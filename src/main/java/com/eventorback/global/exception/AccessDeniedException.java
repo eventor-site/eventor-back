@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 
-import com.sikyeojoback.global.exception.payload.ErrorStatus;
+import com.eventorback.global.exception.payload.ErrorStatus;
 
 public class AccessDeniedException extends GlobalException {
 	public AccessDeniedException(Long currentUserId, Long requestUserId) {

@@ -1,6 +1,6 @@
 package com.eventorback.statustype.domain.dto;
 
-import com.sikyeojoback.statustype.domain.entity.StatusType;
+import com.eventorback.statustype.domain.entity.StatusType;
 
 import lombok.Builder;
 

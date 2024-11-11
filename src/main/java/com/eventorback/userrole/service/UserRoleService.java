@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.sikyeojoback.userrole.domain.dto.UserRoleDto;
+import com.eventorback.userrole.domain.dto.UserRoleDto;
 
 public interface UserRoleService {
 	List<UserRoleDto> getUserRoles();

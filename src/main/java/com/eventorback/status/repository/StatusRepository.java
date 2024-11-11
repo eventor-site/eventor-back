@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.sikyeojoback.status.domain.entity.Status;
+import com.eventorback.status.domain.entity.Status;
 
 public interface StatusRepository extends JpaRepository<Status, Long>, CustomStatusRepository {
 

@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 
-import com.sikyeojoback.global.exception.NotFoundException;
-import com.sikyeojoback.global.exception.payload.ErrorStatus;
+import com.eventorback.global.exception.NotFoundException;
+import com.eventorback.global.exception.payload.ErrorStatus;
 
 public class StatusNotFoundException extends NotFoundException {
 	public StatusNotFoundException(Object value) {

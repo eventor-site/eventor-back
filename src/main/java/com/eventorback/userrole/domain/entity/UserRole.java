@@ -1,7 +1,7 @@
 package com.eventorback.userrole.domain.entity;
 
-import com.sikyeojoback.role.domain.entity.Role;
-import com.sikyeojoback.user.domain.entity.User;
+import com.eventorback.role.domain.entity.Role;
+import com.eventorback.user.domain.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

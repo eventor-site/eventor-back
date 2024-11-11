@@ -7,12 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sikyeojoback.role.domain.dto.RoleDto;
-import com.sikyeojoback.role.domain.entity.Role;
-import com.sikyeojoback.role.exception.RoleAlreadyExistsException;
-import com.sikyeojoback.role.exception.RoleNotFoundException;
-import com.sikyeojoback.role.repository.RoleRepository;
-import com.sikyeojoback.role.service.RoleService;
+import com.eventorback.role.domain.dto.RoleDto;
+import com.eventorback.role.domain.entity.Role;
+import com.eventorback.role.exception.RoleAlreadyExistsException;
+import com.eventorback.role.exception.RoleNotFoundException;
+import com.eventorback.role.repository.RoleRepository;
+import com.eventorback.role.service.RoleService;
 
 import lombok.RequiredArgsConstructor;
 

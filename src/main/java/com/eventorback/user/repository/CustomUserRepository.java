@@ -2,7 +2,7 @@ package com.eventorback.user.repository;
 
 import java.util.List;
 
-import com.sikyeojoback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
 
 public interface CustomUserRepository {
 

@@ -7,15 +7,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sikyeojoback.category.domain.dto.request.CreateCategoryRequest;
-import com.sikyeojoback.category.domain.dto.request.UpdateCategoryRequest;
-import com.sikyeojoback.category.domain.dto.response.GetCategoryNameResponse;
-import com.sikyeojoback.category.domain.dto.response.GetCategoryResponse;
-import com.sikyeojoback.category.domain.entity.Category;
-import com.sikyeojoback.category.exception.CategoryAlreadyExistsException;
-import com.sikyeojoback.category.exception.CategoryNotFoundException;
-import com.sikyeojoback.category.repository.CategoryRepository;
-import com.sikyeojoback.category.service.CategoryService;
+import com.eventorback.category.domain.dto.request.CreateCategoryRequest;
+import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
+import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
+import com.eventorback.category.domain.dto.response.GetCategoryResponse;
+import com.eventorback.category.domain.entity.Category;
+import com.eventorback.category.exception.CategoryAlreadyExistsException;
+import com.eventorback.category.exception.CategoryNotFoundException;
+import com.eventorback.category.repository.CategoryRepository;
+import com.eventorback.category.service.CategoryService;
 
 import lombok.RequiredArgsConstructor;
 

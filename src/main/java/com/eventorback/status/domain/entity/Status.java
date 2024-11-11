@@ -1,7 +1,7 @@
 package com.eventorback.status.domain.entity;
 
-import com.sikyeojoback.status.domain.dto.request.StatusRequest;
-import com.sikyeojoback.statustype.domain.entity.StatusType;
+import com.eventorback.status.domain.dto.request.StatusRequest;
+import com.eventorback.statustype.domain.entity.StatusType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

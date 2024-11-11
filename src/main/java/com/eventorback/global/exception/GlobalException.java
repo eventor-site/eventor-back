@@ -1,6 +1,6 @@
 package com.eventorback.global.exception;
 
-import com.sikyeojoback.global.exception.payload.ErrorStatus;
+import com.eventorback.global.exception.payload.ErrorStatus;
 
 import lombok.Getter;
 

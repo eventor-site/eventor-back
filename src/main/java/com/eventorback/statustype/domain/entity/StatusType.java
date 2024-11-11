@@ -1,6 +1,6 @@
 package com.eventorback.statustype.domain.entity;
 
-import com.sikyeojoback.statustype.domain.dto.StatusTypeDto;
+import com.eventorback.statustype.domain.dto.StatusTypeDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

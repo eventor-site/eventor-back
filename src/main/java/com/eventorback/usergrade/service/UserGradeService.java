@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.sikyeojoback.usergrade.domain.dto.UserGradeDto;
+import com.eventorback.usergrade.domain.dto.UserGradeDto;
 
 public interface UserGradeService {
 	List<UserGradeDto> getUserGrades();

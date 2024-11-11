@@ -1,12 +1,12 @@
 package com.eventorback.category.repository.impl;
 
-import static com.sikyeojoback.category.domain.entity.QCategory.*;
+import static com.eventorback.category.domain.entity.QCategory.*;
 
 import java.util.List;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sikyeojoback.category.domain.dto.response.GetCategoryNameResponse;
-import com.sikyeojoback.category.repository.CustomCategoryRepository;
+import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
+import com.eventorback.category.repository.CustomCategoryRepository;
 
 import lombok.RequiredArgsConstructor;
 

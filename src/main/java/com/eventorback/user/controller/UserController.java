@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sikyeojoback.user.domain.dto.request.SignUpRequest;
-import com.sikyeojoback.user.domain.dto.response.GetUserByAddShopResponse;
-import com.sikyeojoback.user.domain.dto.response.UserTokenInfo;
-import com.sikyeojoback.user.service.UserService;
+import com.eventorback.user.domain.dto.request.SignUpRequest;
+import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.domain.dto.response.UserTokenInfo;
+import com.eventorback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

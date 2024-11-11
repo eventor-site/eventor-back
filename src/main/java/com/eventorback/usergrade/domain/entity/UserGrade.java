@@ -2,7 +2,7 @@ package com.eventorback.usergrade.domain.entity;
 
 import java.math.BigDecimal;
 
-import com.sikyeojoback.usergrade.domain.dto.UserGradeDto;
+import com.eventorback.usergrade.domain.dto.UserGradeDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

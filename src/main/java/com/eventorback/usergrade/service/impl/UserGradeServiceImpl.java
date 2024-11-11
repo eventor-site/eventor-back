@@ -7,12 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sikyeojoback.usergrade.domain.dto.UserGradeDto;
-import com.sikyeojoback.usergrade.domain.entity.UserGrade;
-import com.sikyeojoback.usergrade.exception.UserGradeAlreadyExistsException;
-import com.sikyeojoback.usergrade.exception.UserGradeNotFoundException;
-import com.sikyeojoback.usergrade.repository.UserGradeRepository;
-import com.sikyeojoback.usergrade.service.UserGradeService;
+import com.eventorback.usergrade.domain.dto.UserGradeDto;
+import com.eventorback.usergrade.domain.entity.UserGrade;
+import com.eventorback.usergrade.exception.UserGradeAlreadyExistsException;
+import com.eventorback.usergrade.exception.UserGradeNotFoundException;
+import com.eventorback.usergrade.repository.UserGradeRepository;
+import com.eventorback.usergrade.service.UserGradeService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.sikyeojoback.role.domain.dto.RoleDto;
+import com.eventorback.role.domain.dto.RoleDto;
 
 public interface RoleService {
 

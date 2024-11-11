@@ -7,11 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sikyeojoback.userrole.domain.dto.UserRoleDto;
-import com.sikyeojoback.userrole.domain.entity.UserRole;
-import com.sikyeojoback.userrole.exception.UserRoleNotFoundException;
-import com.sikyeojoback.userrole.repository.UserRoleRepository;
-import com.sikyeojoback.userrole.service.UserRoleService;
+import com.eventorback.userrole.domain.dto.UserRoleDto;
+import com.eventorback.userrole.domain.entity.UserRole;
+import com.eventorback.userrole.exception.UserRoleNotFoundException;
+import com.eventorback.userrole.repository.UserRoleRepository;
+import com.eventorback.userrole.service.UserRoleService;
 
 import lombok.RequiredArgsConstructor;
 

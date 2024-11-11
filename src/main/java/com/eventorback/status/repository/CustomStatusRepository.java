@@ -2,7 +2,7 @@ package com.eventorback.status.repository;
 
 import java.util.List;
 
-import com.sikyeojoback.status.domain.dto.response.GetStatusResponse;
+import com.eventorback.status.domain.dto.response.GetStatusResponse;
 
 public interface CustomStatusRepository {
 

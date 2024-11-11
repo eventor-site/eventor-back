@@ -8,7 +8,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import com.sikyeojoback.auth.annotation.CurrentUserId;
+import com.eventorback.auth.annotation.CurrentUserId;
 
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.http.HttpServletRequest;

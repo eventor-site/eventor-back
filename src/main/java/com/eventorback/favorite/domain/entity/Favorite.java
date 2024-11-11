@@ -1,8 +1,6 @@
 package com.eventorback.favorite.domain.entity;
 
-import com.sikyeojoback.food.domain.entity.Food;
-import com.sikyeojoback.shop.domain.entity.Shop;
-import com.sikyeojoback.user.domain.entity.User;
+import com.eventorback.user.domain.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +26,7 @@ public class Favorite {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "shop_id")
-	private Shop shop;
+	// @ManyToOne(optional = false)
+	// @JoinColumn(name = "shop_id")
+	// private Shop shop;
 }

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sikyeojoback.usergrade.domain.dto.UserGradeDto;
-import com.sikyeojoback.usergrade.service.UserGradeService;
+import com.eventorback.usergrade.domain.dto.UserGradeDto;
+import com.eventorback.usergrade.service.UserGradeService;
 
 import lombok.RequiredArgsConstructor;
 
