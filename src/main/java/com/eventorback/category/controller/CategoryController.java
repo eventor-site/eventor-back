@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sikyeojoback.category.domain.dto.request.CreateCategoryRequest;
-import com.sikyeojoback.category.domain.dto.request.UpdateCategoryRequest;
-import com.sikyeojoback.category.domain.dto.response.GetCategoryNameResponse;
-import com.sikyeojoback.category.domain.dto.response.GetCategoryResponse;
-import com.sikyeojoback.category.service.impl.CategoryServiceImpl;
+import com.eventorback.category.domain.dto.request.CreateCategoryRequest;
+import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
+import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
+import com.eventorback.category.domain.dto.response.GetCategoryResponse;
+import com.eventorback.category.service.impl.CategoryServiceImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

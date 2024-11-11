@@ -1,6 +1,6 @@
 package com.eventorback.role.domain.entity;
 
-import com.sikyeojoback.role.domain.dto.RoleDto;
+import com.eventorback.role.domain.dto.RoleDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

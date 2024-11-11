@@ -9,7 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.sikyeojoback.auth.resolver.CurrentUserIdArgumentResolver;
+import com.eventorback.auth.resolver.CurrentUserIdArgumentResolver;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {

@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.sikyeojoback.status.domain.entity.Status;
-import com.sikyeojoback.user.domain.dto.request.SignUpRequest;
-import com.sikyeojoback.usergrade.domain.entity.UserGrade;
+import com.eventorback.status.domain.entity.Status;
+import com.eventorback.user.domain.dto.request.SignUpRequest;
+import com.eventorback.usergrade.domain.entity.UserGrade;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

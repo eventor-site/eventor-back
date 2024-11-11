@@ -2,7 +2,7 @@ package com.eventorback.usergrade.domain.dto;
 
 import java.math.BigDecimal;
 
-import com.sikyeojoback.usergrade.domain.entity.UserGrade;
+import com.eventorback.usergrade.domain.entity.UserGrade;
 
 import lombok.Builder;
 

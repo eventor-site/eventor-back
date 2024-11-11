@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 
-import com.sikyeojoback.global.exception.payload.ErrorStatus;
+import com.eventorback.global.exception.payload.ErrorStatus;
 
 public class UnauthorizedException extends GlobalException {
 	public UnauthorizedException() {

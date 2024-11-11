@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 
-import com.sikyeojoback.global.exception.AlreadyExistsException;
-import com.sikyeojoback.global.exception.payload.ErrorStatus;
+import com.eventorback.global.exception.AlreadyExistsException;
+import com.eventorback.global.exception.payload.ErrorStatus;
 
 public class RoleAlreadyExistsException extends AlreadyExistsException {
 	public RoleAlreadyExistsException(Object value) {

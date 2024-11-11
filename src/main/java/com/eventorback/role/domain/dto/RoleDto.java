@@ -1,6 +1,6 @@
 package com.eventorback.role.domain.dto;
 
-import com.sikyeojoback.role.domain.entity.Role;
+import com.eventorback.role.domain.entity.Role;
 
 import lombok.Builder;
 

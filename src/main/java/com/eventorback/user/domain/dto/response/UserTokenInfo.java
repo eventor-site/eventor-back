@@ -2,7 +2,7 @@ package com.eventorback.user.domain.dto.response;
 
 import java.util.List;
 
-import com.sikyeojoback.user.domain.entity.User;
+import com.eventorback.user.domain.entity.User;
 
 import lombok.Builder;
 

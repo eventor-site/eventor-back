@@ -1,12 +1,12 @@
 package com.eventorback.user.repository.impl;
 
-import static com.sikyeojoback.user.domain.entity.QUser.*;
+import static com.eventorback.user.domain.entity.QUser.*;
 
 import java.util.List;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sikyeojoback.user.domain.dto.response.GetUserByAddShopResponse;
-import com.sikyeojoback.user.repository.CustomUserRepository;
+import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.repository.CustomUserRepository;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,12 +1,12 @@
 package com.eventorback.statustype.repository.impl;
 
-import static com.sikyeojoback.statustype.domain.entity.QStatusType.*;
+import static com.eventorback.statustype.domain.entity.QStatusType.*;
 
 import java.util.List;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sikyeojoback.statustype.domain.dto.StatusTypeDto;
-import com.sikyeojoback.statustype.repository.CustomStatusTypeRepository;
+import com.eventorback.statustype.domain.dto.StatusTypeDto;
+import com.eventorback.statustype.repository.CustomStatusTypeRepository;
 
 import lombok.RequiredArgsConstructor;
 

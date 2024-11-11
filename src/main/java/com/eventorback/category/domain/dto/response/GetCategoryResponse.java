@@ -1,6 +1,6 @@
 package com.eventorback.category.domain.dto.response;
 
-import com.sikyeojoback.category.domain.entity.Category;
+import com.eventorback.category.domain.entity.Category;
 
 import lombok.Builder;
 

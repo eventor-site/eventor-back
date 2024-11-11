@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.sikyeojoback.status.domain.dto.request.StatusRequest;
-import com.sikyeojoback.status.domain.dto.response.GetStatusResponse;
+import com.eventorback.status.domain.dto.request.StatusRequest;
+import com.eventorback.status.domain.dto.response.GetStatusResponse;
 
 public interface StatusService {
 

@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sikyeojoback.statustype.domain.dto.StatusTypeDto;
-import com.sikyeojoback.statustype.service.StatusTypeService;
+import com.eventorback.statustype.domain.dto.StatusTypeDto;
+import com.eventorback.statustype.service.StatusTypeService;
 
 import lombok.RequiredArgsConstructor;
 

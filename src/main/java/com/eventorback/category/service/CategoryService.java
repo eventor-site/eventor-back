@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.sikyeojoback.category.domain.dto.request.CreateCategoryRequest;
-import com.sikyeojoback.category.domain.dto.request.UpdateCategoryRequest;
-import com.sikyeojoback.category.domain.dto.response.GetCategoryNameResponse;
-import com.sikyeojoback.category.domain.dto.response.GetCategoryResponse;
+import com.eventorback.category.domain.dto.request.CreateCategoryRequest;
+import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
+import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
+import com.eventorback.category.domain.dto.response.GetCategoryResponse;
 
 public interface CategoryService {
 

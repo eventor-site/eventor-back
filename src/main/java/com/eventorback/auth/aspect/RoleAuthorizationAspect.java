@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.sikyeojoback.auth.annotation.AuthorizeRole;
-import com.sikyeojoback.global.exception.UnauthorizedException;
-import com.sikyeojoback.global.exception.UnavailableAuthorizationException;
-import com.sikyeojoback.global.exception.UserNotActiveException;
-import com.sikyeojoback.user.domain.entity.User;
-import com.sikyeojoback.user.repository.UserRepository;
+import com.eventorback.auth.annotation.AuthorizeRole;
+import com.eventorback.global.exception.UnauthorizedException;
+import com.eventorback.global.exception.UnavailableAuthorizationException;
+import com.eventorback.global.exception.UserNotActiveException;
+import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

@@ -7,16 +7,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sikyeojoback.status.domain.dto.request.StatusRequest;
-import com.sikyeojoback.status.domain.dto.response.GetStatusResponse;
-import com.sikyeojoback.status.domain.entity.Status;
-import com.sikyeojoback.status.exception.StatusAlreadyExistsException;
-import com.sikyeojoback.status.exception.StatusNotFoundException;
-import com.sikyeojoback.status.repository.StatusRepository;
-import com.sikyeojoback.status.service.StatusService;
-import com.sikyeojoback.statustype.domain.entity.StatusType;
-import com.sikyeojoback.statustype.exception.StatusTypeNotFoundException;
-import com.sikyeojoback.statustype.repository.StatusTypeRepository;
+import com.eventorback.status.domain.dto.request.StatusRequest;
+import com.eventorback.status.domain.dto.response.GetStatusResponse;
+import com.eventorback.status.domain.entity.Status;
+import com.eventorback.status.exception.StatusAlreadyExistsException;
+import com.eventorback.status.exception.StatusNotFoundException;
+import com.eventorback.status.repository.StatusRepository;
+import com.eventorback.status.service.StatusService;
+import com.eventorback.statustype.domain.entity.StatusType;
+import com.eventorback.statustype.exception.StatusTypeNotFoundException;
+import com.eventorback.statustype.repository.StatusTypeRepository;
 
 import lombok.RequiredArgsConstructor;
 

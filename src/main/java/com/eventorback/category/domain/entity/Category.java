@@ -1,6 +1,6 @@
 package com.eventorback.category.domain.entity;
 
-import com.sikyeojoback.category.domain.dto.request.CreateCategoryRequest;
+import com.eventorback.category.domain.dto.request.CreateCategoryRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

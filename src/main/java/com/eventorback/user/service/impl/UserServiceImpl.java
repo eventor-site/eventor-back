@@ -6,19 +6,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sikyeojoback.status.domain.entity.Status;
-import com.sikyeojoback.status.exception.StatusNotFoundException;
-import com.sikyeojoback.status.repository.StatusRepository;
-import com.sikyeojoback.user.domain.dto.request.SignUpRequest;
-import com.sikyeojoback.user.domain.dto.response.GetUserByAddShopResponse;
-import com.sikyeojoback.user.domain.dto.response.UserTokenInfo;
-import com.sikyeojoback.user.domain.entity.User;
-import com.sikyeojoback.user.exception.UserNotFoundException;
-import com.sikyeojoback.user.repository.UserRepository;
-import com.sikyeojoback.user.service.UserService;
-import com.sikyeojoback.usergrade.domain.entity.UserGrade;
-import com.sikyeojoback.usergrade.repository.UserGradeRepository;
-import com.sikyeojoback.userrole.repository.UserRoleRepository;
+import com.eventorback.status.domain.entity.Status;
+import com.eventorback.status.exception.StatusNotFoundException;
+import com.eventorback.status.repository.StatusRepository;
+import com.eventorback.user.domain.dto.request.SignUpRequest;
+import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.domain.dto.response.UserTokenInfo;
+import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.UserNotFoundException;
+import com.eventorback.user.repository.UserRepository;
+import com.eventorback.user.service.UserService;
+import com.eventorback.usergrade.domain.entity.UserGrade;
+import com.eventorback.usergrade.repository.UserGradeRepository;
+import com.eventorback.userrole.repository.UserRoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
