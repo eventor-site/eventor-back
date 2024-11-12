@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void signUp(SignUpRequest request) {
 		Status status = statusRepository.findByName("활성").orElseThrow(() -> new StatusNotFoundException("활성"));
-		UserGrade userGrade = userGradeRepository.findByName("일반").orElseThrow(() -> new StatusNotFoundException("일반"));
+		UserGrade userGrade = userGradeRepository.findByName("1단계").orElseThrow(() -> new StatusNotFoundException("1단계"));
 
 		String encodedPassword = passwordEncoder.encode(request.password());
 		userRepository.save(User.toEntity(status, userGrade, request, encodedPassword));
