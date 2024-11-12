@@ -10,7 +10,7 @@ public class DataSourceConfig {
 	@Bean
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setUrl("jdbc:mysql://localhost:3306/sikyeojo");
+		dataSource.setUrl("jdbc:mysql://localhost:3306/eventor");
 		dataSource.setUsername("root");
 		dataSource.setPassword("1q2w3e4r!");
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
