@@ -37,8 +37,8 @@ public class User {
 	@JoinColumn(name = "user_grade_id")
 	private UserGrade userGrade;
 
-	@Column(name = "id")
-	private String id;
+	@Column(name = "identifier")
+	private String identifier;
 
 	@Column(name = "password")
 	private String password;
@@ -74,11 +74,11 @@ public class User {
 	private String lastLoginTime;
 
 	@Builder
-	public User(Status status, UserGrade userGrade, String id, String password, String name, String nickname,
+	public User(Status status, UserGrade userGrade, String identifier, String password, String name, String nickname,
 		String email, LocalDate birth, String gender, String phone, LocalDateTime createdAt) {
 		this.status = status;
 		this.userGrade = userGrade;
-		this.id = id;
+		this.identifier = identifier;
 		this.password = password;
 		this.name = name;
 		this.nickname = nickname;
@@ -93,7 +93,7 @@ public class User {
 		return User.builder()
 			.status(status)
 			.userGrade(userGrade)
-			.id(request.id())
+			.identifier(request.identifier())
 			.password(encodedPassword)
 			.name(request.name())
 			.nickname(request.nickName())

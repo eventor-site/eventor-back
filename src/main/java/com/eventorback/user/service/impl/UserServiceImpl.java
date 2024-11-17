@@ -42,8 +42,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserTokenInfo getUserTokenInfoById(String id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+	public UserTokenInfo getUserTokenInfoById(String identifier) {
+		User user = userRepository.findByIdentifier(identifier).orElseThrow(() -> new UserNotFoundException(identifier));
 		List<String> userRoleNames = userRoleRepository.findRolesByUserId(user.getUserId())
 			.stream()
 			.map(userRole -> userRole.getRole().getName())
