@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.category.exception.CategoryNotFoundException;
 import com.eventorback.category.repository.CategoryRepository;
+import com.eventorback.image.domain.dto.response.GetImageResponse;
+import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
@@ -34,6 +36,7 @@ public class PostServiceImpl implements PostService {
 	private final CategoryRepository categoryRepository;
 	private final UserRepository userRepository;
 	private final StatusRepository statusRepository;
+	private final ImageRepository imageRepository;
 
 	@Override
 	public List<GetPostSimpleResponse> getPosts() {
@@ -49,12 +52,17 @@ public class PostServiceImpl implements PostService {
 	public GetPostResponse getPost(Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 
+		List<GetImageResponse> images = imageRepository.findAllByPostPostId(postId)
+			.stream()
+			.map(GetImageResponse::fromEntity)
+			.toList();
+
 		if (post.getStatus().getName().equals("게시글 삭제됨")) {
 			throw new PostNotFoundException(postId);
 		}
 
 		post.increaseViewCount();
-		return GetPostResponse.fromEntity(post);
+		return GetPostResponse.fromEntity(post, images);
 	}
 
 	@Override

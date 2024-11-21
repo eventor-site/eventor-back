@@ -1,7 +1,9 @@
 package com.eventorback.post.domain.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.post.domain.entity.Post;
 
 import lombok.Builder;
@@ -17,9 +19,10 @@ public record GetPostResponse(
 	Long viewCount,
 	LocalDateTime createdAt,
 	Boolean isNotification,
+	List<GetImageResponse> images,
 	Boolean isWriter) {
 
-	public static GetPostResponse fromEntity(Post post) {
+	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images) {
 		return GetPostResponse.builder()
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
@@ -30,6 +33,7 @@ public record GetPostResponse(
 			.viewCount(post.getViewCount())
 			.createdAt(LocalDateTime.now())
 			.isNotification(post.getIsNotification())
+			.images(images)
 			.build();
 	}
 }
