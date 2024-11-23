@@ -9,6 +9,7 @@ import static com.eventorback.user.domain.entity.QUser.*;
 import java.util.List;
 import java.util.Optional;
 
+import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.repository.CustomPostRepository;
@@ -21,25 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomPostRepositoryImpl implements CustomPostRepository {
 	private final JPAQueryFactory queryFactory;
-
-	@Override
-	public List<GetPostSimpleResponse> getPostsByCategoryName(String categoryName) {
-		return queryFactory
-			.select(Projections.constructor(
-				GetPostSimpleResponse.class,
-				post.postId,
-				post.writer,
-				post.title,
-				post.recommendationCount,
-				post.viewCount,
-				post.createdAt))
-			.from(post)
-			.join(post.category, category)
-			.join(post.status, status)
-			.where(category.name.eq(categoryName).and(status.name.eq("게시글 작성됨")))
-			.orderBy(post.createdAt.desc())
-			.fetch();
-	}
 
 	@Override
 	public List<GetPostSimpleResponse> getPosts() {
@@ -61,9 +43,91 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
+	public List<GetPostSimpleResponse> getHotEventPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetPostSimpleResponse.class,
+				post.postId,
+				post.writer,
+				post.title,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("게시글 작성됨").and(category.name.eq("이벤트")))
+			.orderBy(post.viewCount.desc())
+			.limit(10)  // 상위 10권으로 결과 제한
+			.fetch();
+	}
+
+	@Override
+	public List<GetPostSimpleResponse> getLatestEventPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetPostSimpleResponse.class,
+				post.postId,
+				post.writer,
+				post.title,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("게시글 작성됨").and(category.name.eq("이벤트")))
+			.orderBy(post.createdAt.desc())
+			.limit(10)  // 상위 10권으로 결과 제한
+			.fetch();
+	}
+
+	@Override
+	public List<GetPostSimpleResponse> getRecommendationEventPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetPostSimpleResponse.class,
+				post.postId,
+				post.writer,
+				post.title,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("게시글 작성됨").and(category.name.eq("이벤트")))
+			.orderBy(post.recommendationCount.desc())
+			.limit(10)  // 상위 10권으로 결과 제한
+			.fetch();
+	}
+
+	@Override
+	public List<GetPostSimpleResponse> getPostsByCategoryName(String categoryName) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetPostSimpleResponse.class,
+				post.postId,
+				post.writer,
+				post.title,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("게시글 작성됨").and(category.name.eq(categoryName)))
+			.orderBy(post.createdAt.desc())
+			.fetch();
+	}
+
+	@Override
 	public Optional<GetPostResponse> getPost(Long postId) {
-		List<String> imageUrls = queryFactory
-			.select(image.url)
+		List<GetImageResponse> images = queryFactory
+			.select(Projections.constructor(
+				GetImageResponse.class,
+				image.originalName,
+				image.url))
 			.from(image)
 			.where(image.post.postId.eq(postId))
 			.fetch(); // 해당 게시물의 이미지 URL 리스트 가져오기
@@ -81,7 +145,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					post.viewCount,
 					post.createdAt,
 					post.isNotification,
-					(Expression<?>)imageUrls))
+					(Expression<?>)images))
 				.from(post)
 				.join(post.category, category)
 				.where(post.postId.eq(postId).and(status.name.eq("게시글 작성됨")))

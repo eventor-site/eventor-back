@@ -1,5 +1,6 @@
 package com.eventorback.favorite.domain.entity;
 
+import com.eventorback.post.domain.entity.Post;
 import com.eventorback.user.domain.entity.User;
 
 import jakarta.persistence.Column;
@@ -9,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +28,13 @@ public class Favorite {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	// @ManyToOne(optional = false)
-	// @JoinColumn(name = "shop_id")
-	// private Shop shop;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "post_id")
+	private Post post;
+
+	@Builder
+	public Favorite(User user, Post post) {
+		this.user = user;
+		this.post = post;
+	}
 }

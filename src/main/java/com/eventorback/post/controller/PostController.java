@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
@@ -21,6 +22,7 @@ import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.service.PostService;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,14 +37,30 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getPosts());
 	}
 
+	@GetMapping("/event/hot")
+	public ResponseEntity<List<GetPostSimpleResponse>> getHotEventPosts() {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getHotEventPosts());
+	}
+
+	@GetMapping("/event/latest")
+	public ResponseEntity<List<GetPostSimpleResponse>> getLatestEventPosts() {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getLatestEventPosts());
+	}
+
+	@GetMapping("/event/recommendation")
+	public ResponseEntity<List<GetPostSimpleResponse>> getRecommendationEventPosts() {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getRecommendationEventPosts());
+	}
+
 	@GetMapping
 	public ResponseEntity<List<GetPostSimpleResponse>> getPostsByCategoryName(@RequestParam String categoryName) {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByCategoryName(categoryName));
 	}
 
 	@GetMapping("/{postId}")
-	public ResponseEntity<GetPostResponse> getPost(@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(postId));
+	public ResponseEntity<GetPostResponse> getPost(@CurrentUser CurrentUserDto currentUser,
+		@PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(currentUser, postId));
 	}
 
 	@PostMapping
@@ -52,9 +70,9 @@ public class PostController {
 	}
 
 	@PutMapping("/{postId}")
-	public ResponseEntity<Void> updatePost(@PathVariable Long postId,
+	public ResponseEntity<Void> updatePost(@CurrentUserId Long userId, @PathVariable Long postId,
 		@RequestBody UpdatePostRequest request) {
-		postService.updatePost(postId, request);
+		postService.updatePost(userId, postId, request);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 

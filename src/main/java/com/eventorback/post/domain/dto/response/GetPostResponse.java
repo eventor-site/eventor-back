@@ -20,9 +20,9 @@ public record GetPostResponse(
 	LocalDateTime createdAt,
 	Boolean isNotification,
 	List<GetImageResponse> images,
-	Boolean isWriter) {
+	Boolean isAuthorized) {
 
-	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images) {
+	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images, Boolean isAuthorized) {
 		return GetPostResponse.builder()
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
@@ -34,6 +34,7 @@ public record GetPostResponse(
 			.createdAt(LocalDateTime.now())
 			.isNotification(post.getIsNotification())
 			.images(images)
+			.isAuthorized(isAuthorized)
 			.build();
 	}
 }
