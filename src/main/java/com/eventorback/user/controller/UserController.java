@@ -41,8 +41,8 @@ public class UserController {
 	 * @return 사용자 정보가 포함된 {@link ResponseEntity} 객체를 반환합니다.
 	 */
 	@GetMapping("/info")
-	public ResponseEntity<UserTokenInfo> getUserInfoById(@RequestHeader("X-User-userId") String id) {
-		UserTokenInfo user = userService.getUserTokenInfoById(id);
+	public ResponseEntity<UserTokenInfo> getUserInfoByIdentifier(@RequestHeader("X-User-userId") String identifier) {
+		UserTokenInfo user = userService.getUserTokenInfoByIdentifier(identifier);
 
 		if (user == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

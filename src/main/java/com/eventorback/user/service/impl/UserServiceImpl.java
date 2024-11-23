@@ -35,19 +35,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void signUp(SignUpRequest request) {
 		Status status = statusRepository.findByName("활성").orElseThrow(() -> new StatusNotFoundException("활성"));
-		UserGrade userGrade = userGradeRepository.findByName("1단계").orElseThrow(() -> new StatusNotFoundException("1단계"));
+		UserGrade userGrade = userGradeRepository.findByName("1단계")
+			.orElseThrow(() -> new StatusNotFoundException("1단계"));
 
 		String encodedPassword = passwordEncoder.encode(request.password());
 		userRepository.save(User.toEntity(status, userGrade, request, encodedPassword));
 	}
 
 	@Override
-	public UserTokenInfo getUserTokenInfoById(String identifier) {
-		User user = userRepository.findByIdentifier(identifier).orElseThrow(() -> new UserNotFoundException(identifier));
-		List<String> userRoleNames = userRoleRepository.findRolesByUserId(user.getUserId())
-			.stream()
-			.map(userRole -> userRole.getRole().getName())
-			.toList();
+	public UserTokenInfo getUserTokenInfoByIdentifier(String identifier) {
+		User user = userRepository.findByIdentifier(identifier)
+			.orElseThrow(() -> new UserNotFoundException(identifier));
+		List<String> userRoleNames = userRoleRepository.findAllByUserUserId(user.getUserId())
+			.stream().map(userRole -> userRole.getRole().getName()).toList();
 
 		return UserTokenInfo.fromEntity(user, userRoleNames);
 	}

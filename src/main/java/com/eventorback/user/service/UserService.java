@@ -10,7 +10,7 @@ public interface UserService {
 
 	void signUp(SignUpRequest request);
 
-	UserTokenInfo getUserTokenInfoById(String id);
+	UserTokenInfo getUserTokenInfoByIdentifier(String identifier);
 
 	List<GetUserByAddShopResponse> searchUserById(String keyword);
 
