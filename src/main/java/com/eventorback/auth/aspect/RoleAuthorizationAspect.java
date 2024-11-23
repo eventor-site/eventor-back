@@ -41,7 +41,7 @@ public class RoleAuthorizationAspect {
 			throw new UnauthorizedException();
 		}
 
-		// @AuthorizeRole에 정의된 역할 목록
+		// @AuthorizeRole 에 정의된 역할 목록
 		List<String> requiredRoles = Arrays.asList(authorizeRole.value());
 
 		// 헤더에서 역할 목록을 ','로 구분하여 리스트로 변환

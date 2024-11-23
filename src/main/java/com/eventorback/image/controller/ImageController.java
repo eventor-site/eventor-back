@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.eventorback.image.service.impl.ImageServiceImpl;
+import com.eventorback.image.service.UploadService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,12 +18,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/back/images")
 public class ImageController {
-	private final ImageServiceImpl uploadService;
+	private final UploadService uploadService;
 
-	@PostMapping("/upload")
+	@PostMapping(value = "/upload", consumes = "multipart/form-data")
 	public ResponseEntity<Void> uploadImage(@RequestParam("files") List<MultipartFile> files,
 		@RequestParam String folderName, @RequestParam Long postId) {
-		uploadService.upload(files, folderName, postId);
+		uploadService.uploads(files, folderName, postId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 }

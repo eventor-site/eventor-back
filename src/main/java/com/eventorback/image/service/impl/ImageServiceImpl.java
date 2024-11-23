@@ -6,9 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,30 +32,30 @@ public class ImageServiceImpl implements ImageService {
 
 	private static final String UPLOAD_DIRECTORY = "src/main/resources/static";
 
-	public void upload(List<MultipartFile> files, String folderName, Long postId) {
-		for (MultipartFile file : files) {
-			// 1. 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
-			String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
-			Path folderPath = Paths.get(UPLOAD_DIRECTORY, folderName, today);
-			createDirectoryIfNotExists(folderPath);
+	@Override
+	@Async("imageUploadExecutor")
+	public void upload(MultipartFile file, String folderName, Long postId) {
+		// 1. 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
+		String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+		Path folderPath = Paths.get(UPLOAD_DIRECTORY, folderName, today);
+		createDirectoryIfNotExists(folderPath);
 
-			// 2. 파일 이름 생성 (UUID 로 중복 방지)
-			String originalFilename = file.getOriginalFilename();
-			String fileExtension = getFileExtension(originalFilename);
-			String newFileName = postId.toString() + "_" + UUID.randomUUID() + fileExtension;
+		// 2. 파일 이름 생성 (UUID 로 중복 방지)
+		String originalFilename = file.getOriginalFilename();
+		String fileExtension = getFileExtension(originalFilename);
+		String newFileName = postId.toString() + "_" + UUID.randomUUID() + fileExtension;
 
-			// 3. 파일 확장자 검사
-			checkFileExtension(fileExtension);
+		// 3. 파일 확장자 검사
+		checkFileExtension(fileExtension);
 
-			// 4. 파일 저장
-			String url = saveFile(folderPath, newFileName, file);
+		// 4. 파일 저장
+		String url = saveFile(folderPath, newFileName, file);
 
-			//임시 백엔드 리소스 URL
-			url = "http://localhost:8083/" + folderName + "/" + today + "/" + newFileName;
+		//임시 백엔드 리소스 URL
+		url = "http://localhost:8083/" + folderName + "/" + today + "/" + newFileName;
 
-			// 5. DB에 이미지 정보 저장
-			createImage(postId, originalFilename, newFileName, url);
-		}
+		// 5. DB에 이미지 정보 저장
+		createImage(postId, originalFilename, newFileName, url);
 	}
 
 	@Override
@@ -107,8 +107,8 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public Image createImage(Long postId, String originalName, String newName, String url) {
+	public void createImage(Long postId, String originalName, String newName, String url) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
-		return imageRepository.save(new Image(post, originalName, newName, url));
+		imageRepository.save(new Image(post, originalName, newName, url));
 	}
 }

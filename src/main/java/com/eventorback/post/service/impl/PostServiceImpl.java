@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.category.exception.CategoryNotFoundException;
 import com.eventorback.category.repository.CategoryRepository;
+import com.eventorback.global.exception.AccessDeniedException;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
@@ -22,6 +23,7 @@ import com.eventorback.post.service.PostService;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
@@ -44,25 +46,41 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public List<GetPostSimpleResponse> getHotEventPosts() {
+		return postRepository.getHotEventPosts();
+	}
+
+	@Override
+	public List<GetPostSimpleResponse> getLatestEventPosts() {
+		return postRepository.getLatestEventPosts();
+	}
+
+	@Override
+	public List<GetPostSimpleResponse> getRecommendationEventPosts() {
+		return postRepository.getRecommendationEventPosts();
+	}
+
+	@Override
 	public List<GetPostSimpleResponse> getPostsByCategoryName(String categoryName) {
 		return postRepository.getPostsByCategoryName(categoryName);
 	}
 
 	@Override
-	public GetPostResponse getPost(Long postId) {
+	public GetPostResponse getPost(CurrentUserDto currentUser, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 
 		List<GetImageResponse> images = imageRepository.findAllByPostPostId(postId)
-			.stream()
-			.map(GetImageResponse::fromEntity)
-			.toList();
+			.stream().map(GetImageResponse::fromEntity).toList();
+
+		Boolean isAuthorized =
+			post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("관리자");
 
 		if (post.getStatus().getName().equals("게시글 삭제됨")) {
 			throw new PostNotFoundException(postId);
 		}
 
 		post.increaseViewCount();
-		return GetPostResponse.fromEntity(post, images);
+		return GetPostResponse.fromEntity(post, images, isAuthorized);
 	}
 
 	@Override
@@ -84,9 +102,13 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void updatePost(Long postId, UpdatePostRequest request) {
+	public void updatePost(Long userId, Long postId, UpdatePostRequest request) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(postId));
+
+		if (!post.getUser().getUserId().equals(userId)) {
+			throw new AccessDeniedException();
+		}
 		post.update(request);
 	}
 

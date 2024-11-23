@@ -9,6 +9,7 @@ import lombok.Builder;
 @Builder
 public record UserTokenInfo(
 	Long userId,
+	String identifier,
 	String password,
 	List<String> roles,
 	String statusName
@@ -16,6 +17,7 @@ public record UserTokenInfo(
 	public static UserTokenInfo fromEntity(User user, List<String> roleNames) {
 		return UserTokenInfo.builder()
 			.userId(user.getUserId())
+			.identifier(user.getIdentifier())
 			.password(user.getPassword())
 			.roles(roleNames)
 			.statusName(user.getStatus().getName())

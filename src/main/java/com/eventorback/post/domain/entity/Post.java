@@ -62,6 +62,12 @@ public class Post {
 	@Column(name = "is_notification")
 	private Boolean isNotification;
 
+	@Column(name = "start_time")
+	private LocalDateTime startTime;
+
+	@Column(name = "end_time")
+	private LocalDateTime endTime;
+
 	@Builder
 	public Post(Category category, User user, Status status, String writer, String title, String content,
 		Boolean isNotification) {
@@ -75,6 +81,23 @@ public class Post {
 		this.viewCount = 0L;
 		this.createdAt = LocalDateTime.now();
 		this.isNotification = isNotification;
+	}
+
+	@Builder
+	public Post(Category category, User user, Status status, String writer, String title, String content,
+		Boolean isNotification, LocalDateTime startTime, LocalDateTime endTime) {
+		this.category = category;
+		this.user = user;
+		this.status = status;
+		this.writer = writer;
+		this.title = title;
+		this.content = content;
+		this.recommendationCount = 0L;
+		this.viewCount = 0L;
+		this.createdAt = LocalDateTime.now();
+		this.isNotification = isNotification;
+		this.startTime = startTime;
+		this.endTime = endTime;
 	}
 
 	public static Post toEntity(Category category, User user, Status status, CreatePostRequest request) {
@@ -105,6 +128,8 @@ public class Post {
 		this.title = request.title();
 		this.content = request.content();
 		this.isNotification = request.isNotification();
+		this.startTime = request.startTime();
+		this.endTime = request.endTime();
 	}
 
 }
