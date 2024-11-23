@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.eventorback.userrole.domain.entity.UserRole;
 
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
-	List<UserRole> findRolesByUserId(Long userId);
+	List<UserRole> findAllByUserUserId(Long userId);
 }

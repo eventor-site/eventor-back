@@ -72,8 +72,10 @@ public class PostServiceImpl implements PostService {
 		List<GetImageResponse> images = imageRepository.findAllByPostPostId(postId)
 			.stream().map(GetImageResponse::fromEntity).toList();
 
+		List<String> rolse = currentUser.roles();
+		
 		Boolean isAuthorized =
-			post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("관리자");
+			post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("admin");
 
 		if (post.getStatus().getName().equals("게시글 삭제됨")) {
 			throw new PostNotFoundException(postId);
