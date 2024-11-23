@@ -72,8 +72,6 @@ public class PostServiceImpl implements PostService {
 		List<GetImageResponse> images = imageRepository.findAllByPostPostId(postId)
 			.stream().map(GetImageResponse::fromEntity).toList();
 
-		List<String> rolse = currentUser.roles();
-		
 		Boolean isAuthorized =
 			post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("admin");
 
