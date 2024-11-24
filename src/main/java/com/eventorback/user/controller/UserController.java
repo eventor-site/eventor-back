@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,13 +34,10 @@ public class UserController {
 	}
 
 	/**
-	 * 이메일을 통해 사용자의 토큰 정보를 조회합니다.
-	 *
-	 * @param id 사용자 아이디를 헤더로 전달합니다.
-	 * @return 사용자 정보가 포함된 {@link ResponseEntity} 객체를 반환합니다.
+	 * 아이디를 통해 사용자의 토큰 정보를 조회합니다.
 	 */
 	@GetMapping("/info")
-	public ResponseEntity<UserTokenInfo> getUserInfoByIdentifier(@RequestHeader("X-User-userId") String identifier) {
+	public ResponseEntity<UserTokenInfo> getUserInfoByIdentifier(@RequestParam String identifier) {
 		UserTokenInfo user = userService.getUserTokenInfoByIdentifier(identifier);
 
 		if (user == null) {
