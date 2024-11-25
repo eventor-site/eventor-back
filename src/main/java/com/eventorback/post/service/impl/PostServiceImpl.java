@@ -14,8 +14,10 @@ import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
+import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
+import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -46,23 +48,26 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<GetPostSimpleResponse> getHotEventPosts() {
+	public List<GetMainPostResponse> getHotEventPosts() {
 		return postRepository.getHotEventPosts();
 	}
 
 	@Override
-	public List<GetPostSimpleResponse> getLatestEventPosts() {
+	public List<GetMainPostResponse> getLatestEventPosts() {
 		return postRepository.getLatestEventPosts();
 	}
 
 	@Override
-	public List<GetPostSimpleResponse> getRecommendationEventPosts() {
+	public List<GetMainPostResponse> getRecommendationEventPosts() {
 		return postRepository.getRecommendationEventPosts();
 	}
 
 	@Override
-	public List<GetPostSimpleResponse> getPostsByCategoryName(String categoryName) {
-		return postRepository.getPostsByCategoryName(categoryName);
+	public GetPostsByCategoryNameResponse getPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
+		Boolean isAuthorized =
+			currentUser != null && (currentUser.roles().contains("admin") || categoryName.equals("자유"));
+		List<GetPostSimpleResponse> posts = postRepository.getPostsByCategoryName(currentUser, categoryName);
+		return GetPostsByCategoryNameResponse.fromResponse(posts, isAuthorized);
 	}
 
 	@Override
@@ -72,8 +77,11 @@ public class PostServiceImpl implements PostService {
 		List<GetImageResponse> images = imageRepository.findAllByPostPostId(postId)
 			.stream().map(GetImageResponse::fromEntity).toList();
 
-		Boolean isAuthorized =
-			post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("admin");
+		Boolean isAuthorized = false;
+		if (currentUser != null) {
+			isAuthorized =
+				post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("admin");
+		}
 
 		if (post.getStatus().getName().equals("게시글 삭제됨")) {
 			throw new PostNotFoundException(postId);
