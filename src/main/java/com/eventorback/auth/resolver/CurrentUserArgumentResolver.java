@@ -39,17 +39,23 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		Long userId = userIdHeader != null ? Long.parseLong(userIdHeader) : null;
 
 		// roles 파싱
-		userRolesHeader = userRolesHeader.replace("[", "").replace("]", "");  // 대괄호 제거
 		List<String> roles = null;
-		if (StringUtils.hasText(userRolesHeader)) {
-			roles = Arrays.asList(userRolesHeader.split(",")); // 쉼표로 구분
-			// 각 역할에서 공백을 제거하고, 필요시 trim() 적용
-			roles = roles.stream().map(String::trim).toList();
+		if (userRolesHeader != null) {
+			userRolesHeader = userRolesHeader.replace("[", "").replace("]", "");  // 대괄호 제거
+			roles = null;
+			if (StringUtils.hasText(userRolesHeader)) {
+				roles = Arrays.asList(userRolesHeader.split(",")); // 쉼표로 구분
+				// 각 역할에서 공백을 제거하고, 필요시 trim() 적용
+				roles = roles.stream().map(String::trim).toList();
+			}
+
+			return CurrentUserDto.builder()
+				.userId(userId)
+				.roles(roles)
+				.build();
+		} else {
+			return null;
 		}
 
-		return CurrentUserDto.builder()
-			.userId(userId)
-			.roles(roles)
-			.build();
 	}
 }

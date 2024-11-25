@@ -19,8 +19,10 @@ import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
+import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
+import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.service.PostService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
@@ -38,23 +40,25 @@ public class PostController {
 	}
 
 	@GetMapping("/event/hot")
-	public ResponseEntity<List<GetPostSimpleResponse>> getHotEventPosts() {
+	public ResponseEntity<List<GetMainPostResponse>> getHotEventPosts() {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getHotEventPosts());
 	}
 
 	@GetMapping("/event/latest")
-	public ResponseEntity<List<GetPostSimpleResponse>> getLatestEventPosts() {
+	public ResponseEntity<List<GetMainPostResponse>> getLatestEventPosts() {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getLatestEventPosts());
 	}
 
 	@GetMapping("/event/recommendation")
-	public ResponseEntity<List<GetPostSimpleResponse>> getRecommendationEventPosts() {
+	public ResponseEntity<List<GetMainPostResponse>> getRecommendationEventPosts() {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getRecommendationEventPosts());
 	}
 
 	@GetMapping
-	public ResponseEntity<List<GetPostSimpleResponse>> getPostsByCategoryName(@RequestParam String categoryName) {
-		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByCategoryName(categoryName));
+	public ResponseEntity<GetPostsByCategoryNameResponse> getPostsByCategoryName(
+		@CurrentUser CurrentUserDto currentUser,
+		@RequestParam String categoryName) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByCategoryName(currentUser, categoryName));
 	}
 
 	@GetMapping("/{postId}")
