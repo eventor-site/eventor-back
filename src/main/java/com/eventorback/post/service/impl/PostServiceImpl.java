@@ -22,6 +22,10 @@ import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
 import com.eventorback.post.service.PostService;
+import com.eventorback.postrecommend.domain.entity.PostRecommend;
+import com.eventorback.postrecommend.repository.PostRecommendRepository;
+import com.eventorback.recommendtype.domain.entity.RecommendType;
+import com.eventorback.recommendtype.service.RecommendTypeService;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
@@ -41,6 +45,8 @@ public class PostServiceImpl implements PostService {
 	private final UserRepository userRepository;
 	private final StatusRepository statusRepository;
 	private final ImageRepository imageRepository;
+	private final PostRecommendRepository postRecommendRepository;
+	private final RecommendTypeService recommendTypeService;
 
 	@Override
 	public List<GetPostSimpleResponse> getPosts() {
@@ -122,16 +128,31 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public void recommendPost(Long userId, Long postId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new PostNotFoundException(postId));
-		post.recommend();
+		if (!postRecommendRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
+			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new PostNotFoundException(postId));
+			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("좋아요");
+			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
+			post.recommend();
+		} else {
+
+		}
+
 	}
 
 	@Override
 	public void disrecommendPost(Long userId, Long postId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new PostNotFoundException(postId));
-		post.disrecommendPost();
+		if (!postRecommendRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
+			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new PostNotFoundException(postId));
+			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("좋아요");
+			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
+			post.disrecommendPost();
+		} else {
+
+		}
 	}
 
 	@Override
