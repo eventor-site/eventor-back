@@ -44,6 +44,13 @@ public class Status {
 			.build();
 	}
 
+	public static Status toEntityFindOrCreate(StatusType statusType, String name) {
+		return Status.builder()
+			.statusType(statusType)
+			.name(name)
+			.build();
+	}
+
 	public void updateName(StatusType statusType, String name) {
 		this.statusType = statusType;
 		this.name = name;

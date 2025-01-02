@@ -17,6 +17,7 @@ import com.eventorback.status.service.StatusService;
 import com.eventorback.statustype.domain.entity.StatusType;
 import com.eventorback.statustype.exception.StatusTypeNotFoundException;
 import com.eventorback.statustype.repository.StatusTypeRepository;
+import com.eventorback.statustype.service.StatusTypeService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class StatusServiceImpl implements StatusService {
 	private final StatusRepository statusRepository;
 	private final StatusTypeRepository statusTypeRepository;
+	private final StatusTypeService statusTypeService;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -81,4 +83,13 @@ public class StatusServiceImpl implements StatusService {
 	public void deleteStatus(Long statusId) {
 		statusRepository.deleteById(statusId);
 	}
+
+	@Override
+	public Status findOrCreateStatus(String statusTypeName, String statusName) {
+		return statusRepository.findByName(statusName)
+			.orElseGet(
+				() -> statusRepository.save(
+					Status.toEntityFindOrCreate(statusTypeService.findOrCreateStatusType(statusTypeName), statusName)));
+	}
+
 }

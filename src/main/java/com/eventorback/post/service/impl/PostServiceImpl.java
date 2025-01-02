@@ -121,6 +121,20 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public void recommendPost(Long userId, Long postId) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new PostNotFoundException(postId));
+		post.recommend();
+	}
+
+	@Override
+	public void disrecommendPost(Long userId, Long postId) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new PostNotFoundException(postId));
+		post.disrecommendPost();
+	}
+
+	@Override
 	public void deletePost(Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 		Status status = statusRepository.findByName("게시글 삭제됨")

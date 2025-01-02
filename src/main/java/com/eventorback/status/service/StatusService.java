@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.status.domain.dto.request.StatusRequest;
 import com.eventorback.status.domain.dto.response.GetStatusResponse;
+import com.eventorback.status.domain.entity.Status;
 
 public interface StatusService {
 
@@ -23,4 +24,6 @@ public interface StatusService {
 	void updateStatus(Long statusId, StatusRequest request);
 
 	void deleteStatus(Long statusId);
+
+	Status findOrCreateStatus(String statusTypeName, String statusName);
 }

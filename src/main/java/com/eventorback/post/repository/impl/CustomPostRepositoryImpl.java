@@ -9,13 +9,11 @@ import static com.eventorback.user.domain.entity.QUser.*;
 import java.util.List;
 import java.util.Optional;
 
-import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
-import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
+import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.CustomPostRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -124,34 +122,14 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public Optional<GetPostResponse> getPost(Long postId) {
-		List<GetImageResponse> images = queryFactory
-			.select(Projections.constructor(
-				GetImageResponse.class,
-				image.originalName,
-				image.url))
-			.from(image)
-			.where(image.post.postId.eq(postId))
-			.fetch(); // 해당 게시물의 이미지 URL 리스트 가져오기
-
+	public Optional<Post> getPost(Long postId) {
 		return Optional.ofNullable(
 			queryFactory
-				.select(Projections.constructor(
-					GetPostResponse.class,
-					post.postId,
-					category.name,
-					post.writer,
-					post.title,
-					post.content,
-					post.recommendationCount,
-					post.viewCount,
-					post.createdAt,
-					post.isNotification,
-					(Expression<?>)images))
-				.from(post)
-				.join(post.category, category)
+				.selectFrom(post)
+				.join(post.category, category).fetchJoin()
+				.join(post.status, status).fetchJoin()
 				.where(post.postId.eq(postId).and(status.name.eq("게시글 작성됨")))
-				.fetchOne() // 단일 결과를 반환
+				.fetchOne()
 		);
 	}
 
