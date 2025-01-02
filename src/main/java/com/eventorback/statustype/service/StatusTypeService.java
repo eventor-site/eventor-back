@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.statustype.domain.dto.StatusTypeDto;
+import com.eventorback.statustype.domain.entity.StatusType;
 
 public interface StatusTypeService {
 
@@ -22,4 +23,6 @@ public interface StatusTypeService {
 	void updateStatusType(Long statusId, StatusTypeDto request);
 
 	void deleteStatusType(Long statusId);
+
+	StatusType findOrCreateStatusType(String statusTypeName);
 }

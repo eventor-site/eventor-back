@@ -35,6 +35,12 @@ public class StatusType {
 			.build();
 	}
 
+	public static StatusType toEntityFindOrCreate(String name) {
+		return StatusType.builder()
+			.name(name)
+			.build();
+	}
+
 	public void updateStatusType(String name) {
 		this.name = name;
 	}

@@ -80,6 +80,18 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
+	@PutMapping("/{postId}/recommend")
+	public ResponseEntity<Void> recommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
+		postService.recommendPost(userId, postId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PutMapping("/{postId}/disrecommend")
+	public ResponseEntity<Void> disrecommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
+		postService.disrecommendPost(userId, postId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
 	@DeleteMapping("/{postId}")
 	public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
 		postService.deletePost(postId);
