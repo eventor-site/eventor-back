@@ -132,7 +132,7 @@ public class Post {
 		this.endTime = request.endTime();
 	}
 
-	public void recommend() {
+	public void recommendPost() {
 		this.recommendationCount++;
 	}
 

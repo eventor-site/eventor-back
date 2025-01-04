@@ -127,31 +127,40 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void recommendPost(Long userId, Long postId) {
-		if (!postRecommendRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
+	public String recommendPost(Long userId, Long postId) {
+		PostRecommend postRecommend = postRecommendRepository.findByUserUserIdAndPostPostId(userId, postId)
+			.orElse(null);
+
+		if (postRecommend == null) {
 			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 			Post post = postRepository.findById(postId)
 				.orElseThrow(() -> new PostNotFoundException(postId));
-			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("좋아요");
+			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
-			post.recommend();
+			post.recommendPost();
+			return "추천되었습니다.";
 		} else {
-
+			String recommendTypeName = postRecommend.getRecommendType().getName();
+			return "이미 " + recommendTypeName + "하였습니다.";
 		}
-
 	}
 
 	@Override
-	public void disrecommendPost(Long userId, Long postId) {
-		if (!postRecommendRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
+	public String disrecommendPost(Long userId, Long postId) {
+		PostRecommend postRecommend = postRecommendRepository.findByUserUserIdAndPostPostId(userId, postId)
+			.orElse(null);
+
+		if (postRecommend == null) {
 			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 			Post post = postRepository.findById(postId)
 				.orElseThrow(() -> new PostNotFoundException(postId));
-			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("좋아요");
+			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("비추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
 			post.disrecommendPost();
+			return "비추천되었습니다.";
 		} else {
-
+			String recommendTypeName = postRecommend.getRecommendType().getName();
+			return "이미 " + recommendTypeName + "하였습니다.";
 		}
 	}
 

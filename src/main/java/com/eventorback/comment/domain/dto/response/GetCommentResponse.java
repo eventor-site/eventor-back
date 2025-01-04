@@ -13,6 +13,7 @@ public record GetCommentResponse(
 	String writer,
 	String content,
 	Long recommendationCount,
+	Long decommendationCount,
 	LocalDateTime createdAt) {
 	public static GetCommentResponse fromEntity(Comment comment) {
 		Long parentCommentId =
@@ -25,6 +26,7 @@ public record GetCommentResponse(
 			.content(comment.getContent())
 			.createdAt(comment.getCreatedAt())
 			.recommendationCount(comment.getRecommendationCount())
+			.decommendationCount(comment.getDecommendationCount())
 			.build();
 	}
 }

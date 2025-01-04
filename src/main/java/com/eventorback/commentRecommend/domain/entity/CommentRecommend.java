@@ -1,6 +1,6 @@
 package com.eventorback.commentRecommend.domain.entity;
 
-import com.eventorback.post.domain.entity.Post;
+import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.recommendtype.domain.entity.RecommendType;
 import com.eventorback.user.domain.entity.User;
 
@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,22 +25,30 @@ public class CommentRecommend {
 	@Column(name = "comment_recommend_id")
 	private Long commentRecommendId;
 
-	@OneToOne(optional = false)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "post_id")
-	private Post post;
+	@JoinColumn(name = "comment_id")
+	private Comment comment;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "recommend_type")
 	private RecommendType recommendType;
 
 	@Builder
-	public CommentRecommend(User user, Post post, RecommendType recommendType) {
+	public CommentRecommend(User user, Comment comment, RecommendType recommendType) {
 		this.user = user;
-		this.post = post;
+		this.comment = comment;
 		this.recommendType = recommendType;
+	}
+
+	public static CommentRecommend toEntity(User user, Comment comment, RecommendType recommendType) {
+		return CommentRecommend.builder()
+			.user(user)
+			.comment(comment)
+			.recommendType(recommendType)
+			.build();
 	}
 }
