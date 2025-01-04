@@ -54,6 +54,9 @@ public class Comment {
 	@Column(name = "recommendation_count")
 	private Long recommendationCount;
 
+	@Column(name = "decommendation_count")
+	private Long decommendationCount;
+
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
@@ -66,6 +69,7 @@ public class Comment {
 		this.writer = writer;
 		this.content = content;
 		this.recommendationCount = 0L;
+		this.decommendationCount = 0L;
 		this.createdAt = LocalDateTime.now();
 	}
 
@@ -90,6 +94,6 @@ public class Comment {
 	}
 
 	public void disrecommendComment() {
-		this.recommendationCount--;
+		this.decommendationCount++;
 	}
 }

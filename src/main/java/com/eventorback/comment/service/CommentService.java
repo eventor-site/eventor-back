@@ -14,9 +14,9 @@ public interface CommentService {
 
 	void updateComment(Long commentId, UpdateCommentRequest request);
 
-	void recommendComment(Long commentId);
+	String recommendComment(Long userId, Long commentId);
 
-	void disrecommendComment(Long commentId);
+	String disrecommendComment(Long userId, Long commentId);
 
 	void deleteComment(Long commentId);
 

@@ -48,17 +48,15 @@ public class CommentController {
 	}
 
 	@PutMapping("/{commentId}/recommend")
-	public ResponseEntity<Void> recommendComment(@PathVariable Long commentId, @PathVariable Long postId,
-		@CurrentUserId Long userId) {
-		commentService.recommendComment(commentId);
-		return ResponseEntity.status(HttpStatus.OK).build();
+	public ResponseEntity<String> recommendComment(@CurrentUserId Long userId, @PathVariable Long commentId,
+		@PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.recommendComment(userId, commentId));
 	}
 
 	@PutMapping("/{commentId}/disrecommend")
-	public ResponseEntity<Void> disrecommendComment(@PathVariable Long commentId, @PathVariable Long postId,
-		@CurrentUserId Long userId) {
-		commentService.disrecommendComment(commentId);
-		return ResponseEntity.status(HttpStatus.OK).build();
+	public ResponseEntity<String> disrecommendComment(@CurrentUserId Long userId, @PathVariable Long commentId,
+		@PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.disrecommendComment(userId, commentId));
 	}
 
 	@DeleteMapping("/{commentId}")

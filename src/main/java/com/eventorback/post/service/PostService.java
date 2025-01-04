@@ -29,9 +29,9 @@ public interface PostService {
 
 	void updatePost(Long userId, Long postId, UpdatePostRequest request);
 
-	void recommendPost(Long userId, Long postId);
+	String recommendPost(Long userId, Long postId);
 
-	void disrecommendPost(Long userId, Long postId);
+	String disrecommendPost(Long userId, Long postId);
 
 	void deletePost(Long postId);
 }
