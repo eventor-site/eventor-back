@@ -1,6 +1,8 @@
 package com.eventorback.comment.domain.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
@@ -8,6 +10,7 @@ import com.eventorback.post.domain.entity.Post;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +36,9 @@ public class Comment {
 	@ManyToOne
 	@JoinColumn(name = "parent_comment_id")
 	private Comment parentComment;
+
+	@OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Comment> childrenComments = new ArrayList<>(); // 자식 댓글들(대댓글)
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "post_id")
