@@ -12,7 +12,6 @@ import com.eventorback.role.repository.RoleRepository;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
-import com.eventorback.status.service.StatusService;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -37,11 +36,10 @@ public class UserServiceImpl implements UserService {
 	private final UserRoleRepository userRoleRepository;
 	private final StatusRepository statusRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final StatusService statusService;
 
 	@Override
 	public void signUp(SignUpRequest request) {
-		Status status = statusService.findOrCreateStatus("유저", "활성");
+		Status status = statusRepository.findOrCreateStatus("유저", "활성");
 		UserGrade userGrade = userGradeRepository.findByName("1단계")
 			.orElseThrow(() -> new StatusNotFoundException("1단계"));
 

@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.service.CommentService;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +31,9 @@ public class CommentController {
 	private final CommentService commentService;
 
 	@GetMapping
-	public ResponseEntity<List<GetCommentResponse>> getCommentsByPostId(@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.getCommentsByPostId(postId));
+	public ResponseEntity<List<GetCommentResponse>> getCommentsByPostId(@CurrentUser CurrentUserDto currentUser,
+		@PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.getCommentsByPostId(currentUser, postId));
 	}
 
 	@PostMapping
@@ -41,9 +44,9 @@ public class CommentController {
 	}
 
 	@PutMapping("/{commentId}")
-	public ResponseEntity<Void> updateComment(@PathVariable Long commentId,
+	public ResponseEntity<Void> updateComment(@CurrentUser CurrentUserDto currentUser, @PathVariable Long commentId,
 		@Valid @RequestBody UpdateCommentRequest request, @PathVariable Long postId) {
-		commentService.updateComment(commentId, request);
+		commentService.updateComment(currentUser, commentId, request);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 

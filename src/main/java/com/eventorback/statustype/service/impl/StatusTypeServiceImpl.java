@@ -72,10 +72,4 @@ public class StatusTypeServiceImpl implements StatusTypeService {
 	public void deleteStatusType(Long statusTypeId) {
 		statusTypeRepository.deleteById(statusTypeId);
 	}
-
-	@Override
-	public StatusType findOrCreateStatusType(String statusTypeName) {
-		return statusTypeRepository.findByName(statusTypeName)
-			.orElseGet(() -> statusTypeRepository.save(StatusType.toEntityFindOrCreate(statusTypeName)));
-	}
 }

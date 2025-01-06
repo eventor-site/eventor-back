@@ -96,6 +96,10 @@ public class Comment {
 		this.content = request.content();
 	}
 
+	public void updatePostStatus(Status status) {
+		this.status = status;
+	}
+
 	public void recommendComment() {
 		this.recommendationCount++;
 	}

@@ -116,11 +116,12 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void updatePost(Long userId, Long postId, UpdatePostRequest request) {
+	public void updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(postId));
 
-		if (!post.getUser().getUserId().equals(userId)) {
+		if (currentUser != null && (!post.getUser().getUserId().equals(currentUser.userId())) || !currentUser.roles()
+			.contains("admin")) {
 			throw new AccessDeniedException();
 		}
 		post.update(request);
