@@ -14,13 +14,16 @@ import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.comment.service.CommentService;
 import com.eventorback.commentRecommend.domain.entity.CommentRecommend;
 import com.eventorback.commentRecommend.repository.CommentRecommendRepository;
+import com.eventorback.global.exception.AccessDeniedException;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
 import com.eventorback.recommendtype.domain.entity.RecommendType;
 import com.eventorback.recommendtype.service.RecommendTypeService;
 import com.eventorback.status.domain.entity.Status;
-import com.eventorback.status.service.StatusService;
+import com.eventorback.status.exception.StatusNotFoundException;
+import com.eventorback.status.repository.StatusRepository;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
@@ -34,14 +37,17 @@ public class CommentServiceImpl implements CommentService {
 	private final CommentRepository commentRepository;
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
-	private final StatusService statusService;
 	private final CommentRecommendRepository commentRecommendRepository;
+	private final StatusRepository statusRepository;
 	private final RecommendTypeService recommendTypeService;
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<GetCommentResponse> getCommentsByPostId(Long postId) {
-		return commentRepository.findAllByPostPostId(postId).stream().map(GetCommentResponse::fromEntity).toList();
+	public List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId) {
+		return commentRepository.findAllByPostPostId(postId)
+			.stream()
+			.map(comment -> GetCommentResponse.fromEntity(comment, currentUser))
+			.toList();
 	}
 
 	@Override
@@ -53,14 +59,22 @@ public class CommentServiceImpl implements CommentService {
 			parentComment = commentRepository.findById(request.parentCommentId())
 				.orElseThrow(() -> new PostNotFoundException(request.parentCommentId()));
 		}
-		Status status = statusService.findOrCreateStatus("댓글", "댓글 작성됨");
+		Status status = statusRepository.findOrCreateStatus("댓글", "댓글 작성됨");
 
 		commentRepository.save(Comment.toEntity(request, parentComment, post, user, status));
 	}
 
 	@Override
-	public void updateComment(Long commentId, UpdateCommentRequest request) {
+	public void updateComment(CurrentUserDto currentUser, Long commentId, UpdateCommentRequest request) {
+		Comment comment = commentRepository.findById(commentId)
+			.orElseThrow(() -> new CommentNotFoundException(commentId));
 
+		if (currentUser != null && (!comment.getUser().getUserId().equals(currentUser.userId())) || !currentUser.roles()
+			.contains("admin")) {
+			throw new AccessDeniedException();
+		}
+
+		comment.updateComment(request);
 	}
 
 	@Override
@@ -103,6 +117,13 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	public void deleteComment(Long commentId) {
-		commentRepository.deleteById(commentId);
+		Comment comment = commentRepository.findById(commentId)
+			.orElseThrow(() -> new CommentNotFoundException(commentId));
+
+		Status status = statusRepository.findByName("댓글 삭제됨")
+			.orElseThrow(() -> new StatusNotFoundException("댓글 삭제됨"));
+
+		comment.updatePostStatus(status);
 	}
+
 }

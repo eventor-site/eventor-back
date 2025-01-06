@@ -74,9 +74,9 @@ public class PostController {
 	}
 
 	@PutMapping("/{postId}")
-	public ResponseEntity<Void> updatePost(@CurrentUserId Long userId, @PathVariable Long postId,
+	public ResponseEntity<Void> updatePost(@CurrentUser CurrentUserDto currentUser, @PathVariable Long postId,
 		@RequestBody UpdatePostRequest request) {
-		postService.updatePost(userId, postId, request);
+		postService.updatePost(currentUser, postId, request);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 

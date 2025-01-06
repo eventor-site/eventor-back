@@ -27,7 +27,7 @@ public interface PostService {
 
 	CreatePostResponse createPost(Long userId, CreatePostRequest request);
 
-	void updatePost(Long userId, Long postId, UpdatePostRequest request);
+	void updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request);
 
 	String recommendPost(Long userId, Long postId);
 
