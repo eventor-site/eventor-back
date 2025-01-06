@@ -52,7 +52,7 @@ public class ImageServiceImpl implements ImageService {
 		String url = saveFile(folderPath, newFileName, file);
 
 		//임시 백엔드 리소스 URL
-		url = "http://localhost:8083/" + folderName + "/" + today + "/" + newFileName;
+		url = "https://www.eventor.store/" + folderName + "/" + today + "/" + newFileName;
 
 		// 5. DB에 이미지 정보 저장
 		createImage(postId, originalFilename, newFileName, url);
