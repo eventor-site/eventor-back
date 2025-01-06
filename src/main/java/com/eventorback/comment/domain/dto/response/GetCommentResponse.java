@@ -18,7 +18,8 @@ public record GetCommentResponse(
 	Long decommendationCount,
 	List<GetCommentResponse> childComments,
 	LocalDateTime createdAt,
-	Boolean isAuthorized) {
+	Boolean isAuthorized,
+	Boolean isDeleted) {
 
 	public static GetCommentResponse fromEntity(Comment comment, CurrentUserDto currentUser) {
 		Long parentCommentId =
@@ -26,8 +27,10 @@ public record GetCommentResponse(
 
 		List<GetCommentResponse> childComments = comment.getChildrenComments() != null ?
 			comment.getChildrenComments().stream()
-				.map(childComment -> GetCommentResponse.fromEntity(childComment, currentUser)) // 람다식으로 변경
+				.map(childComment -> GetCommentResponse.fromEntity(childComment, currentUser))
 				.toList() : null;
+
+		String content = comment.getStatus().getName().equals("댓글 삭제됨") ? "삭제된 댓글입니다." : comment.getContent();
 
 		Boolean isAuthorized =
 			currentUser != null && (comment.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles()
@@ -37,12 +40,13 @@ public record GetCommentResponse(
 			.commentId(comment.getCommentId())
 			.parentCommentId(parentCommentId)
 			.writer(comment.getWriter())
-			.content(comment.getContent())
+			.content(content)
 			.recommendationCount(comment.getRecommendationCount())
 			.decommendationCount(comment.getDecommendationCount())
 			.childComments(childComments)
 			.createdAt(comment.getCreatedAt())
 			.isAuthorized(isAuthorized)
+			.isDeleted(comment.getStatus().getName().equals("댓글 삭제됨"))
 			.build();
 	}
 }
