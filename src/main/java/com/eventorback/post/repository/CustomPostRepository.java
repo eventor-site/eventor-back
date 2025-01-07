@@ -12,6 +12,8 @@ public interface CustomPostRepository {
 
 	List<GetPostSimpleResponse> getPosts();
 
+	List<GetPostSimpleResponse> getPostsByUserId(Long userId);
+
 	List<GetMainPostResponse> getHotEventPosts();
 
 	List<GetMainPostResponse> getLatestEventPosts();

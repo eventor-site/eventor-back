@@ -23,6 +23,8 @@ public interface PostService {
 
 	GetPostsByCategoryNameResponse getPostsByCategoryName(CurrentUserDto currentUser, String categoryName);
 
+	List<GetPostSimpleResponse> getPostsByUserId(Long userId);
+
 	GetPostResponse getPost(CurrentUserDto currentUser, Long postId);
 
 	CreatePostResponse createPost(Long userId, CreatePostRequest request);

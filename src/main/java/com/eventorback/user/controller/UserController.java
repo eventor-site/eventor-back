@@ -71,9 +71,8 @@ public class UserController {
 	}
 
 	@PutMapping("/me/lastLoginTime")
-	public ResponseEntity<Void> updateLastLoginTime(@CurrentUserId Long userId,
-		@RequestBody UpdateLastLoginTimeRequest request) {
-		userService.updateLastLoginTime(userId, request);
+	public ResponseEntity<Void> updateLastLoginTime(@RequestBody UpdateLastLoginTimeRequest request) {
+		userService.updateLastLoginTime(request);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 

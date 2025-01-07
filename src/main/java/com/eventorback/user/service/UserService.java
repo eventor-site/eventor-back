@@ -22,7 +22,7 @@ public interface UserService {
 
 	void updateUser(Long userId, UpdateUserRequest request);
 
-	void updateLastLoginTime(Long userId, UpdateLastLoginTimeRequest lastLoginTime);
+	void updateLastLoginTime(UpdateLastLoginTimeRequest lastLoginTime);
 
 	String modifyPassword(Long userId, ModifyPasswordRequest request);
 
