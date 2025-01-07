@@ -13,7 +13,10 @@ import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
+import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserNotFoundException;
@@ -64,5 +67,22 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<GetUserByAddShopResponse> searchUserById(String keyword) {
 		return userRepository.searchUserById(keyword);
+	}
+
+	@Override
+	public GetUserResponse getUserInfo(Long userId) {
+		return userRepository.getUserInfo(userId).orElseThrow(() -> new UserNotFoundException(userId));
+	}
+
+	@Override
+	public void updateUser(Long userId, UpdateUserRequest request) {
+		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		user.updateUser(request);
+	}
+
+	@Override
+	public void updateLastLoginTime(Long userId, UpdateLastLoginTimeRequest request) {
+		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		user.updateLastLoginTime(request);
 	}
 }

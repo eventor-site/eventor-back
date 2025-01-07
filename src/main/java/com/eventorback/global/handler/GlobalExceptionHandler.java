@@ -1,11 +1,6 @@
 package com.eventorback.global.handler;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import com.eventorback.postrecommend.exception.PostRecommendAlreadyExistsException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -15,8 +10,8 @@ public class GlobalExceptionHandler {
 	// 	return ResponseEntity.status(404).build();
 	// }
 
-	@ExceptionHandler(PostRecommendAlreadyExistsException.class)
-	public ResponseEntity<String> handleRecommendAlreadyExistsException(PostRecommendAlreadyExistsException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-	}
+	// @ExceptionHandler(AccessDeniedException.class)
+	// public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+	// 	return ResponseEntity.status(HttpStatus.OK).body(ex.getMessage());
+	// }
 }

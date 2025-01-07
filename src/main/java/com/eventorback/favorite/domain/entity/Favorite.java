@@ -37,4 +37,11 @@ public class Favorite {
 		this.user = user;
 		this.post = post;
 	}
+
+	public static Favorite toEntity(User user, Post post) {
+		return Favorite.builder()
+			.user(user)
+			.post(post)
+			.build();
+	}
 }
