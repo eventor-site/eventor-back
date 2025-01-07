@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
+import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.usergrade.domain.entity.UserGrade;
 
 import jakarta.persistence.Column;
@@ -71,7 +73,7 @@ public class User {
 	private LocalDateTime updatedTime;
 
 	@Column(name = "last_login_time")
-	private String lastLoginTime;
+	private LocalDateTime lastLoginTime;
 
 	@Builder
 	public User(Status status, UserGrade userGrade, String identifier, String password, String name, String nickname,
@@ -108,5 +110,19 @@ public class User {
 	public static LocalDate toLocalDate(String birth) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		return LocalDate.parse(birth, formatter);
+	}
+
+	public void updateUser(UpdateUserRequest request) {
+		this.name = request.name();
+		this.nickname = request.nickname();
+		this.email = request.email();
+		this.phone = request.phone();
+		this.birth = request.birth();
+		this.gender = request.gender();
+		this.updatedTime = LocalDateTime.now();
+	}
+
+	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
+		this.lastLoginTime = request.lastLoginTime();
 	}
 }
