@@ -24,6 +24,8 @@ import com.eventorback.post.repository.PostRepository;
 import com.eventorback.post.service.PostService;
 import com.eventorback.postrecommend.domain.entity.PostRecommend;
 import com.eventorback.postrecommend.repository.PostRecommendRepository;
+import com.eventorback.postview.domain.entity.PostView;
+import com.eventorback.postview.repository.PostViewRepository;
 import com.eventorback.recommendtype.domain.entity.RecommendType;
 import com.eventorback.recommendtype.service.RecommendTypeService;
 import com.eventorback.status.domain.entity.Status;
@@ -45,6 +47,7 @@ public class PostServiceImpl implements PostService {
 	private final StatusRepository statusRepository;
 	private final ImageRepository imageRepository;
 	private final PostRecommendRepository postRecommendRepository;
+	private final PostViewRepository postViewRepository;
 	private final RecommendTypeService recommendTypeService;
 
 	@Override
@@ -87,17 +90,25 @@ public class PostServiceImpl implements PostService {
 		List<GetImageResponse> images = imageRepository.findAllByPostPostId(postId)
 			.stream().map(GetImageResponse::fromEntity).toList();
 
-		Boolean isAuthorized = false;
+		boolean isAuthorized = false;
 		if (currentUser != null) {
 			isAuthorized =
 				post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("admin");
 		}
 
+		// 삭제된 게시글인지 확인
 		if (post.getStatus().getName().equals("삭제됨")) {
 			throw new PostNotFoundException(postId);
 		}
 
-		post.increaseViewCount();
+		// 회원의 경우 최초 1회 조회수 증가
+		if (currentUser != null && !postViewRepository.existsByUserUserIdAndPostPostId(currentUser.userId(), postId)) {
+			User user = userRepository.getUser(currentUser.userId())
+				.orElseThrow(() -> new UserNotFoundException(currentUser.userId()));
+			postViewRepository.save(PostView.toEntity(user, post));
+			post.increaseViewCount();
+		}
+
 		return GetPostResponse.fromEntity(post, images, isAuthorized);
 	}
 
