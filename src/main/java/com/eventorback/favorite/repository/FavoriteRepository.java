@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.eventorback.favorite.domain.entity.Favorite;
 
-public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
+public interface FavoriteRepository extends JpaRepository<Favorite, Long>, CustomFavoriteRepository {
 
 	boolean existsByUserUserIdAndPostPostId(Long userId, Long postId);
 
