@@ -82,8 +82,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateLastLoginTime(Long userId, UpdateLastLoginTimeRequest request) {
-		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
+		User user = userRepository.getUser(request.userId())
+			.orElseThrow(() -> new UserNotFoundException(request.userId()));
 		user.updateLastLoginTime(request);
 	}
 

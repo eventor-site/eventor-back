@@ -76,6 +76,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public List<GetPostSimpleResponse> getPostsByUserId(Long userId) {
+		return postRepository.getPostsByUserId(userId);
+	}
+
+	@Override
 	public GetPostResponse getPost(CurrentUserDto currentUser, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 

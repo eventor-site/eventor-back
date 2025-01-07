@@ -61,6 +61,11 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByCategoryName(currentUser, categoryName));
 	}
 
+	@GetMapping("/me")
+	public ResponseEntity<List<GetPostSimpleResponse>> getPostsByUserId(@CurrentUserId Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByUserId(userId));
+	}
+
 	@GetMapping("/{postId}")
 	public ResponseEntity<GetPostResponse> getPost(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId) {

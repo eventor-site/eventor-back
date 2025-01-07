@@ -43,6 +43,25 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
+	public List<GetPostSimpleResponse> getPostsByUserId(Long userId) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetPostSimpleResponse.class,
+				post.postId,
+				post.writer,
+				post.title,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt))
+			.from(post)
+			.join(post.user, user)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨").and(user.userId.eq(userId)))
+			.orderBy(post.createdAt.desc())
+			.fetch();
+	}
+
+	@Override
 	public List<GetMainPostResponse> getHotEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
