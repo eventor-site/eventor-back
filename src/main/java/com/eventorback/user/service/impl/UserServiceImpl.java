@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void signUp(SignUpRequest request) {
-		Status status = statusRepository.findOrCreateStatus("유저", "활성");
+		Status status = statusRepository.findOrCreateStatus("회원", "활성");
 		UserGrade userGrade = userGradeRepository.findByName("1단계")
 			.orElseThrow(() -> new StatusNotFoundException("1단계"));
 
@@ -103,5 +103,12 @@ public class UserServiceImpl implements UserService {
 		user.modifyPassword(encryptedNewPassword);
 
 		return "비밀번호가 성공적으로 변경되었습니다.";
+	}
+
+	@Override
+	public void withdrawUser(Long userId) {
+		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
+		user.withdrawUser(status);
 	}
 }

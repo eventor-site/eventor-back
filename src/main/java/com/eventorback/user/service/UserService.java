@@ -26,4 +26,6 @@ public interface UserService {
 
 	String modifyPassword(Long userId, ModifyPasswordRequest request);
 
+	void withdrawUser(Long userId);
+
 }

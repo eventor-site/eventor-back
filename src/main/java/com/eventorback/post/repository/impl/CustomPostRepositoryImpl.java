@@ -37,7 +37,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.from(post)
 			.join(post.user, user)
 			.join(post.status, status)
-			.where(status.name.eq("게시글 작성됨"))
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.createdAt.desc())
 			.fetch();
 	}
@@ -55,7 +55,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.category, category)
 			.join(post.status, status)
 			.leftJoin(image).on(image.post.postId.eq(post.postId))
-			.where(status.name.eq("게시글 작성됨").and(category.name.eq("이벤트")))
+			.where(status.name.eq("작성됨").and(category.name.eq("이벤트")))
 			.groupBy(post.postId, post.title) // 게시물별 그룹화
 			.orderBy(post.viewCount.desc()) // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물 제한
@@ -76,7 +76,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.leftJoin(image)
 			.on(image.post.postId.eq(post.postId)) // 게시물과 연결된 이미지
-			.where(status.name.eq("게시글 작성됨").and(category.name.eq("이벤트")))
+			.where(status.name.eq("작성됨").and(category.name.eq("이벤트")))
 			.orderBy(post.createdAt.desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();
@@ -96,7 +96,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.leftJoin(image)
 			.on(image.post.postId.eq(post.postId)) // 게시물과 연결된 이미지
-			.where(status.name.eq("게시글 작성됨").and(category.name.eq("이벤트")))
+			.where(status.name.eq("작성됨").and(category.name.eq("이벤트")))
 			.orderBy(post.recommendationCount.desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();
@@ -116,7 +116,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.where(status.name.eq("게시글 작성됨").and(category.name.eq(categoryName)))
+			.where(status.name.eq("작성됨").and(category.name.eq(categoryName)))
 			.orderBy(post.createdAt.desc())
 			.fetch();
 	}
@@ -128,7 +128,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				.selectFrom(post)
 				.join(post.category, category).fetchJoin()
 				.join(post.status, status).fetchJoin()
-				.where(post.postId.eq(postId).and(status.name.eq("게시글 작성됨")))
+				.where(post.postId.eq(postId).and(status.name.eq("작성됨")))
 				.fetchOne()
 		);
 	}

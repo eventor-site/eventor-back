@@ -27,7 +27,6 @@ import com.eventorback.postrecommend.repository.PostRecommendRepository;
 import com.eventorback.recommendtype.domain.entity.RecommendType;
 import com.eventorback.recommendtype.service.RecommendTypeService;
 import com.eventorback.status.domain.entity.Status;
-import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.entity.User;
@@ -89,7 +88,7 @@ public class PostServiceImpl implements PostService {
 				post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("admin");
 		}
 
-		if (post.getStatus().getName().equals("게시글 삭제됨")) {
+		if (post.getStatus().getName().equals("삭제됨")) {
 			throw new PostNotFoundException(postId);
 		}
 
@@ -110,8 +109,7 @@ public class PostServiceImpl implements PostService {
 			user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 		}
 
-		Status status = statusRepository.findByName("게시글 작성됨")
-			.orElseThrow(() -> new StatusNotFoundException("게시글 작성됨"));
+		Status status = statusRepository.findOrCreateStatus("게시글", "작성됨");
 		return CreatePostResponse.fromEntity(postRepository.save(Post.toEntity(category, user, status, request)));
 	}
 
@@ -168,8 +166,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deletePost(Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
-		Status status = statusRepository.findByName("게시글 삭제됨")
-			.orElseThrow(() -> new StatusNotFoundException("게시글 삭제됨"));
+		Status status = statusRepository.findOrCreateStatus("게시글", "삭제됨");
 
 		post.updatePostStatus(status);
 	}
