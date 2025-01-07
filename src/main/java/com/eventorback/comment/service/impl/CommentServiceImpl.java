@@ -21,7 +21,6 @@ import com.eventorback.post.repository.PostRepository;
 import com.eventorback.recommendtype.domain.entity.RecommendType;
 import com.eventorback.recommendtype.service.RecommendTypeService;
 import com.eventorback.status.domain.entity.Status;
-import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.entity.User;
@@ -59,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
 			parentComment = commentRepository.findById(request.parentCommentId())
 				.orElseThrow(() -> new PostNotFoundException(request.parentCommentId()));
 		}
-		Status status = statusRepository.findOrCreateStatus("댓글", "댓글 작성됨");
+		Status status = statusRepository.findOrCreateStatus("댓글", "작성됨");
 
 		commentRepository.save(Comment.toEntity(request, parentComment, post, user, status));
 	}
@@ -120,8 +119,7 @@ public class CommentServiceImpl implements CommentService {
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new CommentNotFoundException(commentId));
 
-		Status status = statusRepository.findByName("댓글 삭제됨")
-			.orElseThrow(() -> new StatusNotFoundException("댓글 삭제됨"));
+		Status status = statusRepository.findOrCreateStatus("댓글", "삭제됨");
 
 		comment.updatePostStatus(status);
 	}

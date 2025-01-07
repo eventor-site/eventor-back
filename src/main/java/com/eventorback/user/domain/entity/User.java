@@ -129,4 +129,8 @@ public class User {
 	public void modifyPassword(String encryptedNewPassword) {
 		this.password = encryptedNewPassword;
 	}
+
+	public void withdrawUser(Status status) {
+		this.status = status;
+	}
 }

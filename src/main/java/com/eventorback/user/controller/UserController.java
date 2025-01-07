@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -79,6 +80,12 @@ public class UserController {
 	@PutMapping("/me/password")
 	ResponseEntity<String> modifyPassword(@CurrentUserId Long userId, @RequestBody ModifyPasswordRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyPassword(userId, request));
+	}
+
+	@DeleteMapping("/me")
+	ResponseEntity<Void> withdrawUser(@CurrentUserId Long userId) {
+		userService.withdrawUser(userId);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 }
