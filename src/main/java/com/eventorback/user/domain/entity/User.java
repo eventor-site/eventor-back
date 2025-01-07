@@ -125,4 +125,8 @@ public class User {
 	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
 		this.lastLoginTime = request.lastLoginTime();
 	}
+
+	public void modifyPassword(String encryptedNewPassword) {
+		this.password = encryptedNewPassword;
+	}
 }

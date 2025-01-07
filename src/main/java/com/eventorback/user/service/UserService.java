@@ -2,6 +2,7 @@ package com.eventorback.user.service;
 
 import java.util.List;
 
+import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
@@ -22,5 +23,7 @@ public interface UserService {
 	void updateUser(Long userId, UpdateUserRequest request);
 
 	void updateLastLoginTime(Long userId, UpdateLastLoginTimeRequest lastLoginTime);
+
+	String modifyPassword(Long userId, ModifyPasswordRequest request);
 
 }
