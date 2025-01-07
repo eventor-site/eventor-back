@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.auth.annotation.CurrentUserId;
+import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
@@ -73,6 +74,11 @@ public class UserController {
 		@RequestBody UpdateLastLoginTimeRequest request) {
 		userService.updateLastLoginTime(userId, request);
 		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PutMapping("/me/password")
+	ResponseEntity<String> modifyPassword(@CurrentUserId Long userId, @RequestBody ModifyPasswordRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyPassword(userId, request));
 	}
 
 }

@@ -12,6 +12,7 @@ import com.eventorback.role.repository.RoleRepository;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
+import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
@@ -84,5 +85,23 @@ public class UserServiceImpl implements UserService {
 	public void updateLastLoginTime(Long userId, UpdateLastLoginTimeRequest request) {
 		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
 		user.updateLastLoginTime(request);
+	}
+
+	@Override
+	public String modifyPassword(Long userId, ModifyPasswordRequest request) {
+		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+		// 현재 비밀번호 확인
+		if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+			return "현재 비밀번호가 일치하지 않습니다.";
+		}
+
+		// 새로운 비밀번호 암호화
+		String encryptedNewPassword = passwordEncoder.encode(request.newPassword());
+
+		// 비밀번호 업데이트
+		user.modifyPassword(encryptedNewPassword);
+
+		return "비밀번호가 성공적으로 변경되었습니다.";
 	}
 }
