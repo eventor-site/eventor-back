@@ -30,7 +30,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 	@Override
 	public List<GetPostSimpleResponse> getFavoritesByUserId(Long userId) {
-		return List.of();
+		return favoriteRepository.getFavoritePosts(userId);
 	}
 
 	@Override
