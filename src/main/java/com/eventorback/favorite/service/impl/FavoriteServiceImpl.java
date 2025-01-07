@@ -39,11 +39,12 @@ public class FavoriteServiceImpl implements FavoriteService {
 	}
 
 	@Override
-	public String createFavorite(Long userId, Long postId) {
+	public String createOrDeleteFavorite(Long userId, Long postId) {
 		if (userId == null) {
 			return "로그인 후 이용해 주세요.";
 		} else if (favoriteRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
-			return "이미 하트한 게시물 입니다.";
+			favoriteRepository.deleteByUserUserIdAndPostPostId(userId, postId);
+			return "하트가 삭제 되었습니다.";
 		} else {
 			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 			Post post = postRepository.findById(postId)

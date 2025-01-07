@@ -13,7 +13,7 @@ public interface FavoriteService {
 
 	Page<GetPostSimpleResponse> getFavoritesByUserId(Pageable pageable, Long userId);
 
-	String createFavorite(Long userId, Long postId);
+	String createOrDeleteFavorite(Long userId, Long postId);
 
 	String deleteFavorite(Long userId, Long favoriteId);
 }
