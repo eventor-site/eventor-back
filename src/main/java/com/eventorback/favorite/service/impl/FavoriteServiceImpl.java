@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eventorback.favorite.domain.dto.response.GetFavoriteResponse;
 import com.eventorback.favorite.domain.entity.Favorite;
 import com.eventorback.favorite.repository.FavoriteRepository;
 import com.eventorback.favorite.service.FavoriteService;
@@ -29,7 +30,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 	private final PostRepository postRepository;
 
 	@Override
-	public List<GetPostSimpleResponse> getFavoritesByUserId(Long userId) {
+	public List<GetFavoriteResponse> getFavoritesByUserId(Long userId) {
 		return favoriteRepository.getFavoritePosts(userId);
 	}
 

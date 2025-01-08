@@ -1,5 +1,7 @@
 package com.eventorback.favorite.domain.entity;
 
+import java.time.LocalDateTime;
+
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.user.domain.entity.User;
 
@@ -32,10 +34,14 @@ public class Favorite {
 	@JoinColumn(name = "post_id")
 	private Post post;
 
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
+
 	@Builder
 	public Favorite(User user, Post post) {
 		this.user = user;
 		this.post = post;
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public static Favorite toEntity(User user, Post post) {
