@@ -70,21 +70,6 @@ public class Post {
 
 	@Builder
 	public Post(Category category, User user, Status status, String writer, String title, String content,
-		Boolean isNotification) {
-		this.category = category;
-		this.user = user;
-		this.status = status;
-		this.writer = writer;
-		this.title = title;
-		this.content = content;
-		this.recommendationCount = 0L;
-		this.viewCount = 0L;
-		this.createdAt = LocalDateTime.now();
-		this.isNotification = isNotification;
-	}
-
-	@Builder
-	public Post(Category category, User user, Status status, String writer, String title, String content,
 		Boolean isNotification, LocalDateTime startTime, LocalDateTime endTime) {
 		this.category = category;
 		this.user = user;
@@ -109,6 +94,8 @@ public class Post {
 			.title(request.title())
 			.content(request.content())
 			.isNotification(request.isNotification())
+			.startTime(request.startTime())
+			.endTime(request.endTime())
 			.build();
 	}
 

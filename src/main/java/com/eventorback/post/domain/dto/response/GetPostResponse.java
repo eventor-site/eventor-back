@@ -19,6 +19,8 @@ public record GetPostResponse(
 	Long viewCount,
 	LocalDateTime createdAt,
 	Boolean isNotification,
+	LocalDateTime startTime,
+	LocalDateTime endTime,
 	List<GetImageResponse> images,
 	Boolean isAuthorized) {
 
@@ -33,6 +35,8 @@ public record GetPostResponse(
 			.viewCount(post.getViewCount())
 			.createdAt(LocalDateTime.now())
 			.isNotification(post.getIsNotification())
+			.startTime(post.getStartTime())
+			.endTime(post.getEndTime())
 			.images(images)
 			.isAuthorized(isAuthorized)
 			.build();
