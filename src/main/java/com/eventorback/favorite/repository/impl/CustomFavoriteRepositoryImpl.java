@@ -7,8 +7,8 @@ import static com.eventorback.user.domain.entity.QUser.*;
 
 import java.util.List;
 
+import com.eventorback.favorite.domain.dto.response.GetFavoriteResponse;
 import com.eventorback.favorite.repository.CustomFavoriteRepository;
-import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -19,16 +19,15 @@ public class CustomFavoriteRepositoryImpl implements CustomFavoriteRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<GetPostSimpleResponse> getFavoritePosts(Long userId) {
+	public List<GetFavoriteResponse> getFavoritePosts(Long userId) {
 		return queryFactory
 			.select(Projections.constructor(
-				GetPostSimpleResponse.class,
+				GetFavoriteResponse.class,
+				favorite.favoriteId,
 				post.postId,
 				post.writer,
 				post.title,
-				post.recommendationCount,
-				post.viewCount,
-				post.createdAt))
+				favorite.createdAt))
 			.from(favorite)
 			.join(favorite.post, post)
 			.join(favorite.user, user)
