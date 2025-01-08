@@ -12,6 +12,7 @@ import com.eventorback.role.repository.RoleRepository;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
+import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
@@ -20,6 +21,7 @@ import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.UserAlreadyExistsException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
 import com.eventorback.user.service.UserService;
@@ -42,17 +44,8 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public void signUp(SignUpRequest request) {
-		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-		UserGrade userGrade = userGradeRepository.findByName("1단계")
-			.orElseThrow(() -> new StatusNotFoundException("1단계"));
-
-		String encodedPassword = passwordEncoder.encode(request.password());
-		User user = userRepository.save(User.toEntity(status, userGrade, request, encodedPassword));
-
-		// 회원 가입시 기본 권한 데이터 설정
-		Role role = roleRepository.findByName("member").orElseThrow(() -> new RoleNotFoundException("member"));
-		userRoleRepository.save(UserRole.toEntity(user, role));
+	public List<GetUserByAddShopResponse> searchUserById(String keyword) {
+		return userRepository.searchUserById(keyword);
 	}
 
 	@Override
@@ -66,13 +59,34 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<GetUserByAddShopResponse> searchUserById(String keyword) {
-		return userRepository.searchUserById(keyword);
+	public GetUserResponse getUserInfo(Long userId) {
+		return userRepository.getUserInfo(userId).orElseThrow(() -> new UserNotFoundException(userId));
 	}
 
 	@Override
-	public GetUserResponse getUserInfo(Long userId) {
-		return userRepository.getUserInfo(userId).orElseThrow(() -> new UserNotFoundException(userId));
+	public void signUp(SignUpRequest request) {
+		if (userRepository.existsByIdentifier(request.identifier())) {
+			throw new UserAlreadyExistsException(request.identifier());
+		}
+
+		Status status = statusRepository.findOrCreateStatus("회원", "활성");
+		UserGrade userGrade = userGradeRepository.findByName("1단계")
+			.orElseThrow(() -> new StatusNotFoundException("1단계"));
+
+		String encodedPassword = passwordEncoder.encode(request.password());
+		User user = userRepository.save(User.toEntity(status, userGrade, request, encodedPassword));
+
+		// 회원 가입시 기본 권한 데이터 설정
+		Role role = roleRepository.findByName("member").orElseThrow(() -> new RoleNotFoundException("member"));
+		userRoleRepository.save(UserRole.toEntity(user, role));
+	}
+
+	@Override
+	public String checkIdentifier(CheckIdentifierRequest request) {
+		if (userRepository.existsByIdentifier(request.identifier())) {
+			return "이미 존재하는 아이디 입니다.";
+		}
+		return "사용 가능한 아이디 입니다.";
 	}
 
 	@Override
