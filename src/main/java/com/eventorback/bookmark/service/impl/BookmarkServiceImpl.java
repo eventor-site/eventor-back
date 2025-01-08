@@ -30,7 +30,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	@Override
 	public List<GetBookmarkResponse> getBookmarksByUserId(Long userId) {
-		return bookmarkRepository.getBookmarksByUserId(userId);
+		return userId != null ? bookmarkRepository.getBookmarksByUserId(userId) : null;
 	}
 
 	@Override
