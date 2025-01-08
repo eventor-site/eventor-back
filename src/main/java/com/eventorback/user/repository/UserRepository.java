@@ -8,4 +8,6 @@ import com.eventorback.user.domain.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
 	Optional<User> findByIdentifier(String identifier);
+
+	boolean existsByIdentifier(String identifier);
 }

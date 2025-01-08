@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.auth.annotation.CurrentUserId;
+import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
@@ -34,10 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 	private final UserService userService;
 
-	@PostMapping("/sign-up")
-	public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request) {
-		userService.signUp(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	@GetMapping("/search")
+	public ResponseEntity<List<GetUserByAddShopResponse>> searchUserById(@RequestParam String keyword) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserById(keyword));
 	}
 
 	/**
@@ -54,14 +54,20 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
 
-	@GetMapping("/search")
-	public ResponseEntity<List<GetUserByAddShopResponse>> searchUserById(@RequestParam String keyword) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserById(keyword));
-	}
-
 	@GetMapping("/me")
 	public ResponseEntity<GetUserResponse> getUserInfo(@CurrentUserId Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(userId));
+	}
+
+	@PostMapping("/signUp/checkIdentifier")
+	ResponseEntity<String> checkIdentifier(@RequestBody CheckIdentifierRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.checkIdentifier(request));
+	}
+
+	@PostMapping("/signUp")
+	public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request) {
+		userService.signUp(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PutMapping("/me")

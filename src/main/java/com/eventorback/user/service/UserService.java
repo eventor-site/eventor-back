@@ -2,6 +2,7 @@ package com.eventorback.user.service;
 
 import java.util.List;
 
+import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
@@ -12,13 +13,15 @@ import com.eventorback.user.domain.dto.response.UserTokenInfo;
 
 public interface UserService {
 
-	void signUp(SignUpRequest request);
+	List<GetUserByAddShopResponse> searchUserById(String keyword);
 
 	UserTokenInfo getUserTokenInfoByIdentifier(String identifier);
 
-	List<GetUserByAddShopResponse> searchUserById(String keyword);
-
 	GetUserResponse getUserInfo(Long userId);
+
+	void signUp(SignUpRequest request);
+
+	String checkIdentifier(CheckIdentifierRequest request);
 
 	void updateUser(Long userId, UpdateUserRequest request);
 
