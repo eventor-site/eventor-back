@@ -31,4 +31,6 @@ public interface UserService {
 
 	void withdrawUser(Long userId);
 
+	boolean existsByEmail(String email);
+
 }
