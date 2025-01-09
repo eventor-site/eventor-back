@@ -126,4 +126,9 @@ public class UserServiceImpl implements UserService {
 		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
 		user.withdrawUser(status);
 	}
+
+	@Override
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
+	}
 }

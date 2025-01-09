@@ -40,18 +40,18 @@ spring:
 
 
 
-#  mail:
-#    host: smtp.gmail.com
-#    port: 587
-#    username: monte61984@gmail.com
-#    password: vbtzvwxzyzlscamv
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          timeout: 5000
-#          starttls:
-#            enable: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: eventor2025@gmail.com
+    password: wstp qdco txwj jhzm
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
 
 #springdoc:
 #  api-docs:

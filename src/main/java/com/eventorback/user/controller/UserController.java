@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.auth.annotation.CurrentUserId;
+import com.eventorback.mail.service.impl.MailServiceImpl;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 public class UserController {
 	private final UserService userService;
+	private final MailServiceImpl mailService;
 
 	@GetMapping("/search")
 	public ResponseEntity<List<GetUserByAddShopResponse>> searchUserById(@RequestParam String keyword) {
@@ -91,6 +93,27 @@ public class UserController {
 	ResponseEntity<Void> withdrawUser(@CurrentUserId Long userId) {
 		userService.withdrawUser(userId);
 		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PostMapping("/signUp/sendEmail")
+	public ResponseEntity<String> sendEmail(@RequestParam String email) {
+		String subject = "회원가입";
+		boolean isEmailExist = userService.existsByEmail(email);
+		if (!isEmailExist) {
+			mailService.sendMail(email, subject);
+			return ResponseEntity.status(HttpStatus.OK).body(email + "로 인증 번호를 전송했습니다.");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body("이미 사용 중인 이메일입니다.");
+	}
+
+	@GetMapping("/signUp/checkEmail")
+	public ResponseEntity<String> checkEmail(@RequestParam String email, @RequestParam String certifyCode) {
+		String subject = "회원가입";
+		boolean codeMatch = mailService.checkEmail(email, certifyCode, subject);
+		if (codeMatch) {
+			return ResponseEntity.status(HttpStatus.OK).body("인증되었습니다.");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body("인증번호가 일치하지 않습니다.");
 	}
 
 }

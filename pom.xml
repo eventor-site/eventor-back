@@ -144,6 +144,12 @@
             <version>2.12.0</version>
         </dependency>
 
+        <!-- Redis Dependency -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- OpenFeign Dependency -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -162,7 +168,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-
+        
         <!-- Spring Boot Starter Cache for caching support -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
