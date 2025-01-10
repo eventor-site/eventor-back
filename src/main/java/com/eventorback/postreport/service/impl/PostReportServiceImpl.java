@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -39,7 +38,7 @@ public class PostReportServiceImpl implements PostReportService {
 	}
 
 	@Override
-	public Page<GetPostSimpleResponse> getPostReports(Pageable pageable) {
+	public Page<GetPostReportResponse> getPostReports(Pageable pageable) {
 		return null;
 	}
 
@@ -48,7 +47,7 @@ public class PostReportServiceImpl implements PostReportService {
 		if (userId == null) {
 			return "로그인 후 이용해 주세요.";
 		} else if (postReportRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
-			return "이미 신고한 게시물입니다.";
+			return "이미 신고한 게시물 입니다.";
 		} else {
 			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 			Post post = postRepository.findById(postId)
