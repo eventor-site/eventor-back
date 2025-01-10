@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/status-types")
+@RequestMapping("/back/statusTypes")
 public class StatusTypeController {
 	private final StatusTypeService statusTypeService;
 

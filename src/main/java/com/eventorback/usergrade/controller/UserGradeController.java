@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/user-grades")
+@RequestMapping("/back/userGrades")
 public class UserGradeController {
 	private final UserGradeService userGradeService;
 
