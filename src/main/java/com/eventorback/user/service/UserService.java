@@ -19,7 +19,7 @@ public interface UserService {
 
 	GetUserResponse getUserInfo(Long userId);
 
-	void signUp(SignUpRequest request);
+	void signup(SignUpRequest request);
 
 	String checkIdentifier(CheckIdentifierRequest request);
 
@@ -32,5 +32,9 @@ public interface UserService {
 	void withdrawUser(Long userId);
 
 	boolean existsByEmail(String email);
+
+	String recoverIdentifier(String email);
+
+	String recoverPassword(String identifier);
 
 }
