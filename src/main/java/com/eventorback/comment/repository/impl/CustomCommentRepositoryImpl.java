@@ -22,6 +22,24 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
+	public List<GetCommentByUserIdResponse> getComments() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetCommentByUserIdResponse.class,
+				comment.post.postId,
+				comment.commentId,
+				comment.writer,
+				comment.content,
+				comment.recommendationCount,
+				comment.decommendationCount,
+				comment.createdAt))
+			.from(comment)
+			.where(comment.status.name.eq("작성됨"))
+			.orderBy(comment.createdAt.desc())
+			.fetch();
+	}
+
+	@Override
 	// TODO: DB 구조 변경 예정 https://annahxxl.tistory.com/5
 	public List<GetCommentResponse> getCommentsByPostId(Long postId) {
 		return queryFactory
@@ -66,7 +84,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.decommendationCount,
 				comment.createdAt))
 			.from(comment)
-			.where(user.userId.eq(userId))
+			.where(user.userId.eq(userId).and(comment.status.name.eq("작성됨")))
 			.orderBy(comment.createdAt.desc())
 			.fetch();
 	}

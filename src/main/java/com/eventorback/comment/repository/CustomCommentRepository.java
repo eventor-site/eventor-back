@@ -9,6 +9,8 @@ import com.eventorback.comment.domain.entity.Comment;
 
 public interface CustomCommentRepository {
 
+	List<GetCommentByUserIdResponse> getComments();
+
 	List<GetCommentResponse> getCommentsByPostId(Long postId);
 
 	List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId);
