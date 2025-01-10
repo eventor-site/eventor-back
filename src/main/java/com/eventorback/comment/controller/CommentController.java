@@ -37,6 +37,11 @@ public class CommentController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.getCommentsByPostId(currentUser, postId));
 	}
 
+	@GetMapping("/users/admin/comments")
+	public ResponseEntity<List<GetCommentByUserIdResponse>> getComments() {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments());
+	}
+
 	@GetMapping("/users/me/comments")
 	public ResponseEntity<List<GetCommentByUserIdResponse>> getCommentsByUserId(@CurrentUserId Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByUserId(userId));

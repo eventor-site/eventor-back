@@ -51,6 +51,11 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	public List<GetCommentByUserIdResponse> getComments() {
+		return commentRepository.getComments();
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId) {
 		return commentRepository.getCommentsByUserId(userId);

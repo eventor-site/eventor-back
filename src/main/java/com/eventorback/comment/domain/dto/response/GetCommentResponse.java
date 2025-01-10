@@ -31,7 +31,7 @@ public record GetCommentResponse(
 				.map(childComment -> GetCommentResponse.fromEntity(childComment, currentUser))
 				.toList() : null;
 
-		String content = comment.getStatus().getName().equals("댓글 삭제됨") ? "삭제된 댓글입니다." : comment.getContent();
+		String content = comment.getStatus().getName().equals("삭제됨") ? "삭제된 댓글입니다." : comment.getContent();
 
 		Boolean isAuthorized =
 			currentUser != null && (comment.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles()
@@ -48,7 +48,7 @@ public record GetCommentResponse(
 			.createdAt(comment.getCreatedAt())
 			.userGradeName(comment.getUser().getUserGrade().getName())
 			.isAuthorized(isAuthorized)
-			.isDeleted(comment.getStatus().getName().equals("댓글 삭제됨"))
+			.isDeleted(comment.getStatus().getName().equals("삭제됨"))
 			.build();
 	}
 }

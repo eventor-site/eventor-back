@@ -12,6 +12,8 @@ public interface CommentService {
 
 	List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId);
 
+	List<GetCommentByUserIdResponse> getComments();
+
 	List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId);
 
 	void createComment(CreateCommentRequest request, Long postId, Long userId);
