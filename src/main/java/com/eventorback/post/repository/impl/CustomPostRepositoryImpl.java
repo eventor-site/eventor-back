@@ -5,6 +5,7 @@ import static com.eventorback.image.domain.entity.QImage.*;
 import static com.eventorback.post.domain.entity.QPost.*;
 import static com.eventorback.status.domain.entity.QStatus.*;
 import static com.eventorback.user.domain.entity.QUser.*;
+import static com.eventorback.usergrade.domain.entity.QUserGrade.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +19,9 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CustomPostRepositoryImpl implements CustomPostRepository {
 	private final JPAQueryFactory queryFactory;
@@ -33,10 +36,12 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.title,
 				post.recommendationCount,
 				post.viewCount,
-				post.createdAt))
+				post.createdAt,
+				userGrade.name))
 			.from(post)
-			.join(post.user, user)
 			.join(post.status, status)
+			.join(post.user, user)
+			.join(user.userGrade, userGrade)
 			.where(status.name.eq("작성됨"))
 			.orderBy(post.createdAt.desc())
 			.fetch();
@@ -52,10 +57,12 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.title,
 				post.recommendationCount,
 				post.viewCount,
-				post.createdAt))
+				post.createdAt,
+				userGrade.name))
 			.from(post)
-			.join(post.user, user)
 			.join(post.status, status)
+			.join(post.user, user)
+			.join(user.userGrade, userGrade)
 			.where(status.name.eq("작성됨").and(user.userId.eq(userId)))
 			.orderBy(post.createdAt.desc())
 			.fetch();
@@ -123,6 +130,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 	@Override
 	public List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
+		log.info("시작");
 		return queryFactory
 			.select(Projections.constructor(
 				GetPostSimpleResponse.class,
@@ -131,10 +139,14 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.title,
 				post.recommendationCount,
 				post.viewCount,
-				post.createdAt))
+				post.createdAt,
+				userGrade.name
+			))
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
+			.join(post.user, user)
+			.join(user.userGrade, userGrade)
 			.where(status.name.eq("작성됨").and(category.name.eq(categoryName)))
 			.orderBy(post.createdAt.desc())
 			.fetch();

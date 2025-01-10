@@ -13,7 +13,8 @@ public record GetPostSimpleResponse(
 	String title,
 	Long recommendationCount,
 	Long viewCount,
-	LocalDateTime createdAt) {
+	LocalDateTime createdAt,
+	String userGradeName) {
 
 	public static GetPostSimpleResponse fromEntity(Post post) {
 		return GetPostSimpleResponse.builder()
@@ -23,6 +24,7 @@ public record GetPostSimpleResponse(
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
+			.userGradeName(post.getUser().getUserGrade().getName())
 			.build();
 	}
 }
