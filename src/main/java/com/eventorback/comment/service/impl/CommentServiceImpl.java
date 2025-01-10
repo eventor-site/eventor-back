@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
+import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.exception.CommentNotFoundException;
@@ -47,6 +48,12 @@ public class CommentServiceImpl implements CommentService {
 			.stream()
 			.map(comment -> GetCommentResponse.fromEntity(comment, currentUser))
 			.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId) {
+		return commentRepository.getCommentsByUserId(userId);
 	}
 
 	@Override

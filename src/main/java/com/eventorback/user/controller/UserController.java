@@ -61,17 +61,6 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(userId));
 	}
 
-	@PostMapping("/signup/checkIdentifier")
-	ResponseEntity<String> checkIdentifier(@RequestBody CheckIdentifierRequest request) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.checkIdentifier(request));
-	}
-
-	@PostMapping("/signup")
-	public ResponseEntity<Void> signup(@RequestBody SignUpRequest request) {
-		userService.signup(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
-	}
-
 	@PutMapping("/me")
 	public ResponseEntity<Void> updateUser(@CurrentUserId Long userId, @RequestBody UpdateUserRequest request) {
 		userService.updateUser(userId, request);
@@ -93,6 +82,17 @@ public class UserController {
 	ResponseEntity<Void> withdrawUser(@CurrentUserId Long userId) {
 		userService.withdrawUser(userId);
 		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@PostMapping("/signup/checkIdentifier")
+	ResponseEntity<String> checkIdentifier(@RequestBody CheckIdentifierRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.checkIdentifier(request));
+	}
+
+	@PostMapping("/signup")
+	public ResponseEntity<Void> signup(@RequestBody SignUpRequest request) {
+		userService.signup(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PostMapping("/signup/sendEmail")

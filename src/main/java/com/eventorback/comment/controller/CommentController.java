@@ -17,6 +17,7 @@ import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
+import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.service.CommentService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
@@ -26,43 +27,48 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/posts/{postId}/comments")
+@RequestMapping("/back")
 public class CommentController {
 	private final CommentService commentService;
 
-	@GetMapping
+	@GetMapping("/posts/{postId}/comments")
 	public ResponseEntity<List<GetCommentResponse>> getCommentsByPostId(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.getCommentsByPostId(currentUser, postId));
 	}
 
-	@PostMapping
+	@GetMapping("/users/me/comments")
+	public ResponseEntity<List<GetCommentByUserIdResponse>> getCommentsByUserId(@CurrentUserId Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByUserId(userId));
+	}
+
+	@PostMapping("/posts/{postId}/comments")
 	public ResponseEntity<Void> createComment(@RequestBody CreateCommentRequest request, @PathVariable Long postId,
 		@CurrentUserId Long userId) {
 		commentService.createComment(request, postId, userId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
-	@PutMapping("/{commentId}")
+	@PutMapping("/posts/{postId}/comments/{commentId}")
 	public ResponseEntity<Void> updateComment(@CurrentUser CurrentUserDto currentUser, @PathVariable Long commentId,
 		@Valid @RequestBody UpdateCommentRequest request, @PathVariable Long postId) {
 		commentService.updateComment(currentUser, commentId, request);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@PutMapping("/{commentId}/recommend")
+	@PutMapping("/posts/{postId}/comments/{commentId}/recommend")
 	public ResponseEntity<String> recommendComment(@CurrentUserId Long userId, @PathVariable Long commentId,
 		@PathVariable Long postId) {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.recommendComment(userId, commentId));
 	}
 
-	@PutMapping("/{commentId}/disrecommend")
+	@PutMapping("/posts/{postId}/comments/{commentId}/disrecommend")
 	public ResponseEntity<String> disrecommendComment(@CurrentUserId Long userId, @PathVariable Long commentId,
 		@PathVariable Long postId) {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.disrecommendComment(userId, commentId));
 	}
 
-	@DeleteMapping("/{commentId}")
+	@DeleteMapping("/posts/{postId}/comments/{commentId}")
 	public ResponseEntity<Void> deleteComment(@PathVariable Long commentId, @PathVariable Long postId) {
 		commentService.deleteComment(commentId);
 		return ResponseEntity.status(HttpStatus.OK).build();

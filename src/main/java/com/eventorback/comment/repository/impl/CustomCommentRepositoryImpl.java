@@ -2,10 +2,12 @@ package com.eventorback.comment.repository.impl;
 
 import static com.eventorback.comment.domain.entity.QComment.*;
 import static com.eventorback.post.domain.entity.QPost.*;
+import static com.eventorback.user.domain.entity.QUser.*;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CustomCommentRepository;
@@ -48,6 +50,24 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 			.join(comment.post, post)
 			.where(post.postId.eq(postId))
 			.orderBy(comment.createdAt.asc())
+			.fetch();
+	}
+
+	@Override
+	public List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetCommentByUserIdResponse.class,
+				comment.post.postId,
+				comment.commentId,
+				comment.writer,
+				comment.content,
+				comment.recommendationCount,
+				comment.decommendationCount,
+				comment.createdAt))
+			.from(comment)
+			.where(user.userId.eq(userId))
+			.orderBy(comment.createdAt.desc())
 			.fetch();
 	}
 
