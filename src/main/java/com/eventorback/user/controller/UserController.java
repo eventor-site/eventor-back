@@ -50,7 +50,7 @@ public class UserController {
 		UserTokenInfo user = userService.getUserTokenInfoByIdentifier(identifier);
 
 		if (user == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			return ResponseEntity.status(HttpStatus.OK).body(null);
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(user);
@@ -61,14 +61,14 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(userId));
 	}
 
-	@PostMapping("/signUp/checkIdentifier")
+	@PostMapping("/signup/checkIdentifier")
 	ResponseEntity<String> checkIdentifier(@RequestBody CheckIdentifierRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.checkIdentifier(request));
 	}
 
-	@PostMapping("/signUp")
-	public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request) {
-		userService.signUp(request);
+	@PostMapping("/signup")
+	public ResponseEntity<Void> signup(@RequestBody SignUpRequest request) {
+		userService.signup(request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
@@ -95,18 +95,18 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
-	@PostMapping("/signUp/sendEmail")
+	@PostMapping("/signup/sendEmail")
 	public ResponseEntity<String> sendEmail(@RequestParam String email) {
 		String subject = "회원가입";
 		boolean isEmailExist = userService.existsByEmail(email);
 		if (!isEmailExist) {
-			mailService.sendMail(email, subject);
+			mailService.sendMail(email, subject, "");
 			return ResponseEntity.status(HttpStatus.OK).body(email + "로 인증 번호를 전송했습니다.");
 		}
 		return ResponseEntity.status(HttpStatus.OK).body("이미 사용 중인 이메일입니다.");
 	}
 
-	@GetMapping("/signUp/checkEmail")
+	@GetMapping("/signup/checkEmail")
 	public ResponseEntity<String> checkEmail(@RequestParam String email, @RequestParam String certifyCode) {
 		String subject = "회원가입";
 		boolean codeMatch = mailService.checkEmail(email, certifyCode, subject);
@@ -114,6 +114,16 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.OK).body("인증되었습니다.");
 		}
 		return ResponseEntity.status(HttpStatus.OK).body("인증번호가 일치하지 않습니다.");
+	}
+
+	@PostMapping("/recover/identifier")
+	ResponseEntity<String> recoverIdentifier(@RequestParam String email) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.recoverIdentifier(email));
+	}
+
+	@PostMapping("/recover/password")
+	ResponseEntity<String> recoverPassword(@RequestParam String identifier) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.recoverPassword(identifier));
 	}
 
 }

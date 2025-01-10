@@ -6,6 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eventorback.global.util.NumberUtil;
+import com.eventorback.mail.service.MailService;
 import com.eventorback.role.domain.entity.Role;
 import com.eventorback.role.exception.RoleNotFoundException;
 import com.eventorback.role.repository.RoleRepository;
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRoleRepository userRoleRepository;
 	private final StatusRepository statusRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final MailService mailService;
 
 	@Override
 	public List<GetUserByAddShopResponse> searchUserById(String keyword) {
@@ -51,7 +54,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserTokenInfo getUserTokenInfoByIdentifier(String identifier) {
 		User user = userRepository.findByIdentifier(identifier)
-			.orElseThrow(() -> new UserNotFoundException(identifier));
+			.orElse(null);
+		if (user == null) {
+			return null;
+		}
+
 		List<String> userRoleNames = userRoleRepository.findAllByUserUserId(user.getUserId())
 			.stream().map(userRole -> userRole.getRole().getName()).toList();
 
@@ -64,7 +71,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void signUp(SignUpRequest request) {
+	public void signup(SignUpRequest request) {
 		if (userRepository.existsByIdentifier(request.identifier())) {
 			throw new UserAlreadyExistsException(request.identifier());
 		}
@@ -130,5 +137,32 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean existsByEmail(String email) {
 		return userRepository.existsByEmail(email);
+	}
+
+	@Override
+	public String recoverIdentifier(String email) {
+		User user = userRepository.findByEmail(email).orElse(null);
+		if (user != null) {
+			mailService.sendMail(email, "아이디 찾기", user.getIdentifier());
+			return email + "로 아이디를 전송하였습니다.";
+		}
+		return "가입된 아이디가 없습니다.";
+	}
+
+	@Override
+	public String recoverPassword(String identifier) {
+		User user = userRepository.findByIdentifier(identifier).orElse(null);
+		if (user != null) {
+			// 새로운 비밀번호
+			String newPassword = NumberUtil.createRandom(8);
+			String encryptedNewPassword = passwordEncoder.encode(newPassword);
+
+			// 비밀번호 업데이트
+			user.modifyPassword(encryptedNewPassword);
+
+			mailService.sendMail(user.getEmail(), "비밀번호 찾기", newPassword);
+			return "이메일로 새로운 비밀번호가 전송되었습니다.";
+		}
+		return "가입된 아이디가 아닙니다.";
 	}
 }

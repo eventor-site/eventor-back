@@ -4,13 +4,16 @@ import jakarta.mail.internet.MimeMessage;
 
 public interface MailService {
 
-	void createNumber();
+	MimeMessage createMail(String receiverEmail, String subject, String text);
 
-	MimeMessage createMail(String receiverEmail, String subject);
+	MimeMessage recoverIdentifierMail(String receiverEmail, String subject, String identifier);
 
-	void sendMail(String email, String subject);
+	MimeMessage recoverPasswordMail(String receiverEmail, String subject, String password);
+
+	void sendMail(String email, String subject, String text);
 
 	boolean checkEmail(String email, String certifyCode, String subject);
 
 	String getSubjectKey(String subject);
+
 }
