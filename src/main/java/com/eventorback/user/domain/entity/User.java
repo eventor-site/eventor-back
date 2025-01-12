@@ -66,8 +66,8 @@ public class User {
 	@Column(name = "sso_id")
 	private String ssoId;
 
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
+	@Column(name = "point")
+	private Long point;
 
 	@Column(name = "updated_time")
 	private LocalDateTime updatedTime;
@@ -75,9 +75,12 @@ public class User {
 	@Column(name = "last_login_time")
 	private LocalDateTime lastLoginTime;
 
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
+
 	@Builder
 	public User(Status status, UserGrade userGrade, String identifier, String password, String name, String nickname,
-		String email, LocalDate birth, String gender, String phone, LocalDateTime createdAt) {
+		String email, LocalDate birth, String gender, String phone) {
 		this.status = status;
 		this.userGrade = userGrade;
 		this.identifier = identifier;
@@ -88,7 +91,8 @@ public class User {
 		this.birth = birth;
 		this.gender = gender;
 		this.phone = phone;
-		this.createdAt = createdAt;
+		this.point = 0L;
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public static User toEntity(Status status, UserGrade userGrade, SignUpRequest request, String encodedPassword) {
@@ -103,7 +107,6 @@ public class User {
 			.birth(toLocalDate(request.birth()))
 			.gender(request.gender())
 			.phone(request.phone())
-			.createdAt(LocalDateTime.now())
 			.build();
 	}
 
