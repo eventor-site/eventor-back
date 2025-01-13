@@ -8,7 +8,7 @@ import lombok.Builder;
 public record GetPostReportResponse(
 	Long postReportId,
 	Long postId,
-	String writer,
+	String identifier,
 	String title,
 	LocalDateTime createdAt,
 	String reportTypeName) {

@@ -9,7 +9,7 @@ import static com.eventorback.userrole.domain.entity.QUserRole.*;
 import java.util.List;
 import java.util.Optional;
 
-import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
@@ -22,14 +22,14 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<GetUserByAddShopResponse> searchUserById(String keyword) {
+	public List<GetUserByIdentifier> searchUserByIdentifier(String keyword) {
 		return queryFactory
 			.select(user.identifier)
 			.from(user)
 			.where(user.identifier.contains(keyword))
 			.fetch()
 			.stream()
-			.map(GetUserByAddShopResponse::new)
+			.map(GetUserByIdentifier::new)
 			.toList();
 	}
 

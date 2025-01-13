@@ -20,7 +20,7 @@ import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.service.UserService;
@@ -38,8 +38,8 @@ public class UserController {
 	private final MailServiceImpl mailService;
 
 	@GetMapping("/search")
-	public ResponseEntity<List<GetUserByAddShopResponse>> searchUserById(@RequestParam String keyword) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserById(keyword));
+	public ResponseEntity<List<GetUserByIdentifier>> searchUserByIdentifier(@RequestParam String keyword) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserByIdentifier(keyword));
 	}
 
 	/**

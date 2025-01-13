@@ -123,6 +123,9 @@ public class PostServiceImpl implements PostService {
 		User user = null;
 		if (userId != null) {
 			user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			if (user.getStatus().getName().equals("정지")) {
+				throw new AccessDeniedException();
+			}
 		}
 
 		Status status = statusRepository.findOrCreateStatus("게시글", "작성됨");

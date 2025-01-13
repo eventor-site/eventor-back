@@ -9,7 +9,7 @@ public record GetCommentReportResponse(
 	Long commentReportId,
 	Long postId,
 	Long commentId,
-	String writer,
+	String identifier,
 	String content,
 	LocalDateTime createdAt,
 	String reportTypeName) {
