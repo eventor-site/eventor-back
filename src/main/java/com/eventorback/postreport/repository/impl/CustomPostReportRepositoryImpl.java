@@ -26,7 +26,7 @@ public class CustomPostReportRepositoryImpl implements CustomPostReportRepositor
 				GetPostReportResponse.class,
 				postReport.postReportId,
 				post.postId,
-				post.writer,
+				user.identifier,
 				post.title,
 				postReport.createdAt,
 				reportType.name))

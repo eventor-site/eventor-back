@@ -133,7 +133,7 @@ public class User {
 		this.password = encryptedNewPassword;
 	}
 
-	public void withdrawUser(Status status) {
+	public void updateStatus(Status status) {
 		this.status = status;
 	}
 }

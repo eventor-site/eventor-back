@@ -27,7 +27,7 @@ public class CustomCommentReportRepositoryImpl implements CustomCommentReportRep
 				commentReport.commentReportId,
 				comment.post.postId,
 				comment.commentId,
-				comment.writer,
+				user.identifier,
 				comment.content,
 				commentReport.createdAt,
 				reportType.name))

@@ -64,7 +64,15 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public void createComment(CreateCommentRequest request, Long postId, Long userId) {
 		Post post = postRepository.getPost(postId).orElseThrow(() -> new PostNotFoundException(postId));
-		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+		User user = null;
+		if (userId != null) {
+			user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			if (user.getStatus().getName().equals("정지")) {
+				throw new AccessDeniedException();
+			}
+		}
+
 		Comment parentComment = null;
 		if (request.parentCommentId() != null) {
 			parentComment = commentRepository.findById(request.parentCommentId())

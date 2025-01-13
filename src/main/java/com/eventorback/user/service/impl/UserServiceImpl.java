@@ -19,7 +19,7 @@ import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetUserByAddShopResponse;
+import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
@@ -47,8 +47,8 @@ public class UserServiceImpl implements UserService {
 	private final MailService mailService;
 
 	@Override
-	public List<GetUserByAddShopResponse> searchUserById(String keyword) {
-		return userRepository.searchUserById(keyword);
+	public List<GetUserByIdentifier> searchUserByIdentifier(String keyword) {
+		return userRepository.searchUserByIdentifier(keyword);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
 	public void withdrawUser(Long userId) {
 		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
 		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
-		user.withdrawUser(status);
+		user.updateStatus(status);
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
 			user.modifyPassword(encryptedNewPassword);
 
 			mailService.sendMail(user.getEmail(), "비밀번호 찾기", newPassword);
-			return "이메일로 새로운 비밀번호가 전송되었습니다.";
+			return user.getEmail() + "로 새로운 비밀번호가 전송되었습니다.";
 		}
 		return "가입된 아이디가 아닙니다.";
 	}
