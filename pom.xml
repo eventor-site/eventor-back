@@ -168,7 +168,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-        
+
         <!-- Spring Boot Starter Cache for caching support -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -192,6 +192,10 @@
             <version>2.17.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
 
         <!-- Testing Dependencies -->
         <dependency>
