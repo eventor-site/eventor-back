@@ -19,6 +19,7 @@ import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
+import com.eventorback.user.domain.dto.response.GetOauthResponse;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -66,6 +67,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public GetOauthResponse getOauthByEmail(String email) {
+		User user = userRepository.findByEmail(email)
+			.orElse(null);
+		if (user == null) {
+			return null;
+		}
+		return GetOauthResponse.fromEntity(user);
+	}
+
+	@Override
 	public GetUserResponse getUserInfo(Long userId) {
 		return userRepository.getUserInfo(userId).orElseThrow(() -> new UserNotFoundException(userId));
 	}
@@ -77,8 +88,8 @@ public class UserServiceImpl implements UserService {
 		}
 
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-		UserGrade userGrade = userGradeRepository.findByName("1단계")
-			.orElseThrow(() -> new StatusNotFoundException("1단계"));
+		UserGrade userGrade = userGradeRepository.findByName("1")
+			.orElseThrow(() -> new StatusNotFoundException("1"));
 
 		String encodedPassword = passwordEncoder.encode(request.password());
 		User user = userRepository.save(User.toEntity(status, userGrade, request, encodedPassword));

@@ -7,6 +7,7 @@ import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
+import com.eventorback.user.domain.dto.response.GetOauthResponse;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -16,6 +17,8 @@ public interface UserService {
 	List<GetUserByIdentifier> searchUserByIdentifier(String keyword);
 
 	UserTokenInfo getUserTokenInfoByIdentifier(String identifier);
+
+	GetOauthResponse getOauthByEmail(String email);
 
 	GetUserResponse getUserInfo(Long userId);
 

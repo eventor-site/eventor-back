@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import com.eventorback.global.util.NumberUtil;
 import com.eventorback.mail.service.MailService;
 
 import jakarta.mail.MessagingException;
@@ -37,7 +36,7 @@ public class MailServiceImpl implements MailService {
 			message.setSubject("[Eventor] " + subject + " 인증번호");
 			String body = "";
 			body += "<h3>" + subject + " 인증번호입니다.</h3>";
-			body += "<h1>인증번호: " + NumberUtil.createRandom(6) + "</h1>";
+			body += "<h1>인증번호: " + text + " 입니다.</h1>";
 			body += "<h3>3분 내로 인증번호를 입력해주시기 바랍니다.</h3>";
 			body += "<h3>감사합니다.</h3>";
 			message.setText(body, "UTF-8", "html");

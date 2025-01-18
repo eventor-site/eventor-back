@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.auth.annotation.CurrentUserId;
+import com.eventorback.global.util.NumberUtil;
 import com.eventorback.mail.service.impl.MailServiceImpl;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
+import com.eventorback.user.domain.dto.response.GetOauthResponse;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -48,6 +50,17 @@ public class UserController {
 	@GetMapping("/info")
 	public ResponseEntity<UserTokenInfo> getUserInfoByIdentifier(@RequestParam String identifier) {
 		UserTokenInfo user = userService.getUserTokenInfoByIdentifier(identifier);
+
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		}
+
+		return ResponseEntity.status(HttpStatus.OK).body(user);
+	}
+
+	@GetMapping("/oauth")
+	ResponseEntity<GetOauthResponse> getOauthByEmail(@RequestParam String email) {
+		GetOauthResponse user = userService.getOauthByEmail(email);
 
 		if (user == null) {
 			return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -100,7 +113,7 @@ public class UserController {
 		String subject = "회원가입";
 		boolean isEmailExist = userService.existsByEmail(email);
 		if (!isEmailExist) {
-			mailService.sendMail(email, subject, "");
+			mailService.sendMail(email, subject, NumberUtil.createRandom(6));
 			return ResponseEntity.status(HttpStatus.OK).body(email + "로 인증 번호를 전송했습니다.");
 		}
 		return ResponseEntity.status(HttpStatus.OK).body("이미 사용 중인 이메일입니다.");
