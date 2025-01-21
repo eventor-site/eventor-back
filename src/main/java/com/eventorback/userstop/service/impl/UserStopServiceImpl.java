@@ -1,6 +1,5 @@
 package com.eventorback.userstop.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -61,13 +60,7 @@ public class UserStopServiceImpl implements UserStopService {
 		ReportType reportType = reportTypeRepository.findById(request.reportTypeId())
 			.orElseThrow(() -> new ReportTypeNotFoundException(request.reportTypeId()));
 
-		// 시작 시간 설정 (현재 시간)
-		LocalDateTime startTime = LocalDateTime.now();
-
-		// 종료 시간 계산 (시작 시간 + 신고 유형에 저장된 일수)
-		LocalDateTime endTime = startTime.plusDays(reportType.getDay());
-
-		userStopRepository.save(UserStop.toEntity(user, reportType, startTime, endTime));
+		userStopRepository.save(UserStop.toEntity(user, reportType, request));
 	}
 
 	@Override
