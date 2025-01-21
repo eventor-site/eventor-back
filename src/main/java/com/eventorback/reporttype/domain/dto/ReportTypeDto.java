@@ -7,14 +7,12 @@ import lombok.Builder;
 @Builder
 public record ReportTypeDto(
 	Long reportTypeId,
-	String name,
-	Long day) {
+	String name) {
 
 	public static ReportTypeDto fromEntity(ReportType reportType) {
 		return ReportTypeDto.builder()
 			.reportTypeId(reportType.getReportTypeId())
 			.name(reportType.getName())
-			.day(reportType.getDay())
 			.build();
 	}
 }

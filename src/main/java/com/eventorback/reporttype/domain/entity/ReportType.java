@@ -24,25 +24,19 @@ public class ReportType {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "day")
-	private Long day;
-
 	@Builder
-	public ReportType(String name, Long day) {
+	public ReportType(String name) {
 		this.name = name;
-		this.day = day;
 	}
 
 	public static ReportType toEntity(ReportTypeDto request) {
 		return ReportType.builder()
 			.name(request.name())
-			.day(request.day())
 			.build();
 	}
 
 	public void updateReportType(ReportTypeDto request) {
 		this.name = request.name();
-		this.day = request.day();
 	}
 
 }

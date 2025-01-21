@@ -11,7 +11,7 @@ public record GetUserStopResponse(
 	Long userStopId,
 	String identifier,
 	String reportTypeName,
-	Long day,
+	Long stopDay,
 	LocalDateTime startTime,
 	LocalDateTime endTime) {
 
@@ -20,7 +20,7 @@ public record GetUserStopResponse(
 			.userStopId(userStop.getUserStopId())
 			.identifier(userStop.getUser().getIdentifier())
 			.reportTypeName(userStop.getReportType().getName())
-			.day(userStop.getReportType().getDay())
+			.stopDay(userStop.getStopDay())
 			.startTime(userStop.getStartTime())
 			.endTime(userStop.getEndTime())
 			.build();
