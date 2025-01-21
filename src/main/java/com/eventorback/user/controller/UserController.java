@@ -17,13 +17,14 @@ import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.global.util.NumberUtil;
 import com.eventorback.mail.service.impl.MailServiceImpl;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
+import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetOauthResponse;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
+import com.eventorback.user.domain.dto.response.Oauth2Dto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.service.UserService;
 
@@ -58,15 +59,15 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
 
-	@GetMapping("/oauth")
-	ResponseEntity<GetOauthResponse> getOauthByEmail(@RequestParam String email) {
-		GetOauthResponse user = userService.getOauthByEmail(email);
+	@GetMapping("/signup/oauth2/identifier")
+	ResponseEntity<Oauth2Dto> getOauth2ByIdentifier(@RequestParam String identifier) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getOauth2ByIdentifier(identifier));
+	}
 
-		if (user == null) {
-			return ResponseEntity.status(HttpStatus.OK).body(null);
-		}
-
-		return ResponseEntity.status(HttpStatus.OK).body(user);
+	@PostMapping("/signup/oauth2/connection")
+	ResponseEntity<Void> oauth2Connection(@RequestBody Oauth2Dto dto) {
+		userService.oauth2Connection(dto);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@GetMapping("/me")
@@ -100,6 +101,11 @@ public class UserController {
 	@PostMapping("/signup/checkIdentifier")
 	ResponseEntity<String> checkIdentifier(@RequestBody CheckIdentifierRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.checkIdentifier(request));
+	}
+
+	@PostMapping("/signup/checkNickname")
+	ResponseEntity<String> checkNickname(@RequestBody CheckNicknameRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.checkNickname(request));
 	}
 
 	@PostMapping("/signup")

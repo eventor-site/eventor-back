@@ -63,8 +63,8 @@ public class User {
 	@Column(name = "phone")
 	private String phone;
 
-	@Column(name = "sso_id")
-	private String ssoId;
+	@Column(name = "oauth_id")
+	private String oauthId;
 
 	@Column(name = "point")
 	private Long point;
@@ -80,7 +80,7 @@ public class User {
 
 	@Builder
 	public User(Status status, UserGrade userGrade, String identifier, String password, String name, String nickname,
-		String email, LocalDate birth, String gender, String phone) {
+		String email, LocalDate birth, String gender, String phone, String oauthId) {
 		this.status = status;
 		this.userGrade = userGrade;
 		this.identifier = identifier;
@@ -93,6 +93,7 @@ public class User {
 		this.phone = phone;
 		this.point = 0L;
 		this.createdAt = LocalDateTime.now();
+		this.oauthId = oauthId;
 	}
 
 	public static User toEntity(Status status, UserGrade userGrade, SignUpRequest request, String encodedPassword) {
@@ -102,11 +103,12 @@ public class User {
 			.identifier(request.identifier())
 			.password(encodedPassword)
 			.name(request.name())
-			.nickname(request.nickName())
+			.nickname(request.nickname())
 			.email(request.email())
 			.birth(toLocalDate(request.birth()))
 			.gender(request.gender())
 			.phone(request.phone())
+			.oauthId(request.oauthId())
 			.build();
 	}
 
@@ -135,5 +137,9 @@ public class User {
 
 	public void updateStatus(Status status) {
 		this.status = status;
+	}
+
+	public void oauth2Connection(String oauthId) {
+		this.oauthId = oauthId;
 	}
 }
