@@ -60,6 +60,13 @@ public class CommentReportServiceImpl implements CommentReportService {
 	}
 
 	@Override
+	public void confirmCommentReport(Long commentReportId) {
+		CommentReport commentReport = commentReportRepository.findById(commentReportId)
+			.orElseThrow(() -> new CommentNotFoundException(commentReportId));
+		commentReport.confirm();
+	}
+
+	@Override
 	public String deleteCommentReport(Long userId, Long commentReportId) {
 		if (userId == null) {
 			return "로그인 후 이용해 주세요.";

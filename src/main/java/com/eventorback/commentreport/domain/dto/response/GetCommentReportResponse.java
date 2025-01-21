@@ -11,6 +11,7 @@ public record GetCommentReportResponse(
 	Long commentId,
 	String identifier,
 	String content,
+	boolean isChecked,
 	LocalDateTime createdAt,
 	String reportTypeName) {
 }

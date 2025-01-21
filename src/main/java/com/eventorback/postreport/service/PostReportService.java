@@ -15,5 +15,7 @@ public interface PostReportService {
 
 	String createPostReport(Long userId, Long postId, String reportTypeName);
 
+	void confirmPostReport(Long postReportId);
+
 	String deletePostReport(Long userId, Long postReportId);
 }

@@ -60,6 +60,13 @@ public class PostReportServiceImpl implements PostReportService {
 	}
 
 	@Override
+	public void confirmPostReport(Long postReportId) {
+		PostReport postReport = postReportRepository.findById(postReportId)
+			.orElseThrow(() -> new PostNotFoundException(postReportId));
+		postReport.confirm();
+	}
+
+	@Override
 	public String deletePostReport(Long userId, Long postReportId) {
 		if (userId == null) {
 			return "로그인 후 이용해 주세요.";

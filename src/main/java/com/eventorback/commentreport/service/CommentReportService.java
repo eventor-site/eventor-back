@@ -15,5 +15,7 @@ public interface CommentReportService {
 
 	String createCommentReport(Long userId, Long commentId, String reportTypeName);
 
+	void confirmCommentReport(Long commentReportId);
+
 	String deleteCommentReport(Long userId, Long commentReportId);
 }

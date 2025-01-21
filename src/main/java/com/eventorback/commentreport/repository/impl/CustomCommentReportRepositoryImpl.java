@@ -29,6 +29,7 @@ public class CustomCommentReportRepositoryImpl implements CustomCommentReportRep
 				comment.commentId,
 				user.identifier,
 				comment.content,
+				commentReport.isChecked,
 				commentReport.createdAt,
 				reportType.name))
 			.from(commentReport)

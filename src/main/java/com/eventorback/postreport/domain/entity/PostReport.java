@@ -39,6 +39,9 @@ public class PostReport {
 	@JoinColumn(name = "report_type")
 	private ReportType reportType;
 
+	@Column(name = "is_checked")
+	private boolean isChecked;
+
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
@@ -47,6 +50,7 @@ public class PostReport {
 		this.user = user;
 		this.post = post;
 		this.reportType = reportType;
+		this.isChecked = false;
 		this.createdAt = LocalDateTime.now();
 	}
 
@@ -56,5 +60,9 @@ public class PostReport {
 			.post(post)
 			.reportType(reportType)
 			.build();
+	}
+
+	public void confirm() {
+		this.isChecked = true;
 	}
 }
