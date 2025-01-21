@@ -28,6 +28,7 @@ public class CustomPostReportRepositoryImpl implements CustomPostReportRepositor
 				post.postId,
 				user.identifier,
 				post.title,
+				postReport.isChecked,
 				postReport.createdAt,
 				reportType.name))
 			.from(postReport)

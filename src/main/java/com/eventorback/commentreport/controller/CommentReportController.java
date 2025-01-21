@@ -36,6 +36,13 @@ public class CommentReportController {
 			.body(commentReportService.createCommentReport(userId, commentId, reportTypeName));
 	}
 
+	@GetMapping("/posts/{postId}/comments/{commentId}/commentReports/{commentReportId}/confirm")
+	ResponseEntity<Void> confirmCommentReport(@PathVariable Long postId, @PathVariable Long commentId,
+		@PathVariable Long commentReportId) {
+		commentReportService.confirmCommentReport(commentReportId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
 	@DeleteMapping("/commentReports/{commentReportId}")
 	public ResponseEntity<String> deleteCommentReport(@CurrentUserId Long userId, @PathVariable Long commentReportId) {
 		return ResponseEntity.status(HttpStatus.OK)

@@ -10,6 +10,7 @@ public record GetPostReportResponse(
 	Long postId,
 	String identifier,
 	String title,
+	boolean isChecked,
 	LocalDateTime createdAt,
 	String reportTypeName) {
 }

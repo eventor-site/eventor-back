@@ -36,6 +36,12 @@ public class PostReportController {
 			.body(postReportService.createPostReport(userId, postId, reportTypeName));
 	}
 
+	@GetMapping("/posts/{postId}/postReports/{postReportId}/confirm")
+	ResponseEntity<Void> confirmPostReport(@PathVariable Long postId, @PathVariable Long postReportId) {
+		postReportService.confirmPostReport(postReportId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
 	@DeleteMapping("/postReports/{postReportId}")
 	public ResponseEntity<String> deletePostReport(@CurrentUserId Long userId, @PathVariable Long postReportId) {
 		return ResponseEntity.status(HttpStatus.OK).body(postReportService.deletePostReport(userId, postReportId));
