@@ -15,6 +15,7 @@ import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.UserRepository;
 import com.eventorback.userstop.domain.dto.UserStopDto;
+import com.eventorback.userstop.domain.dto.response.GetUserStopByIdentifierResponse;
 import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
 import com.eventorback.userstop.domain.entity.UserStop;
 import com.eventorback.userstop.exception.UserStopNotFoundException;
@@ -47,6 +48,11 @@ public class UserStopServiceImpl implements UserStopService {
 		UserStop userStop = userStopRepository.findById(userStopId)
 			.orElseThrow(() -> new UserStopNotFoundException(userStopId));
 		return UserStopDto.fromEntity(userStop);
+	}
+
+	@Override
+	public List<GetUserStopByIdentifierResponse> getUserStopByUser(String identifier) {
+		return userStopRepository.getUserStopByIdentifier(identifier);
 	}
 
 	@Override
