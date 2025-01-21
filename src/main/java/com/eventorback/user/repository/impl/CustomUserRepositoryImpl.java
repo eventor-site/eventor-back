@@ -11,8 +11,10 @@ import java.util.Optional;
 
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
+import com.eventorback.user.domain.dto.response.Oauth2Dto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,28 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.select(user)
 			.from(user)
 			.where(user.userId.eq(userId))
+			.fetchOne());
+	}
+
+	@Override
+	public Optional<User> getUser(String identifier) {
+		return Optional.ofNullable(queryFactory
+			.select(user)
+			.from(user)
+			.where(user.identifier.eq(identifier))
+			.fetchOne());
+	}
+
+	@Override
+	public Optional<Oauth2Dto> getOauth2ByIdentifier(String identifier) {
+		return Optional.ofNullable(queryFactory
+			.select(Projections.constructor(
+				Oauth2Dto.class,
+				user.identifier,
+				user.oauthId
+			))
+			.from(user)
+			.where(user.identifier.eq(identifier))
 			.fetchOne());
 	}
 

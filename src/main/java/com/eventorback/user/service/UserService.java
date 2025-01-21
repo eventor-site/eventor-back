@@ -3,13 +3,14 @@ package com.eventorback.user.service;
 import java.util.List;
 
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
+import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetOauthResponse;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
+import com.eventorback.user.domain.dto.response.Oauth2Dto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 
 public interface UserService {
@@ -18,13 +19,17 @@ public interface UserService {
 
 	UserTokenInfo getUserTokenInfoByIdentifier(String identifier);
 
-	GetOauthResponse getOauthByEmail(String email);
+	Oauth2Dto getOauth2ByIdentifier(String identifier);
+
+	void oauth2Connection(Oauth2Dto dto);
 
 	GetUserResponse getUserInfo(Long userId);
 
 	void signup(SignUpRequest request);
 
 	String checkIdentifier(CheckIdentifierRequest request);
+
+	String checkNickname(CheckNicknameRequest request);
 
 	void updateUser(Long userId, UpdateUserRequest request);
 

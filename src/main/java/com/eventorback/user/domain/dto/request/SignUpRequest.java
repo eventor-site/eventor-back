@@ -7,10 +7,11 @@ public record SignUpRequest(
 	String identifier,
 	String password,
 	String name,
-	String nickName,
+	String nickname,
 	String email,
 	String birth,
 	String gender,
-	String phone) {
+	String phone,
+	String oauthId) {
 }
 

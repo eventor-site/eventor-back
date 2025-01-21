@@ -15,16 +15,16 @@ import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
+import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetOauthResponse;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
+import com.eventorback.user.domain.dto.response.Oauth2Dto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
-import com.eventorback.user.exception.UserAlreadyExistsException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
 import com.eventorback.user.service.UserService;
@@ -67,13 +67,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public GetOauthResponse getOauthByEmail(String email) {
-		User user = userRepository.findByEmail(email)
-			.orElse(null);
-		if (user == null) {
-			return null;
-		}
-		return GetOauthResponse.fromEntity(user);
+	public Oauth2Dto getOauth2ByIdentifier(String identifier) {
+		return userRepository.getOauth2ByIdentifier(identifier).orElse(null);
+	}
+
+	@Override
+	public void oauth2Connection(Oauth2Dto dto) {
+		User user = userRepository.getUser(dto.identifier())
+			.orElseThrow(() -> new UserNotFoundException(dto.identifier()));
+		user.oauth2Connection(dto.oauthId());
 	}
 
 	@Override
@@ -83,10 +85,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void signup(SignUpRequest request) {
-		if (userRepository.existsByIdentifier(request.identifier())) {
-			throw new UserAlreadyExistsException(request.identifier());
-		}
-
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
 		UserGrade userGrade = userGradeRepository.findByName("1")
 			.orElseThrow(() -> new StatusNotFoundException("1"));
@@ -105,6 +103,14 @@ public class UserServiceImpl implements UserService {
 			return "이미 존재하는 아이디 입니다.";
 		}
 		return "사용 가능한 아이디 입니다.";
+	}
+
+	@Override
+	public String checkNickname(CheckNicknameRequest request) {
+		if (userRepository.existsByNickname(request.nickname())) {
+			return "이미 존재하는 닉네임 입니다.";
+		}
+		return "사용 가능한 닉네임 입니다.";
 	}
 
 	@Override
