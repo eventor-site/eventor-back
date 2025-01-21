@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,10 +29,13 @@ public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 	private final PostRepository postRepository;
 
-	private static final String UPLOAD_DIRECTORY = "src/main/resources/static";
+	private static final String DOMAIN_URL = "https://www.eventor.store/";
+
+	// TODO: 배포시 파일 저장 경로 별도 설정 필요
+	private static final String UPLOAD_DIRECTORY = "C:/Users/dlrud/Desktop/infra/";
 
 	@Override
-	@Async("imageUploadExecutor")
+	// @Async("imageUploadExecutor")
 	public void upload(MultipartFile file, String folderName, Long postId) {
 		// 1. 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
 		String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -49,10 +51,10 @@ public class ImageServiceImpl implements ImageService {
 		checkFileExtension(fileExtension);
 
 		// 4. 파일 저장
-		String url = saveFile(folderPath, newFileName, file);
+		saveFile(folderPath, newFileName, file);
 
 		//임시 백엔드 리소스 URL
-		url = "https://www.eventor.store/" + folderName + "/" + today + "/" + newFileName;
+		String url = DOMAIN_URL + folderName + "/" + today + "/" + newFileName;
 
 		// 5. DB에 이미지 정보 저장
 		createImage(postId, originalFilename, newFileName, url);
@@ -99,7 +101,7 @@ public class ImageServiceImpl implements ImageService {
 		String[] imageExtensions = {"jpg", "jpeg", "png", "gif"};
 
 		for (String extension : imageExtensions) {
-			if (fileContentType.endsWith(extension)) {
+			if (fileContentType.toLowerCase().endsWith(extension)) {
 				return;
 			}
 		}
