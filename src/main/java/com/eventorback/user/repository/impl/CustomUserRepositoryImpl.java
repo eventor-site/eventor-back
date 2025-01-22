@@ -1,9 +1,9 @@
 package com.eventorback.user.repository.impl;
 
+import static com.eventorback.grade.domain.entity.QGrade.*;
 import static com.eventorback.role.domain.entity.QRole.*;
 import static com.eventorback.status.domain.entity.QStatus.*;
 import static com.eventorback.user.domain.entity.QUser.*;
-import static com.eventorback.usergrade.domain.entity.QUserGrade.*;
 import static com.eventorback.userrole.domain.entity.QUserRole.*;
 
 import java.util.List;
@@ -85,7 +85,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.selectFrom(user)
 			.where(user.userId.eq(userId))
 			.join(user.status, status).fetchJoin()
-			.join(user.userGrade, userGrade).fetchJoin()
+			.join(user.grade, grade).fetchJoin()
 			.fetchOne();
 
 		// 사용자 정보가 없을 경우 Optional.empty 반환
@@ -103,7 +103,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			userInfo.getBirth(),
 			userInfo.getGender(),
 			userInfo.getStatus().getName(),
-			userInfo.getUserGrade().getName(),
+			userInfo.getGrade().getName(),
 			userRoles,
 			userInfo.getCreatedAt(),
 			userInfo.getUpdatedTime(),
