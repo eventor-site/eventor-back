@@ -120,6 +120,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public String meCheckNickname(Long userId, CheckNicknameRequest request) {
+		if (userId != null && userRepository.existsByUserIdNotAndNickname(userId, request.nickname())) {
+			return "이미 존재하는 닉네임 입니다.";
+		}
+		return "사용 가능한 닉네임 입니다.";
+	}
+
+	@Override
 	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
 		User user = userRepository.getUser(request.userId())
 			.orElseThrow(() -> new UserNotFoundException(request.userId()));

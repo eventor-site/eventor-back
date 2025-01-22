@@ -33,6 +33,8 @@ public interface UserService {
 
 	void updateUser(Long userId, UpdateUserRequest request);
 
+	String meCheckNickname(Long userId, CheckNicknameRequest request);
+
 	void updateLastLoginTime(UpdateLastLoginTimeRequest lastLoginTime);
 
 	String modifyPassword(Long userId, ModifyPasswordRequest request);

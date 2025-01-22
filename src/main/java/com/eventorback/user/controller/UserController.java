@@ -81,6 +81,12 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
+	@PostMapping("/me/checkNickname")
+	public ResponseEntity<String> meCheckNickname(@CurrentUserId Long userId,
+		@RequestBody CheckNicknameRequest request) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.meCheckNickname(userId, request));
+	}
+
 	@PutMapping("/me/lastLoginTime")
 	public ResponseEntity<Void> updateLastLoginTime(@RequestBody UpdateLastLoginTimeRequest request) {
 		userService.updateLastLoginTime(request);
