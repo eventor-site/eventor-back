@@ -3,9 +3,9 @@ package com.eventorback.user.domain.dto.response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.eventorback.grade.domain.entity.Grade;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.entity.User;
-import com.eventorback.usergrade.domain.entity.UserGrade;
 
 import lombok.Builder;
 
@@ -19,13 +19,13 @@ public record GetUserResponse(
 	LocalDate birth,
 	String gender,
 	String statusName,
-	String userGradeName,
+	String gradeName,
 	String userRoles,
 	LocalDateTime createdAt,
 	LocalDateTime updatedTime,
 	LocalDateTime lastLoginTime
 ) {
-	public static GetUserResponse fromEntity(User user, UserGrade userGrade, Status status) {
+	public static GetUserResponse fromEntity(User user, Grade grade, Status status) {
 		return GetUserResponse.builder()
 			.identifier(user.getIdentifier())
 			.name(user.getName())
@@ -35,7 +35,7 @@ public record GetUserResponse(
 			.birth(user.getBirth())
 			.gender(user.getGender())
 			.statusName(status.getName())
-			.userGradeName(userGrade.getName())
+			.gradeName(grade.getName())
 			.createdAt(user.getCreatedAt())
 			.updatedTime(user.getUpdatedTime())
 			.lastLoginTime(user.getLastLoginTime())

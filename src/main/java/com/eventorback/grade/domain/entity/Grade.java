@@ -1,8 +1,8 @@
-package com.eventorback.usergrade.domain.entity;
+package com.eventorback.grade.domain.entity;
 
 import java.math.BigDecimal;
 
-import com.eventorback.usergrade.domain.dto.UserGradeDto;
+import com.eventorback.grade.domain.dto.GradeDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class UserGrade {
+public class Grade {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_grade_id")
-	private Long userGradeId;
+	@Column(name = "grade_id")
+	private Long gradeId;
 
 	@Column(name = "name")
 	private String name;
@@ -36,15 +36,15 @@ public class UserGrade {
 	private BigDecimal pointRate;
 
 	@Builder
-	public UserGrade(String name, BigDecimal minAmount, BigDecimal maxAmount, BigDecimal pointRate) {
+	public Grade(String name, BigDecimal minAmount, BigDecimal maxAmount, BigDecimal pointRate) {
 		this.name = name;
 		this.minAmount = minAmount;
 		this.maxAmount = maxAmount;
 		this.pointRate = pointRate;
 	}
 
-	public static UserGrade toEntity(UserGradeDto request) {
-		return UserGrade.builder()
+	public static Grade toEntity(GradeDto request) {
+		return Grade.builder()
 			.name(request.name())
 			.minAmount(request.minAmount())
 			.maxAmount(request.maxAmount())
@@ -52,7 +52,7 @@ public class UserGrade {
 			.build();
 	}
 
-	public void updateUserGrade(String name, BigDecimal minAmount, BigDecimal maxAmount, BigDecimal pointRate) {
+	public void updateGrade(String name, BigDecimal minAmount, BigDecimal maxAmount, BigDecimal pointRate) {
 		this.name = name;
 		this.minAmount = minAmount;
 		this.maxAmount = maxAmount;

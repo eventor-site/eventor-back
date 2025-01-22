@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.eventorback.grade.domain.entity.Grade;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.usergrade.domain.entity.UserGrade;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,8 +36,8 @@ public class User {
 	private Status status;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "user_grade_id")
-	private UserGrade userGrade;
+	@JoinColumn(name = "grade_id")
+	private Grade grade;
 
 	@Column(name = "identifier")
 	private String identifier;
@@ -79,10 +79,10 @@ public class User {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public User(Status status, UserGrade userGrade, String identifier, String password, String name, String nickname,
+	public User(Status status, Grade grade, String identifier, String password, String name, String nickname,
 		String email, LocalDate birth, String gender, String phone, String oauthId) {
 		this.status = status;
-		this.userGrade = userGrade;
+		this.grade = grade;
 		this.identifier = identifier;
 		this.password = password;
 		this.name = name;
@@ -96,10 +96,10 @@ public class User {
 		this.oauthId = oauthId;
 	}
 
-	public static User toEntity(Status status, UserGrade userGrade, SignUpRequest request, String encodedPassword) {
+	public static User toEntity(Status status, Grade grade, SignUpRequest request, String encodedPassword) {
 		return User.builder()
 			.status(status)
-			.userGrade(userGrade)
+			.grade(grade)
 			.identifier(request.identifier())
 			.password(encodedPassword)
 			.name(request.name())

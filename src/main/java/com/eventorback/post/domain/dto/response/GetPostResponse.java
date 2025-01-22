@@ -22,7 +22,7 @@ public record GetPostResponse(
 	LocalDateTime startTime,
 	LocalDateTime endTime,
 	List<GetImageResponse> images,
-	String userGradeName,
+	String gradeName,
 	Boolean isAuthorized) {
 
 	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images, Boolean isAuthorized) {
@@ -40,7 +40,7 @@ public record GetPostResponse(
 			.endTime(post.getEndTime())
 			.images(images)
 			.isAuthorized(isAuthorized)
-			.userGradeName(post.getUser().getUserGrade().getName())
+			.gradeName(post.getUser().getGrade().getName())
 			.build();
 	}
 }

@@ -18,7 +18,7 @@ public record GetCommentResponse(
 	Long decommendationCount,
 	List<GetCommentResponse> childComments,
 	LocalDateTime createdAt,
-	String userGradeName,
+	String gradeName,
 	Boolean isAuthorized,
 	Boolean isDeleted) {
 
@@ -46,7 +46,7 @@ public record GetCommentResponse(
 			.decommendationCount(comment.getDecommendationCount())
 			.childComments(childComments)
 			.createdAt(comment.getCreatedAt())
-			.userGradeName(comment.getUser().getUserGrade().getName())
+			.gradeName(comment.getUser().getGrade().getName())
 			.isAuthorized(isAuthorized)
 			.isDeleted(comment.getStatus().getName().equals("삭제됨"))
 			.build();

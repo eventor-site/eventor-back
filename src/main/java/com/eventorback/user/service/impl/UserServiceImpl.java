@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.global.util.NumberUtil;
+import com.eventorback.grade.domain.entity.Grade;
+import com.eventorback.grade.repository.GradeRepository;
 import com.eventorback.mail.service.MailService;
 import com.eventorback.role.domain.entity.Role;
 import com.eventorback.role.exception.RoleNotFoundException;
@@ -28,8 +30,6 @@ import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
 import com.eventorback.user.service.UserService;
-import com.eventorback.usergrade.domain.entity.UserGrade;
-import com.eventorback.usergrade.repository.UserGradeRepository;
 import com.eventorback.userrole.domain.entity.UserRole;
 import com.eventorback.userrole.repository.UserRoleRepository;
 
@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
-	private final UserGradeRepository userGradeRepository;
+	private final GradeRepository gradeRepository;
 	private final RoleRepository roleRepository;
 	private final UserRoleRepository userRoleRepository;
 	private final StatusRepository statusRepository;
@@ -86,11 +86,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void signup(SignUpRequest request) {
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-		UserGrade userGrade = userGradeRepository.findByName("1")
+		Grade grade = gradeRepository.findByName("1")
 			.orElseThrow(() -> new StatusNotFoundException("1"));
 
 		String encodedPassword = passwordEncoder.encode(request.password());
-		User user = userRepository.save(User.toEntity(status, userGrade, request, encodedPassword));
+		User user = userRepository.save(User.toEntity(status, grade, request, encodedPassword));
 
 		// 회원 가입시 기본 권한 데이터 설정
 		Role role = roleRepository.findByName("member").orElseThrow(() -> new RoleNotFoundException("member"));

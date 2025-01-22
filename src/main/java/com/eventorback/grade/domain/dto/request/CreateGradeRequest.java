@@ -1,8 +1,8 @@
-package com.eventorback.usergrade.domain.dto.request;
+package com.eventorback.grade.domain.dto.request;
 
 import java.math.BigDecimal;
 
-public record CreateUserGradeRequest(
+public record CreateGradeRequest(
 	String name,
 	BigDecimal minAmount,
 	BigDecimal maxAmount,
