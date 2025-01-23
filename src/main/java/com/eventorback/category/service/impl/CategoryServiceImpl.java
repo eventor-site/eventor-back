@@ -12,8 +12,10 @@ import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
 import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryResponse;
 import com.eventorback.category.domain.entity.Category;
+import com.eventorback.category.domain.entity.CategoryClosure;
 import com.eventorback.category.exception.CategoryAlreadyExistsException;
 import com.eventorback.category.exception.CategoryNotFoundException;
+import com.eventorback.category.repository.CategoryClosureRepository;
 import com.eventorback.category.repository.CategoryRepository;
 import com.eventorback.category.service.CategoryService;
 
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 	private final CategoryRepository categoryRepository;
+	private final CategoryClosureRepository categoryClosureRepository;
 
 	@Override
 	public List<GetCategoryNameResponse> searchCategories(String keyword) {
@@ -56,8 +59,42 @@ public class CategoryServiceImpl implements CategoryService {
 		if (request.parentCategoryId() != null) {
 			parentCategory = categoryRepository.findById(request.parentCategoryId()).orElse(null);
 		}
-		categoryRepository.save(Category.toEntity(request, parentCategory));
+		Category newCategory = categoryRepository.save(Category.toEntity(request, parentCategory));
 
+		// 클로저 테이블에 관계 추가
+		createClosureRelations(newCategory, parentCategory);
+	}
+
+	@Override
+	public void createClosureRelations(Category newCategory, Category parentCategory) {
+		// 1. 부모 카테고리의 모든 조상 관계 가져오기
+		List<CategoryClosure> parentAncestors = categoryClosureRepository.findByDescendant(parentCategory);
+
+		// 2. 부모 카테고리의 조상 → 새 자식 관계 생성
+		for (CategoryClosure parentAncestor : parentAncestors) {
+			CategoryClosure closure = CategoryClosure.builder()
+				.ancestor(parentAncestor.getAncestor()) // 부모의 조상
+				.descendant(newCategory) // 새 자식
+				.depth(parentAncestor.getDepth() + 1) // 깊이 증가
+				.build();
+			categoryClosureRepository.save(closure);
+		}
+
+		// 3. 부모 자신 → 새 자식 관계 생성
+		CategoryClosure parentToChild = CategoryClosure.builder()
+			.ancestor(parentCategory) // 부모 자신
+			.descendant(newCategory) // 새 자식
+			.depth(1L) // 부모에서 바로 연결된 깊이
+			.build();
+		categoryClosureRepository.save(parentToChild);
+
+		// 4. 새 자식 → 자기 자신 관계 생성
+		CategoryClosure selfRelation = CategoryClosure.builder()
+			.ancestor(newCategory)
+			.descendant(newCategory)
+			.depth(0L) // 자기 자신
+			.build();
+		categoryClosureRepository.save(selfRelation);
 	}
 
 	@Override
@@ -67,7 +104,7 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
-		
+
 		Category parentCategory = null;
 		if (request.parentCategoryId() != null) {
 			parentCategory = categoryRepository.findById(request.parentCategoryId()).orElse(null);
@@ -79,4 +116,5 @@ public class CategoryServiceImpl implements CategoryService {
 	public void deleteCategory(Long categoryId) {
 		categoryRepository.deleteById(categoryId);
 	}
+
 }

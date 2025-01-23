@@ -70,6 +70,13 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 	@Override
 	public List<GetMainPostResponse> getHotEventPosts() {
+		// '이벤트' 카테고리 하위의 모든 카테고리 아이디를 조회
+		List<Long> eventCategoryIds = queryFactory
+			.select(category.categoryId)
+			.from(category)
+			.where(category.parentCategory.name.eq("이벤트"))
+			.fetch();
+
 		return queryFactory
 			.select(Projections.constructor(
 				GetMainPostResponse.class,
@@ -130,7 +137,6 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 	@Override
 	public List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
-		log.info("시작");
 		return queryFactory
 			.select(Projections.constructor(
 				GetPostSimpleResponse.class,
