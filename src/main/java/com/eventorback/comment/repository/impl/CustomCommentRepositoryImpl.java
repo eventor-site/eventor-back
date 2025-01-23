@@ -11,6 +11,7 @@ import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CustomCommentRepository;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -41,7 +42,8 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 
 	@Override
 	// TODO: DB 구조 변경 예정 https://annahxxl.tistory.com/5
-	public List<GetCommentResponse> getCommentsByPostId(Long postId) {
+	public List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId) {
+
 		return queryFactory
 			.select(Projections.constructor(
 				GetCommentResponse.class,

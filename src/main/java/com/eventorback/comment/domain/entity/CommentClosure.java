@@ -1,4 +1,4 @@
-package com.eventorback.category.domain.entity;
+package com.eventorback.comment.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,26 +14,26 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-public class CategoryClosure {
+public class CommentClosure {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "category_closure_id")
-	private Long categoryClosureId;
+	@Column(name = "comment_closure_id")
+	private Long commentClosureId;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ancestor_id")
-	private Category ancestor;
+	private Comment ancestor;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "descendant_id")
-	private Category descendant;
+	private Comment descendant;
 
 	@Column(name = "depth")
 	private Long depth;
 
 	@Builder
-	public CategoryClosure(Category ancestor, Category descendant, Long depth) {
+	public CommentClosure(Comment ancestor, Comment descendant, Long depth) {
 		this.ancestor = ancestor;
 		this.descendant = descendant;
 		this.depth = depth;
