@@ -28,8 +28,12 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomPostRepositoryImpl implements CustomPostRepository {
 	private final JPAQueryFactory queryFactory;
 
+	/**
+	 * 'categoryName' 하위의 모든 카테고리 ID를 조회
+	 * @param categoryName 카테고리 이름
+	 * @return categoryId 리스트
+	 */
 	public List<Long> categoryIds(String categoryName) {
-		// 'categoryName' 하위의 모든 카테고리 ID를 조회
 		return queryFactory
 			.select(category.categoryId)
 			.from(categoryClosure)

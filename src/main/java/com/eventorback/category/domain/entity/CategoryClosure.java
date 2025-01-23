@@ -21,11 +21,11 @@ public class CategoryClosure {
 	@Column(name = "category_closure_id")
 	private Long categoryClosureId;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "ancestor_id")
 	private Category ancestor;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "descendant_id")
 	private Category descendant;
 

@@ -6,6 +6,7 @@ import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
+import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface CommentService {
@@ -17,6 +18,8 @@ public interface CommentService {
 	List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId);
 
 	void createComment(CreateCommentRequest request, Long postId, Long userId);
+
+	void createClosureRelations(Comment newComment, Comment parentComment);
 
 	void updateComment(CurrentUserDto currentUser, Long commentId, UpdateCommentRequest request);
 

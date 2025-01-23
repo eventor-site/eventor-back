@@ -6,12 +6,13 @@ import java.util.Optional;
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface CustomCommentRepository {
 
 	List<GetCommentByUserIdResponse> getComments();
 
-	List<GetCommentResponse> getCommentsByPostId(Long postId);
+	List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId);
 
 	List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId);
 
