@@ -9,6 +9,7 @@ import com.eventorback.category.domain.dto.request.CreateCategoryRequest;
 import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
 import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryResponse;
+import com.eventorback.category.domain.entity.Category;
 
 public interface CategoryService {
 
@@ -21,6 +22,8 @@ public interface CategoryService {
 	GetCategoryResponse getCategory(Long categoryId);
 
 	void createCategory(CreateCategoryRequest request);
+
+	void createClosureRelations(Category newCategory, Category parentCategory);
 
 	void updateCategory(Long categoryId, UpdateCategoryRequest request);
 
