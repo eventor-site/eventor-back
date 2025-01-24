@@ -46,7 +46,9 @@ public class UserScheduler {
 		Status status = statusRepository.findOrCreateStatus("회원", "휴면");
 
 		for (User user : users) {
-			if (user.getLastLoginTime() == null || user.getLastLoginTime().isBefore(LocalDateTime.now().minusDays(90))
+			if (user.getLastLoginTime() == null && user.getCreatedAt().isBefore(LocalDateTime.now().minusDays(90))
+				|| user.getLastLoginTime() != null && user.getLastLoginTime()
+				.isBefore(LocalDateTime.now().minusDays(90))
 				&& user.getStatus().getName().equals("활성")) {
 				user.updateStatus(status);
 			}
