@@ -20,7 +20,7 @@ public interface CustomPostRepository {
 
 	List<GetMainPostResponse> getRecommendationEventPosts();
 
-	List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, String categoryName);
+	List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, List<Long> categoryIds);
 
 	Optional<Post> getPost(Long postId);
 }

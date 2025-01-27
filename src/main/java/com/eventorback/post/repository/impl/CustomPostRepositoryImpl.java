@@ -10,6 +10,7 @@ import static com.eventorback.user.domain.entity.QUser.*;
 import java.util.List;
 import java.util.Optional;
 
+import com.eventorback.category.repository.CategoryRepository;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.entity.Post;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CustomPostRepositoryImpl implements CustomPostRepository {
 	private final JPAQueryFactory queryFactory;
+	private final CategoryRepository categoryRepository;
 
 	@Override
 	public List<GetPostSimpleResponse> getPosts() {
@@ -149,7 +151,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
+	public List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
 				GetPostSimpleResponse.class,
@@ -166,7 +168,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.join(post.user, user)
 			.join(user.grade, grade)
-			.where(status.name.eq("작성됨"))
+			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
 			.orderBy(post.createdAt.desc())
 			.fetch();
 	}

@@ -13,7 +13,8 @@ import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CustomCommentRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -41,35 +42,34 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	}
 
 	@Override
-	// TODO: DB 구조 변경 예정 https://annahxxl.tistory.com/5
 	public List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId) {
-
 		return queryFactory
 			.select(Projections.constructor(
 				GetCommentResponse.class,
 				comment.commentId,
 				comment.parentComment.commentId,
 				comment.writer,
-				comment.content,
+				new CaseBuilder()
+					.when(comment.status.name.eq("삭제됨")) // 댓글 상태가 삭제됨이면
+					.then("[삭제된 댓글입니다.]") // 치환된 내용
+					.otherwise(comment.content), // 원래 내용
 				comment.recommendationCount,
 				comment.decommendationCount,
-				JPAExpressions
-					.select(Projections.constructor(GetCommentResponse.class,
-						comment.commentId,
-						comment.parentComment.commentId,
-						comment.writer,
-						comment.content,
-						comment.recommendationCount,
-						comment.decommendationCount,
-						comment.createdAt))
-					.from(comment)
-					.where(comment.parentComment.commentId.eq(comment.commentId)),
-				comment.createdAt))
+				comment.createdAt,
+				comment.user.grade.name,
+				new CaseBuilder()
+					.when(
+						comment.user.userId.eq(currentUser.userId())
+							.or(Expressions.asBoolean(currentUser.roles().contains("admin")).isTrue())
+					)
+					.then(true)
+					.otherwise(false),
+				comment.depth)
+			)
 			.from(comment)
-			.join(comment.parentComment, comment)
 			.join(comment.post, post)
 			.where(post.postId.eq(postId))
-			.orderBy(comment.createdAt.asc())
+			.orderBy(comment.group.asc(), comment.groupOrder.asc())
 			.fetch();
 	}
 
@@ -99,5 +99,32 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				.where(comment.commentId.eq(commentId))
 				.fetchOne()
 		);
+	}
+
+	@Override
+	public Long getMaxGroup() {
+		Long maxGroup = queryFactory
+			.select(comment.group.max())
+			.from(comment)
+			.fetchOne();
+		return maxGroup != null ? maxGroup : 1L;
+	}
+
+	@Override
+	public Long getTotalChildCount(Long group) {
+		return queryFactory
+			.select(comment.childCount.sum())
+			.from(comment)
+			.where(comment.group.eq(group))
+			.fetchOne();
+	}
+
+	@Override
+	public List<Comment> getGreaterGroupOrder(Long group, Long groupOrder) {
+		return queryFactory
+			.select(comment)
+			.from(comment)
+			.where(comment.group.eq(group), comment.groupOrder.goe(groupOrder))    //greater than
+			.fetch();
 	}
 }

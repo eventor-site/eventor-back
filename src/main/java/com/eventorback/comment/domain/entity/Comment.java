@@ -1,8 +1,6 @@
 package com.eventorback.comment.domain.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
@@ -10,7 +8,6 @@ import com.eventorback.post.domain.entity.Post;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.entity.User;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,9 +32,6 @@ public class Comment {
 	@ManyToOne
 	@JoinColumn(name = "parent_comment_id")
 	private Comment parentComment;
-
-	@OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Comment> childrenComments = new ArrayList<>(); // 자식 댓글들(대댓글)
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "post_id")
@@ -67,8 +60,21 @@ public class Comment {
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
+	@Column(name = "group")
+	private Long group;
+
+	@Column(name = "depth")
+	private Long depth;
+
+	@Column(name = "group_order")
+	private Long groupOrder;
+
+	@Column(name = "child_count")
+	private Long childCount;
+
 	@Builder
-	public Comment(Comment parentComment, Post post, User user, Status status, String writer, String content) {
+	public Comment(Comment parentComment, Post post, User user, Status status, String writer, String content,
+		Long group, Long depth, Long groupOrder, Long childCount) {
 		this.parentComment = parentComment;
 		this.post = post;
 		this.user = user;
@@ -78,10 +84,14 @@ public class Comment {
 		this.recommendationCount = 0L;
 		this.decommendationCount = 0L;
 		this.createdAt = LocalDateTime.now();
+		this.group = group;
+		this.depth = depth;
+		this.groupOrder = groupOrder;
+		this.childCount = childCount;
 	}
 
 	public static Comment toEntity(CreateCommentRequest request, Comment parentComment, Post post, User user,
-		Status status) {
+		Status status, Long group, Long depth, Long groupOrder, Long childCount) {
 		return Comment.builder()
 			.parentComment(parentComment)
 			.post(post)
@@ -89,6 +99,26 @@ public class Comment {
 			.status(status)
 			.writer(user.getNickname())
 			.content(request.content())
+			.group(group)
+			.depth(depth)
+			.groupOrder(groupOrder)
+			.childCount(childCount)
+			.build();
+	}
+
+	public static Comment toEntity(CreateCommentRequest request, Comment parentComment, Post post, User user,
+		Status status, Long group) {
+		return Comment.builder()
+			.parentComment(parentComment)
+			.post(post)
+			.user(user)
+			.status(status)
+			.writer(user.getNickname())
+			.content(request.content())
+			.group(group)
+			.depth(0L)
+			.groupOrder(0L)
+			.childCount(0L)
 			.build();
 	}
 
@@ -106,5 +136,21 @@ public class Comment {
 
 	public void disrecommendComment() {
 		this.decommendationCount++;
+	}
+
+	public void addChildCount() {
+		this.childCount++;
+	}
+
+	public void minusChildCount() {
+		this.childCount--;
+	}
+
+	public void addGroupOrder() {
+		this.groupOrder++;
+	}
+
+	public void minusGroupOrder() {
+		this.groupOrder--;
 	}
 }
