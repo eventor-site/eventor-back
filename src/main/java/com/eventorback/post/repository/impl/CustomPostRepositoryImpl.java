@@ -1,7 +1,6 @@
 package com.eventorback.post.repository.impl;
 
 import static com.eventorback.category.domain.entity.QCategory.*;
-import static com.eventorback.category.domain.entity.QCategoryClosure.*;
 import static com.eventorback.grade.domain.entity.QGrade.*;
 import static com.eventorback.image.domain.entity.QImage.*;
 import static com.eventorback.post.domain.entity.QPost.*;
@@ -27,20 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CustomPostRepositoryImpl implements CustomPostRepository {
 	private final JPAQueryFactory queryFactory;
-
-	/**
-	 * 'categoryName' 하위의 모든 카테고리 ID를 조회
-	 * @param categoryName 카테고리 이름
-	 * @return categoryId 리스트
-	 */
-	public List<Long> categoryIds(String categoryName) {
-		return queryFactory
-			.select(category.categoryId)
-			.from(categoryClosure)
-			.join(categoryClosure.descendant, category) // 클로저 테이블에서 descendant 와 조인
-			.where(categoryClosure.ancestor.name.eq(categoryName)) // 이벤트의 하위 카테고리 검색
-			.fetch();
-	}
 
 	@Override
 	public List<GetPostSimpleResponse> getPosts() {
@@ -104,8 +89,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.from(image)
 					.where(image.post.postId.eq(post.postId))
 			))
-			.where(status.name.eq("작성됨")
-				.and(category.categoryId.in(categoryIds("이벤트"))))
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물만 반환
 			.fetch();
@@ -131,9 +115,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.from(image)
 					.where(image.post.postId.eq(post.postId))
 			))
-			.where(status.name.eq("작성됨") // 상태가 "작성됨"
-				.and(category.categoryId.in(categoryIds("이벤트"))) // 하위 카테고리 포함 조건
-			)
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물 제한
 			.fetch();
@@ -160,9 +142,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.where(image.post.postId.eq(post.postId))
 			))
 			.on(image.post.postId.eq(post.postId)) // 게시물과 연결된 이미지
-			.where(status.name.eq("작성됨") // 상태가 "작성됨"
-				.and(category.categoryId.in(categoryIds("이벤트"))) // 하위 카테고리 포함 조건
-			)
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.recommendationCount.desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();
@@ -186,7 +166,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.join(post.user, user)
 			.join(user.grade, grade)
-			.where(status.name.eq("작성됨").and(category.categoryId.in(categoryIds(categoryName))))
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.createdAt.desc())
 			.fetch();
 	}

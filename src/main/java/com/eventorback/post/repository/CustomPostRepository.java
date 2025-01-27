@@ -10,8 +10,6 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface CustomPostRepository {
 
-	List<Long> categoryIds(String categoryName);
-
 	List<GetPostSimpleResponse> getPosts();
 
 	List<GetPostSimpleResponse> getPostsByUserId(Long userId);
