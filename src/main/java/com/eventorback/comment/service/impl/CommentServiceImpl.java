@@ -45,10 +45,6 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional(readOnly = true)
 	public List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId) {
 		return commentRepository.getCommentsByPostId(currentUser, postId);
-		// return commentRepository.findAllByPostPostId(postId)
-		// 	.stream()
-		// 	.map(comment -> GetCommentResponse.fromEntity(comment, currentUser))
-		// 	.toList();
 	}
 
 	@Override
@@ -74,14 +70,38 @@ public class CommentServiceImpl implements CommentService {
 			}
 		}
 
-		Comment parentComment = null;
-		if (request.parentCommentId() != null) {
-			parentComment = commentRepository.findById(request.parentCommentId())
-				.orElseThrow(() -> new PostNotFoundException(request.parentCommentId()));
-		}
 		Status status = statusRepository.findOrCreateStatus("댓글", "작성됨");
 
-		commentRepository.save(Comment.toEntity(request, parentComment, post, user, status));
+		Comment parentComment = null;
+		if (request.parentCommentId() == null) {
+
+			commentRepository.save(
+				Comment.toEntity(request, parentComment, post, user, status, commentRepository.getMaxGroup() + 1));
+		} else {
+			parentComment = commentRepository.findById(request.parentCommentId())
+				.orElseThrow(() -> new CommentNotFoundException(request.parentCommentId()));
+
+			parentComment.addChildCount();
+
+			if (parentComment.getParentComment() == null) {
+				commentRepository.save(
+					Comment.toEntity(request, parentComment, post, user, status, parentComment.getGroup(),
+						parentComment.getDepth() + 1, commentRepository.getTotalChildCount(parentComment.getGroup()),
+						0L));
+			} else {
+				List<Comment> updateList = commentRepository.getGreaterGroupOrder(parentComment.getGroup(),
+					parentComment.getGroupOrder() + parentComment.getChildCount());
+
+				for (Comment comment : updateList) {
+					comment.addGroupOrder();
+				}
+				commentRepository.save(
+					Comment.toEntity(request, parentComment, post, user, status, parentComment.getGroup(),
+						parentComment.getDepth() + 1, parentComment.getGroupOrder() + parentComment.getChildCount(),
+						0L));
+
+			}
+		}
 	}
 
 	@Override

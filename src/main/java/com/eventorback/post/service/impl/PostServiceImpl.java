@@ -74,7 +74,8 @@ public class PostServiceImpl implements PostService {
 	public GetPostsByCategoryNameResponse getPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
 		Boolean isAuthorized =
 			currentUser != null && (currentUser.roles().contains("admin") || categoryName.equals("자유"));
-		List<GetPostSimpleResponse> posts = postRepository.getPostsByCategoryName(currentUser, categoryName);
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
+		List<GetPostSimpleResponse> posts = postRepository.getPostsByCategoryName(currentUser, categoryIds);
 		return GetPostsByCategoryNameResponse.fromResponse(posts, isAuthorized);
 	}
 

@@ -17,4 +17,10 @@ public interface CustomCommentRepository {
 	List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId);
 
 	Optional<Comment> getComment(Long commentId);
+
+	Long getMaxGroup();
+
+	Long getTotalChildCount(Long group);
+
+	List<Comment> getGreaterGroupOrder(Long group, Long groupOrder);
 }
