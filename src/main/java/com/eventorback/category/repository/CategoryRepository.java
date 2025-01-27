@@ -11,4 +11,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
 	boolean existsByName(String name);
 
 	Optional<Category> findByName(String name);
+
 }

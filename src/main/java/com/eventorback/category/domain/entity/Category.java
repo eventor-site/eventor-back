@@ -30,10 +30,36 @@ public class Category {
 	@Column(name = "name")
 	private String name;
 
+	@Column(name = "group")
+	private Long group;
+
+	@Column(name = "depth")
+	private Long depth;
+
+	@Column(name = "group_order")
+	private Long groupOrder;
+
+	@Column(name = "child_count")
+	private Long childCount;
+
 	@Builder
-	public Category(String name, Category parentCategory) {
-		this.name = name;
+	public Category(Category parentCategory, String name, Long group, Long depth, Long groupOrder, Long childCount) {
 		this.parentCategory = parentCategory;
+		this.name = name;
+		this.group = group;
+		this.depth = depth;
+		this.groupOrder = groupOrder;
+		this.childCount = childCount;
+	}
+
+	@Builder
+	public Category(Category parentCategory, String name, Long group) {
+		this.parentCategory = parentCategory;
+		this.name = name;
+		this.group = group;
+		this.depth = 0L;
+		this.groupOrder = 0L;
+		this.childCount = 0L;
 	}
 
 	public static Category toEntity(CreateCategoryRequest request, Category parentCategory) {
@@ -47,4 +73,21 @@ public class Category {
 		this.name = name;
 		this.parentCategory = parentCategory;
 	}
+
+	public void addChildCount() {
+		this.childCount++;
+	}
+
+	public void minusChildCount() {
+		this.childCount--;
+	}
+
+	public void addGroupOrder() {
+		this.groupOrder++;
+	}
+
+	public void minusGroupOrder() {
+		this.groupOrder--;
+	}
+
 }

@@ -10,9 +10,7 @@ import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
-import com.eventorback.comment.domain.entity.CommentClosure;
 import com.eventorback.comment.exception.CommentNotFoundException;
-import com.eventorback.comment.repository.CommentClosureRepository;
 import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.comment.service.CommentService;
 import com.eventorback.commentRecommend.domain.entity.CommentRecommend;
@@ -37,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 	private final CommentRepository commentRepository;
-	private final CommentClosureRepository commentClosureRepository;
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final CommentRecommendRepository commentRecommendRepository;
@@ -84,42 +81,7 @@ public class CommentServiceImpl implements CommentService {
 		}
 		Status status = statusRepository.findOrCreateStatus("댓글", "작성됨");
 
-		Comment newComment = commentRepository.save(Comment.toEntity(request, parentComment, post, user, status));
-
-		// 클로저 테이블에 관계 추가
-		createClosureRelations(newComment, parentComment);
-	}
-
-	@Override
-	public void createClosureRelations(Comment newComment, Comment parentComment) {
-		// 1. 부모 댓글의 모든 조상 관계 가져오기
-		List<CommentClosure> parentAncestors = commentClosureRepository.findByDescendant(parentComment);
-
-		// 2. 부모 댓글의 조상 → 새 자식 관계 생성
-		for (CommentClosure parentAncestor : parentAncestors) {
-			CommentClosure closure = CommentClosure.builder()
-				.ancestor(parentAncestor.getAncestor()) // 부모의 조상
-				.descendant(newComment) // 새 자식
-				.depth(parentAncestor.getDepth() + 1) // 깊이 증가
-				.build();
-			commentClosureRepository.save(closure);
-		}
-
-		// 3. 부모 자신 → 새 자식 관계 생성
-		CommentClosure parentToChild = CommentClosure.builder()
-			.ancestor(parentComment) // 부모 자신
-			.descendant(newComment) // 새 자식
-			.depth(1L) // 부모에서 바로 연결된 깊이
-			.build();
-		commentClosureRepository.save(parentToChild);
-
-		// 4. 새 자식 → 자기 자신 관계 생성
-		CommentClosure selfRelation = CommentClosure.builder()
-			.ancestor(newComment)
-			.descendant(newComment)
-			.depth(0L) // 자기 자신
-			.build();
-		commentClosureRepository.save(selfRelation);
+		commentRepository.save(Comment.toEntity(request, parentComment, post, user, status));
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.category.domain.dto.request.CreateCategoryRequest;
 import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
+import com.eventorback.category.domain.dto.response.GetCategoryListResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryResponse;
 import com.eventorback.category.service.impl.CategoryServiceImpl;
@@ -38,7 +39,7 @@ public class CategoryController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<GetCategoryResponse>> getCategories() {
+	public ResponseEntity<List<GetCategoryListResponse>> getCategories() {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories());
 	}
 
