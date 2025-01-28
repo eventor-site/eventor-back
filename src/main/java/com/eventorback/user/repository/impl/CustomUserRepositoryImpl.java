@@ -11,10 +11,10 @@ import java.util.Optional;
 
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.Oauth2Dto;
+import com.eventorback.user.domain.dto.response.OauthDto;
+import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -54,17 +54,32 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	}
 
 	@Override
-	public Optional<Oauth2Dto> getOauth2ByIdentifier(String identifier) {
-		return Optional.ofNullable(queryFactory
-			.select(Projections.constructor(
-				Oauth2Dto.class,
-				user.identifier,
-				user.oauthId,
-				user.oauthType
-			))
+	public UserTokenInfo getUserInfoByOauth(OauthDto request) {
+		// 사용자 역할 이름 리스트 조회
+		List<String> roles = queryFactory
+			.select(role.name)
+			.from(userRole)
+			.join(userRole.user, user)
+			.join(userRole.role, role)
+			.where(user.oauthId.eq(request.oauthId()), user.oauthType.eq(request.oauthType()))
+			.fetch();
+
+		// 사용자 정보가 없을 경우 null 반환
+		if (roles == null) {
+			return null;
+		}
+
+		User userInfo = queryFactory
+			.selectFrom(user)
 			.from(user)
-			.where(user.identifier.eq(identifier))
-			.fetchOne());
+			.where(user.oauthId.eq(request.oauthId()), user.oauthType.eq(request.oauthType()))
+			.fetchOne();
+
+		return UserTokenInfo.builder()
+			.userId(userInfo.getUserId())
+			.roles(roles)
+			.statusName(userInfo.getStatus().getName())
+			.build();
 	}
 
 	@Override
@@ -78,6 +93,11 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.where(user.userId.eq(userId))
 			.fetch();
 
+		// 사용자 정보가 없을 경우 Optional.empty 반환
+		if (roles == null) {
+			return Optional.empty();
+		}
+
 		// 리스트 데이터를 문자열로 변환
 		String userRoles = String.join(", ", roles);
 
@@ -89,14 +109,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.join(user.grade, grade).fetchJoin()
 			.fetchOne();
 
-		// 사용자 정보가 없을 경우 Optional.empty 반환
-		if (userInfo == null) {
-			return Optional.empty();
-		}
-
 		// DTO 변환 및 반환
 		GetUserResponse response = new GetUserResponse(
-			userInfo.getIdentifier(),
 			userInfo.getName(),
 			userInfo.getNickname(),
 			userInfo.getEmail(),
@@ -107,7 +121,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			userInfo.getGrade().getName(),
 			userRoles,
 			userInfo.getOauthType(),
-			userInfo.getConnectTime(),
 			userInfo.getCreatedAt(),
 			userInfo.getUpdatedTime(),
 			userInfo.getLastLoginTime()

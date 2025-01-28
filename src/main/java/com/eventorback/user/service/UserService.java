@@ -11,7 +11,7 @@ import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.Oauth2Dto;
+import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 
 public interface UserService {
@@ -20,9 +20,9 @@ public interface UserService {
 
 	UserTokenInfo getUserTokenInfoByIdentifier(String identifier);
 
-	Oauth2Dto getOauth2ByIdentifier(String identifier);
+	UserTokenInfo getUserInfoByOauth(OauthDto request);
 
-	void oauth2Connection(Oauth2Dto request);
+	Boolean existsByOauth(OauthDto request);
 
 	GetUserResponse getUserInfo(Long userId);
 

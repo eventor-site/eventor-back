@@ -7,7 +7,6 @@ import lombok.Builder;
 
 @Builder
 public record GetUserResponse(
-	String identifier,
 	String name,
 	String nickname,
 	String email,
@@ -18,7 +17,6 @@ public record GetUserResponse(
 	String gradeName,
 	String userRoles,
 	String oauthType,
-	LocalDateTime connectTime,
 	LocalDateTime createdAt,
 	LocalDateTime updatedTime,
 	LocalDateTime lastLoginTime
