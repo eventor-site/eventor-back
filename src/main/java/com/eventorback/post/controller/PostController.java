@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
+import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
@@ -63,10 +64,9 @@ public class PostController {
 	}
 
 	@GetMapping
-	public ResponseEntity<GetPostsByCategoryNameResponse> getPostsByCategoryName(
-		@CurrentUser CurrentUserDto currentUser,
+	public ApiResponse<List<GetPostsByCategoryNameResponse>> getPostsByCategoryName(
 		@RequestParam String categoryName) {
-		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByCategoryName(currentUser, categoryName));
+		return ApiResponse.createSuccess(postService.getPostsByCategoryName(categoryName));
 	}
 
 	@GetMapping("/me")

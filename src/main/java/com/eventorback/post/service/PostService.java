@@ -23,7 +23,7 @@ public interface PostService {
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName);
 
-	GetPostsByCategoryNameResponse getPostsByCategoryName(CurrentUserDto currentUser, String categoryName);
+	List<GetPostsByCategoryNameResponse> getPostsByCategoryName(String categoryName);
 
 	List<GetPostSimpleResponse> getPostsByUserId(Long userId);
 

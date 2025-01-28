@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.global.util.NumberUtil;
 import com.eventorback.mail.service.impl.MailServiceImpl;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
@@ -81,6 +83,17 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
+	@DeleteMapping("/me")
+	ResponseEntity<Void> withdrawUser(@CurrentUserId Long userId) {
+		userService.withdrawUser(userId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@GetMapping("/me/checkRoles")
+	public ResponseEntity<Boolean> meCheckRoles(@CurrentUser CurrentUserDto currentUser) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.meCheckRoles(currentUser));
+	}
+
 	@PostMapping("/me/checkNickname")
 	public ResponseEntity<String> meCheckNickname(@CurrentUserId Long userId,
 		@RequestBody CheckNicknameRequest request) {
@@ -98,10 +111,10 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.modifyPassword(userId, request));
 	}
 
-	@DeleteMapping("/me")
-	ResponseEntity<Void> withdrawUser(@CurrentUserId Long userId) {
-		userService.withdrawUser(userId);
-		return ResponseEntity.status(HttpStatus.OK).build();
+	@PostMapping("/signup")
+	public ResponseEntity<Void> signup(@RequestBody SignUpRequest request) {
+		userService.signup(request);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PostMapping("/signup/checkIdentifier")
@@ -112,12 +125,6 @@ public class UserController {
 	@PostMapping("/signup/checkNickname")
 	ResponseEntity<String> checkNickname(@RequestBody CheckNicknameRequest request) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.checkNickname(request));
-	}
-
-	@PostMapping("/signup")
-	public ResponseEntity<Void> signup(@RequestBody SignUpRequest request) {
-		userService.signup(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PostMapping("/signup/sendEmail")
