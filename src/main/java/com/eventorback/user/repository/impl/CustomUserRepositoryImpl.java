@@ -106,6 +106,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			userInfo.getStatus().getName(),
 			userInfo.getGrade().getName(),
 			userRoles,
+			userInfo.getOauthType(),
+			userInfo.getConnectTime(),
 			userInfo.getCreatedAt(),
 			userInfo.getUpdatedTime(),
 			userInfo.getLastLoginTime()
