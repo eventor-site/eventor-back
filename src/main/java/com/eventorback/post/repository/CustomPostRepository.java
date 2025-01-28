@@ -20,6 +20,8 @@ public interface CustomPostRepository {
 
 	List<GetMainPostResponse> getRecommendationEventPosts();
 
+	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
+
 	List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, List<Long> categoryIds);
 
 	Optional<Post> getPost(Long postId);

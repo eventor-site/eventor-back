@@ -151,6 +151,32 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
+	public List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetMainPostResponse.class,
+				post.postId,
+				post.title,
+				image.url
+			))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.leftJoin(image)
+			.on(image.post.postId.eq(post.postId))
+			.on(image.imageId.eq(
+				JPAExpressions
+					.select(image.imageId.min())  // 가장 작은 imageId 선택
+					.from(image)
+					.where(image.post.postId.eq(post.postId))
+			))
+			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
+			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
+			.limit(10) // 상위 10개 게시물만 반환
+			.fetch();
+	}
+
+	@Override
 	public List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
@@ -168,6 +194,14 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.join(post.user, user)
 			.join(user.grade, grade)
+			.leftJoin(image)
+			.on(image.post.postId.eq(post.postId))
+			.on(image.imageId.eq(
+				JPAExpressions
+					.select(image.imageId.min())  // 가장 작은 imageId 선택
+					.from(image)
+					.where(image.post.postId.eq(post.postId))
+			))
 			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
 			.orderBy(post.createdAt.desc())
 			.fetch();
