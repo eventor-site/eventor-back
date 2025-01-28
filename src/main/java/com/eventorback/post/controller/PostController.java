@@ -54,6 +54,14 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getRecommendationEventPosts());
 	}
 
+	@GetMapping("/hot")
+	public ResponseEntity<List<GetMainPostResponse>> getHotPostsByCategoryName(
+		@CurrentUser CurrentUserDto currentUser,
+		@RequestParam String categoryName) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(postService.getHotPostsByCategoryName(currentUser, categoryName));
+	}
+
 	@GetMapping
 	public ResponseEntity<GetPostsByCategoryNameResponse> getPostsByCategoryName(
 		@CurrentUser CurrentUserDto currentUser,
