@@ -13,9 +13,9 @@ import java.util.Optional;
 import com.eventorback.category.repository.CategoryRepository;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
+import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.CustomPostRepository;
-import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -177,17 +177,18 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, List<Long> categoryIds) {
+	public List<GetPostsByCategoryNameResponse> getPostsByCategoryName(List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
-				GetPostSimpleResponse.class,
+				GetPostsByCategoryNameResponse.class,
 				post.postId,
 				post.writer,
 				post.title,
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
-				grade.name
+				grade.name,
+				image.url
 			))
 			.from(post)
 			.join(post.category, category)

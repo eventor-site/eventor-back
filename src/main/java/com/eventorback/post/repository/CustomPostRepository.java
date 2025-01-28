@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
+import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.entity.Post;
-import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface CustomPostRepository {
 
@@ -22,7 +22,7 @@ public interface CustomPostRepository {
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
 
-	List<GetPostSimpleResponse> getPostsByCategoryName(CurrentUserDto currentUser, List<Long> categoryIds);
+	List<GetPostsByCategoryNameResponse> getPostsByCategoryName(List<Long> categoryIds);
 
 	Optional<Post> getPost(Long postId);
 }

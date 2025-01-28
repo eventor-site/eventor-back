@@ -2,6 +2,7 @@ package com.eventorback.user.service;
 
 import java.util.List;
 
+import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
@@ -25,13 +26,11 @@ public interface UserService {
 
 	GetUserResponse getUserInfo(Long userId);
 
-	void signup(SignUpRequest request);
-
-	String checkIdentifier(CheckIdentifierRequest request);
-
-	String checkNickname(CheckNicknameRequest request);
-
 	void updateUser(Long userId, UpdateUserRequest request);
+
+	void withdrawUser(Long userId);
+
+	Boolean meCheckRoles(CurrentUserDto currentUser);
 
 	String meCheckNickname(Long userId, CheckNicknameRequest request);
 
@@ -39,7 +38,11 @@ public interface UserService {
 
 	String modifyPassword(Long userId, ModifyPasswordRequest request);
 
-	void withdrawUser(Long userId);
+	void signup(SignUpRequest request);
+
+	String checkIdentifier(CheckIdentifierRequest request);
+
+	String checkNickname(CheckNicknameRequest request);
 
 	boolean existsByEmail(String email);
 

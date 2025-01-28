@@ -11,7 +11,6 @@ import com.eventorback.favorite.domain.dto.response.GetFavoriteResponse;
 import com.eventorback.favorite.domain.entity.Favorite;
 import com.eventorback.favorite.repository.FavoriteRepository;
 import com.eventorback.favorite.service.FavoriteService;
-import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -35,7 +34,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 	}
 
 	@Override
-	public Page<GetPostSimpleResponse> getFavoritesByUserId(Pageable pageable, Long userId) {
+	public Page<GetFavoriteResponse> getFavoritesByUserId(Pageable pageable, Long userId) {
 		return null;
 	}
 

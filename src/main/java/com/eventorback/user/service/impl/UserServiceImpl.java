@@ -16,6 +16,7 @@ import com.eventorback.role.repository.RoleRepository;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.exception.StatusNotFoundException;
 import com.eventorback.status.repository.StatusRepository;
+import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
@@ -84,39 +85,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void signup(SignUpRequest request) {
-		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-		Grade grade = gradeRepository.findByName("1")
-			.orElseThrow(() -> new StatusNotFoundException("1"));
-
-		String encodedPassword = passwordEncoder.encode(request.password());
-		User user = userRepository.save(User.toEntity(status, grade, request, encodedPassword));
-
-		// 회원 가입시 기본 권한 데이터 설정
-		Role role = roleRepository.findByName("member").orElseThrow(() -> new RoleNotFoundException("member"));
-		userRoleRepository.save(UserRole.toEntity(user, role));
-	}
-
-	@Override
-	public String checkIdentifier(CheckIdentifierRequest request) {
-		if (userRepository.existsByIdentifier(request.identifier())) {
-			return "이미 존재하는 아이디 입니다.";
-		}
-		return "사용 가능한 아이디 입니다.";
-	}
-
-	@Override
-	public String checkNickname(CheckNicknameRequest request) {
-		if (userRepository.existsByNickname(request.nickname())) {
-			return "이미 존재하는 닉네임 입니다.";
-		}
-		return "사용 가능한 닉네임 입니다.";
-	}
-
-	@Override
 	public void updateUser(Long userId, UpdateUserRequest request) {
 		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
 		user.updateUser(request);
+	}
+
+	@Override
+	public void withdrawUser(Long userId) {
+		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
+		user.updateStatus(status);
+	}
+
+	@Override
+	public Boolean meCheckRoles(CurrentUserDto currentUser) {
+		return currentUser != null && (currentUser.roles().contains("admin"));
 	}
 
 	@Override
@@ -153,10 +136,33 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void withdrawUser(Long userId) {
-		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
-		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
-		user.updateStatus(status);
+	public void signup(SignUpRequest request) {
+		Status status = statusRepository.findOrCreateStatus("회원", "활성");
+		Grade grade = gradeRepository.findByName("1")
+			.orElseThrow(() -> new StatusNotFoundException("1"));
+
+		String encodedPassword = passwordEncoder.encode(request.password());
+		User user = userRepository.save(User.toEntity(status, grade, request, encodedPassword));
+
+		// 회원 가입시 기본 권한 데이터 설정
+		Role role = roleRepository.findByName("member").orElseThrow(() -> new RoleNotFoundException("member"));
+		userRoleRepository.save(UserRole.toEntity(user, role));
+	}
+
+	@Override
+	public String checkIdentifier(CheckIdentifierRequest request) {
+		if (userRepository.existsByIdentifier(request.identifier())) {
+			return "이미 존재하는 아이디 입니다.";
+		}
+		return "사용 가능한 아이디 입니다.";
+	}
+
+	@Override
+	public String checkNickname(CheckNicknameRequest request) {
+		if (userRepository.existsByNickname(request.nickname())) {
+			return "이미 존재하는 닉네임 입니다.";
+		}
+		return "사용 가능한 닉네임 입니다.";
 	}
 
 	@Override
