@@ -113,8 +113,12 @@ public class User {
 	}
 
 	public static LocalDate toLocalDate(String birth) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		return LocalDate.parse(birth, formatter);
+		if (birth == null) {
+			return null;
+		} else {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+			return LocalDate.parse(birth, formatter);
+		}
 	}
 
 	public void updateUser(UpdateUserRequest request) {
