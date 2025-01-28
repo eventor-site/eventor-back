@@ -26,7 +26,7 @@ import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.Oauth2Dto;
+import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.service.UserService;
 
@@ -52,24 +52,12 @@ public class UserController {
 	 */
 	@GetMapping("/info")
 	public ResponseEntity<UserTokenInfo> getUserInfoByIdentifier(@RequestParam String identifier) {
-		UserTokenInfo user = userService.getUserTokenInfoByIdentifier(identifier);
-
-		if (user == null) {
-			return ResponseEntity.status(HttpStatus.OK).body(null);
-		}
-
-		return ResponseEntity.status(HttpStatus.OK).body(user);
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserTokenInfoByIdentifier(identifier));
 	}
 
-	@GetMapping("/signup/oauth2/identifier")
-	ResponseEntity<Oauth2Dto> getOauth2ByIdentifier(@RequestParam String identifier) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getOauth2ByIdentifier(identifier));
-	}
-
-	@PostMapping("/signup/oauth2/connection")
-	ResponseEntity<Void> oauth2Connection(@RequestBody Oauth2Dto request) {
-		userService.oauth2Connection(request);
-		return ResponseEntity.status(HttpStatus.OK).build();
+	@PostMapping("/oauth2/info")
+	public ResponseEntity<UserTokenInfo> getUserInfoByOauth(@RequestBody OauthDto request) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfoByOauth(request));
 	}
 
 	@GetMapping("/me")
@@ -115,6 +103,11 @@ public class UserController {
 	public ResponseEntity<Void> signup(@RequestBody SignUpRequest request) {
 		userService.signup(request);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	@PostMapping("/signup/oauth2/exists")
+	ResponseEntity<Boolean> existsByOauth(@RequestBody OauthDto request) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.existsByOauth(request));
 	}
 
 	@PostMapping("/signup/checkIdentifier")

@@ -9,7 +9,6 @@ import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.Oauth2Dto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -82,13 +81,9 @@ public class User {
 	@Column(name = "oauth_type")
 	private String oauthType;
 
-	@Column(name = "connect_time")
-	private LocalDateTime connectTime;
-
 	@Builder
 	public User(Status status, Grade grade, String identifier, String password, String name, String nickname,
-		String email, LocalDate birth, String gender, String phone, String oauthId, String oauthType,
-		LocalDateTime connectTime) {
+		String email, LocalDate birth, String gender, String phone, String oauthId, String oauthType) {
 		this.status = status;
 		this.grade = grade;
 		this.identifier = identifier;
@@ -103,7 +98,6 @@ public class User {
 		this.createdAt = LocalDateTime.now();
 		this.oauthId = oauthId;
 		this.oauthType = oauthType;
-		this.connectTime = connectTime;
 	}
 
 	public static User toEntity(Status status, Grade grade, SignUpRequest request, String encodedPassword) {
@@ -120,7 +114,6 @@ public class User {
 			.phone(request.phone())
 			.oauthId(request.oauthId())
 			.oauthType(request.oauthType())
-			.connectTime(request.oauthId() != null ? LocalDateTime.now() : null)
 			.build();
 	}
 
@@ -153,11 +146,5 @@ public class User {
 
 	public void updateStatus(Status status) {
 		this.status = status;
-	}
-
-	public void oauth2Connection(Oauth2Dto request) {
-		this.oauthId = request.oauthId();
-		this.oauthType = request.oauthType();
-		this.connectTime = LocalDateTime.now();
 	}
 }

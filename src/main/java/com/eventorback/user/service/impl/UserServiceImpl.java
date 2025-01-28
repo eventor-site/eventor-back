@@ -25,7 +25,7 @@ import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.Oauth2Dto;
+import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserNotFoundException;
@@ -68,15 +68,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Oauth2Dto getOauth2ByIdentifier(String identifier) {
-		return userRepository.getOauth2ByIdentifier(identifier).orElse(null);
+	public UserTokenInfo getUserInfoByOauth(OauthDto request) {
+		return userRepository.getUserInfoByOauth(request);
 	}
 
 	@Override
-	public void oauth2Connection(Oauth2Dto request) {
-		User user = userRepository.getUser(request.identifier())
-			.orElseThrow(() -> new UserNotFoundException(request.identifier()));
-		user.oauth2Connection(request);
+	public Boolean existsByOauth(OauthDto request) {
+		return userRepository.existsByOauthIdAndOauthType(request.oauthId(), request.oauthType());
 	}
 
 	@Override
@@ -141,7 +139,7 @@ public class UserServiceImpl implements UserService {
 		Grade grade = gradeRepository.findByName("1")
 			.orElseThrow(() -> new StatusNotFoundException("1"));
 
-		String encodedPassword = passwordEncoder.encode(request.password());
+		String encodedPassword = request.password() != null ? passwordEncoder.encode(request.password()) : null;
 		User user = userRepository.save(User.toEntity(status, grade, request, encodedPassword));
 
 		// 회원 가입시 기본 권한 데이터 설정

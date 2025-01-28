@@ -5,7 +5,8 @@ import java.util.Optional;
 
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.Oauth2Dto;
+import com.eventorback.user.domain.dto.response.OauthDto;
+import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
 
 public interface CustomUserRepository {
@@ -16,7 +17,7 @@ public interface CustomUserRepository {
 
 	Optional<User> getUser(String identifier);
 
-	Optional<Oauth2Dto> getOauth2ByIdentifier(String identifier);
+	UserTokenInfo getUserInfoByOauth(OauthDto request);
 
 	Optional<GetUserResponse> getUserInfo(Long userId);
 
