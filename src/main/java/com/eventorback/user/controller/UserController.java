@@ -67,8 +67,8 @@ public class UserController {
 	}
 
 	@PostMapping("/signup/oauth2/connection")
-	ResponseEntity<Void> oauth2Connection(@RequestBody Oauth2Dto dto) {
-		userService.oauth2Connection(dto);
+	ResponseEntity<Void> oauth2Connection(@RequestBody Oauth2Dto request) {
+		userService.oauth2Connection(request);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 

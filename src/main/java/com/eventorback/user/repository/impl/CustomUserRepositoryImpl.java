@@ -59,7 +59,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.select(Projections.constructor(
 				Oauth2Dto.class,
 				user.identifier,
-				user.oauthId
+				user.oauthId,
+				user.oauthType
 			))
 			.from(user)
 			.where(user.identifier.eq(identifier))
