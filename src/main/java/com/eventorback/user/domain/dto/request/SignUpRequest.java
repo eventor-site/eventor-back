@@ -12,6 +12,7 @@ public record SignUpRequest(
 	String birth,
 	String gender,
 	String phone,
-	String oauthId) {
+	String oauthId,
+	String oauthType) {
 }
 

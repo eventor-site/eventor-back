@@ -73,10 +73,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void oauth2Connection(Oauth2Dto dto) {
-		User user = userRepository.getUser(dto.identifier())
-			.orElseThrow(() -> new UserNotFoundException(dto.identifier()));
-		user.oauth2Connection(dto.oauthId());
+	public void oauth2Connection(Oauth2Dto request) {
+		User user = userRepository.getUser(request.identifier())
+			.orElseThrow(() -> new UserNotFoundException(request.identifier()));
+		user.oauth2Connection(request);
 	}
 
 	@Override

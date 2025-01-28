@@ -5,6 +5,7 @@ import lombok.Builder;
 @Builder
 public record Oauth2Dto(
 	String identifier,
-	String oauthId
+	String oauthId,
+	String oauthType
 ) {
 }

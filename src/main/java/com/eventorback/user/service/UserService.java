@@ -22,7 +22,7 @@ public interface UserService {
 
 	Oauth2Dto getOauth2ByIdentifier(String identifier);
 
-	void oauth2Connection(Oauth2Dto dto);
+	void oauth2Connection(Oauth2Dto request);
 
 	GetUserResponse getUserInfo(Long userId);
 
