@@ -21,6 +21,7 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
+import com.eventorback.user.domain.dto.request.SendCodeRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
@@ -121,14 +122,9 @@ public class UserController {
 	}
 
 	@PostMapping("/signup/sendEmail")
-	public ResponseEntity<String> sendEmail(@RequestBody CheckIdentifierRequest request) {
-		String subject = "회원가입";
-		boolean isEmailExist = userService.existsByIdentifier(request);
-		if (!isEmailExist) {
-			mailService.sendMail(request.identifier(), subject, NumberUtil.createRandom(6));
-			return ResponseEntity.status(HttpStatus.OK).body(request.identifier() + "로 인증 번호를 전송했습니다.");
-		}
-		return ResponseEntity.status(HttpStatus.OK).body("이미 가입된 아이디 입니다.");
+	public ResponseEntity<String> sendEmail(@RequestBody SendCodeRequest request) {
+		mailService.sendMail(request.email(), "회원가입", NumberUtil.createRandom(6));
+		return ResponseEntity.status(HttpStatus.OK).body(request.email() + "로 인증 번호를 전송했습니다.");
 	}
 
 	@GetMapping("/signup/checkEmail")
