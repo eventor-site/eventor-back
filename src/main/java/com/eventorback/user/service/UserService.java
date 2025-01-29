@@ -44,6 +44,8 @@ public interface UserService {
 
 	String checkNickname(CheckNicknameRequest request);
 
+	boolean existsByIdentifier(CheckIdentifierRequest request);
+
 	boolean existsByEmail(String email);
 
 	String recoverIdentifier(String email);

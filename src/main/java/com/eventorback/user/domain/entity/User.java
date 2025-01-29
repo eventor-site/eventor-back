@@ -108,7 +108,7 @@ public class User {
 			.password(encodedPassword)
 			.name(request.name())
 			.nickname(request.nickname())
-			.email(request.email())
+			.email(request.identifier() != null ? request.identifier() : request.email())
 			.birth(toLocalDate(request.birth()))
 			.gender(request.gender())
 			.phone(request.phone())
