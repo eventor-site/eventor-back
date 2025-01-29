@@ -164,6 +164,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public boolean existsByIdentifier(CheckIdentifierRequest request) {
+		return userRepository.existsByIdentifier(request.identifier());
+	}
+
+	@Override
 	public boolean existsByEmail(String email) {
 		return userRepository.existsByEmail(email);
 	}

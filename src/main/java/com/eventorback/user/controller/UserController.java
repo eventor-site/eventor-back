@@ -121,14 +121,14 @@ public class UserController {
 	}
 
 	@PostMapping("/signup/sendEmail")
-	public ResponseEntity<String> sendEmail(@RequestParam String email) {
+	public ResponseEntity<String> sendEmail(@RequestBody CheckIdentifierRequest request) {
 		String subject = "회원가입";
-		boolean isEmailExist = userService.existsByEmail(email);
+		boolean isEmailExist = userService.existsByIdentifier(request);
 		if (!isEmailExist) {
-			mailService.sendMail(email, subject, NumberUtil.createRandom(6));
-			return ResponseEntity.status(HttpStatus.OK).body(email + "로 인증 번호를 전송했습니다.");
+			mailService.sendMail(request.identifier(), subject, NumberUtil.createRandom(6));
+			return ResponseEntity.status(HttpStatus.OK).body(request.identifier() + "로 인증 번호를 전송했습니다.");
 		}
-		return ResponseEntity.status(HttpStatus.OK).body("이미 사용 중인 이메일입니다.");
+		return ResponseEntity.status(HttpStatus.OK).body("이미 가입된 아이디 입니다.");
 	}
 
 	@GetMapping("/signup/checkEmail")
