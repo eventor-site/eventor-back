@@ -1,5 +1,6 @@
 package com.eventorback.user.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -96,8 +97,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Boolean meCheckRoles(CurrentUserDto currentUser) {
-		return currentUser != null && (currentUser.roles().contains("admin"));
+	public Boolean meCheckRoles(CurrentUserDto currentUser, String roleName) {
+		return currentUser != null && (currentUser.roles().contains(roleName));
+	}
+
+	@Override
+	public List<String> meRoles(CurrentUserDto currentUser) {
+		return currentUser != null ? currentUser.roles() : new ArrayList<>();
 	}
 
 	@Override
