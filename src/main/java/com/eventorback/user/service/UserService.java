@@ -30,7 +30,9 @@ public interface UserService {
 
 	void withdrawUser(Long userId);
 
-	Boolean meCheckRoles(CurrentUserDto currentUser);
+	Boolean meCheckRoles(CurrentUserDto currentUser, String roleName);
+
+	List<String> meRoles(CurrentUserDto currentUser);
 
 	String meCheckNickname(Long userId, CheckNicknameRequest request);
 

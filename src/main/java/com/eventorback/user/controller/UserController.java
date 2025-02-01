@@ -79,8 +79,14 @@ public class UserController {
 	}
 
 	@GetMapping("/me/checkRoles")
-	public ResponseEntity<Boolean> meCheckRoles(@CurrentUser CurrentUserDto currentUser) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.meCheckRoles(currentUser));
+	public ResponseEntity<Boolean> meCheckRoles(@CurrentUser CurrentUserDto currentUser,
+		@RequestParam String roleName) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.meCheckRoles(currentUser, roleName));
+	}
+
+	@GetMapping("/me/Roles")
+	public ResponseEntity<List<String>> meRoles(@CurrentUser CurrentUserDto currentUser) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.meRoles(currentUser));
 	}
 
 	@PostMapping("/me/checkNickname")

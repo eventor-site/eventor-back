@@ -13,6 +13,7 @@ import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CustomCommentRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -43,6 +44,15 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 
 	@Override
 	public List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId) {
+		BooleanExpression isAdmin = Expressions.FALSE;
+		BooleanExpression isOwner = Expressions.FALSE;
+
+		// currentUser가 null이 아닐 때만 조건을 설정
+		if (currentUser != null) {
+			isAdmin = Expressions.asBoolean(currentUser.roles().contains("admin")).isTrue();
+			isOwner = comment.user.userId.eq(currentUser.userId());
+		}
+
 		return queryFactory
 			.select(Projections.constructor(
 				GetCommentResponse.class,
@@ -50,18 +60,15 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.parentComment.commentId,
 				comment.writer,
 				new CaseBuilder()
-					.when(comment.status.name.eq("삭제됨")) // 댓글 상태가 삭제됨이면
-					.then("[삭제된 댓글입니다.]") // 치환된 내용
-					.otherwise(comment.content), // 원래 내용
+					.when(comment.status.name.eq("삭제됨"))
+					.then("[삭제된 댓글입니다.]")
+					.otherwise(comment.content),
 				comment.recommendationCount,
 				comment.decommendationCount,
 				comment.createdAt,
 				comment.user.grade.name,
 				new CaseBuilder()
-					.when(
-						comment.user.userId.eq(currentUser.userId())
-							.or(Expressions.asBoolean(currentUser.roles().contains("admin")).isTrue())
-					)
+					.when(isOwner.or(isAdmin))
 					.then(true)
 					.otherwise(false),
 				comment.depth)
