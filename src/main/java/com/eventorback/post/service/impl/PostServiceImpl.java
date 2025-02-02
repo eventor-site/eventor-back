@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.category.exception.CategoryNotFoundException;
 import com.eventorback.category.repository.CategoryRepository;
+import com.eventorback.favorite.repository.FavoriteRepository;
 import com.eventorback.global.exception.AccessDeniedException;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.repository.ImageRepository;
@@ -49,6 +50,7 @@ public class PostServiceImpl implements PostService {
 	private final PostRecommendRepository postRecommendRepository;
 	private final PostViewRepository postViewRepository;
 	private final RecommendTypeService recommendTypeService;
+	private final FavoriteRepository favoriteRepository;
 
 	@Override
 	public List<GetPostSimpleResponse> getPosts() {
@@ -96,9 +98,11 @@ public class PostServiceImpl implements PostService {
 			.stream().map(GetImageResponse::fromEntity).toList();
 
 		boolean isAuthorized = false;
+		boolean isFavorite = false;
 		if (currentUser != null) {
 			isAuthorized =
 				post.getUser().getUserId().equals(currentUser.userId()) || currentUser.roles().contains("admin");
+			isFavorite = favoriteRepository.existsByUserUserIdAndPostPostId(currentUser.userId(), postId);
 		}
 
 		// 삭제된 게시글인지 확인
@@ -114,7 +118,7 @@ public class PostServiceImpl implements PostService {
 			post.increaseViewCount();
 		}
 
-		return GetPostResponse.fromEntity(post, images, isAuthorized);
+		return GetPostResponse.fromEntity(post, images, isAuthorized, isFavorite);
 	}
 
 	@Override
