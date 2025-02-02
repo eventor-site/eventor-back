@@ -23,9 +23,11 @@ public record GetPostResponse(
 	LocalDateTime endTime,
 	List<GetImageResponse> images,
 	String gradeName,
-	Boolean isAuthorized) {
+	Boolean isAuthorized,
+	Boolean isFavorite) {
 
-	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images, Boolean isAuthorized) {
+	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images, Boolean isAuthorized,
+		Boolean isFavorite) {
 		return GetPostResponse.builder()
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
@@ -39,8 +41,9 @@ public record GetPostResponse(
 			.startTime(post.getStartTime())
 			.endTime(post.getEndTime())
 			.images(images)
-			.isAuthorized(isAuthorized)
 			.gradeName(post.getUser().getGrade().getName())
+			.isAuthorized(isAuthorized)
+			.isFavorite(isFavorite)
 			.build();
 	}
 }
