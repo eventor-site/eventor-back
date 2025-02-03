@@ -11,8 +11,7 @@ public record GradeDto(
 	Long gradeId,
 	String name,
 	BigDecimal minAmount,
-	BigDecimal maxAmount,
-	BigDecimal pointRate) {
+	BigDecimal maxAmount) {
 
 	public static GradeDto fromEntity(Grade grade) {
 		return GradeDto.builder()
@@ -20,7 +19,6 @@ public record GradeDto(
 			.name(grade.getName())
 			.minAmount(grade.getMinAmount())
 			.maxAmount(grade.getMaxAmount())
-			.pointRate(grade.getPointRate())
 			.build();
 	}
 }

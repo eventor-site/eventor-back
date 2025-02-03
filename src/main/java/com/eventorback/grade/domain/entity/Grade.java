@@ -32,15 +32,11 @@ public class Grade {
 	@Column(name = "max_amount")
 	private BigDecimal maxAmount;
 
-	@Column(name = "point_rate")
-	private BigDecimal pointRate;
-
 	@Builder
-	public Grade(String name, BigDecimal minAmount, BigDecimal maxAmount, BigDecimal pointRate) {
+	public Grade(String name, BigDecimal minAmount, BigDecimal maxAmount) {
 		this.name = name;
 		this.minAmount = minAmount;
 		this.maxAmount = maxAmount;
-		this.pointRate = pointRate;
 	}
 
 	public static Grade toEntity(GradeDto request) {
@@ -48,14 +44,12 @@ public class Grade {
 			.name(request.name())
 			.minAmount(request.minAmount())
 			.maxAmount(request.maxAmount())
-			.pointRate(request.pointRate())
 			.build();
 	}
 
-	public void updateGrade(String name, BigDecimal minAmount, BigDecimal maxAmount, BigDecimal pointRate) {
-		this.name = name;
-		this.minAmount = minAmount;
-		this.maxAmount = maxAmount;
-		this.pointRate = pointRate;
+	public void updateGrade(GradeDto request) {
+		this.name = request.name();
+		this.minAmount = request.minAmount();
+		this.maxAmount = request.maxAmount();
 	}
 }
