@@ -3,6 +3,7 @@ package com.eventorback.bookmark.service.impl;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,9 @@ public class BookmarkServiceImpl implements BookmarkService {
 
 	@Override
 	public Page<GetBookmarkResponse> getBookmarksByUserId(Pageable pageable, Long userId) {
-		return null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return userId != null ? bookmarkRepository.getBookmarksByUserId(PageRequest.of(page, pageSize), userId) : null;
 	}
 
 	@Override
