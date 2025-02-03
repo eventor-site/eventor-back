@@ -2,6 +2,9 @@ package com.eventorback.post.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,6 +41,12 @@ public class PostController {
 	@GetMapping("/all")
 	public ResponseEntity<List<GetPostSimpleResponse>> getPosts() {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getPosts());
+	}
+
+	@GetMapping("/all/paging")
+	public ResponseEntity<Page<GetPostSimpleResponse>> getPosts(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getPosts(pageable));
 	}
 
 	@GetMapping("/event/hot")

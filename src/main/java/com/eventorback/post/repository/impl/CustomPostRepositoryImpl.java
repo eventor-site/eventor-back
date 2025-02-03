@@ -10,6 +10,10 @@ import static com.eventorback.user.domain.entity.QUser.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
@@ -46,6 +50,36 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.where(status.name.eq("작성됨"))
 			.orderBy(post.createdAt.desc())
 			.fetch();
+	}
+
+	@Override
+	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
+		List<GetPostSimpleResponse> result = queryFactory
+			.select(Projections.constructor(
+				GetPostSimpleResponse.class,
+				post.postId,
+				post.writer,
+				post.title,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt,
+				grade.name))
+			.from(post)
+			.join(post.status, status)
+			.join(post.user, user)
+			.join(user.grade, grade)
+			.where(status.name.eq("작성됨"))
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
+			.orderBy(post.createdAt.desc())
+			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(post.count())
+			.from(post)
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override
