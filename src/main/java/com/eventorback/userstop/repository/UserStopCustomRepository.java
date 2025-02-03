@@ -1,23 +1,16 @@
-package com.eventorback.userstop.service;
+package com.eventorback.userstop.repository;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.eventorback.userstop.domain.dto.UserStopDto;
 import com.eventorback.userstop.domain.dto.response.GetUserStopByUserIdResponse;
 import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
 
-public interface UserStopService {
+public interface UserStopCustomRepository {
 
 	Page<GetUserStopResponse> getUserStops(Pageable pageable);
 
-	UserStopDto getUserStop(Long getUserStopId);
-
-	List<GetUserStopByUserIdResponse> getUserStopsByUserId(Long userId);
-
-	void createUserStop(UserStopDto request);
-
-	void deleteUserStop(Long userStopId);
+	List<GetUserStopByUserIdResponse> getUserStopByUserId(Long userId);
 }

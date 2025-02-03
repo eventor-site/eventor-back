@@ -9,7 +9,7 @@ import lombok.Builder;
 @Builder
 public record GetUserStopResponse(
 	Long userStopId,
-	String identifier,
+	Long userId,
 	String reportTypeName,
 	Long stopDay,
 	LocalDateTime startTime,
@@ -18,7 +18,7 @@ public record GetUserStopResponse(
 	public static GetUserStopResponse fromEntity(UserStop userStop) {
 		return GetUserStopResponse.builder()
 			.userStopId(userStop.getUserStopId())
-			.identifier(userStop.getUser().getIdentifier())
+			.userId(userStop.getUser().getUserId())
 			.reportTypeName(userStop.getReportType().getName())
 			.stopDay(userStop.getStopDay())
 			.startTime(userStop.getStartTime())
