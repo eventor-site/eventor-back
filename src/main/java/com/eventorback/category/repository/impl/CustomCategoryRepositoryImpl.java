@@ -3,6 +3,11 @@ package com.eventorback.category.repository.impl;
 import static com.eventorback.category.domain.entity.QCategory.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.eventorback.category.domain.dto.response.GetCategoryListResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
@@ -40,6 +45,28 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 			.from(category)
 			.orderBy(category.group.asc(), category.groupOrder.asc())
 			.fetch();
+	}
+
+	@Override
+	public Page<GetCategoryListResponse> getCategories(Pageable pageable) {
+		List<GetCategoryListResponse> result = queryFactory
+			.select(Projections.constructor(
+				GetCategoryListResponse.class,
+				category.categoryId,
+				category.name,
+				category.depth))
+			.from(category)
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
+			.orderBy(category.group.asc(), category.groupOrder.asc())
+			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(category.count())
+			.from(category)
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override
