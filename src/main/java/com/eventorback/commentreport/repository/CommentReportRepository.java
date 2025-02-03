@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.eventorback.commentreport.domain.entity.CommentReport;
 
-public interface CommentReportRepository extends JpaRepository<CommentReport, Long>, CustomCommentReportRepository {
+public interface CommentReportRepository extends JpaRepository<CommentReport, Long>, CommentReportCustomRepository {
 
 	Optional<CommentReport> findByUserUserIdAndCommentCommentId(Long userId, Long commentId);
 

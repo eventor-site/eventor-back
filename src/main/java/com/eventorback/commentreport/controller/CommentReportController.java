@@ -1,7 +1,8 @@
 package com.eventorback.commentreport.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,9 +25,10 @@ import lombok.RequiredArgsConstructor;
 public class CommentReportController {
 	private final CommentReportService commentReportService;
 
-	@GetMapping("/commentReports")
-	public ResponseEntity<List<GetCommentReportResponse>> getCommentReports() {
-		return ResponseEntity.status(HttpStatus.OK).body(commentReportService.getCommentReports());
+	@GetMapping("/commentReports/paging")
+	public ResponseEntity<Page<GetCommentReportResponse>> getCommentReports(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentReportService.getCommentReports(pageable));
 	}
 
 	@PostMapping("/comments/{commentId}/commentReports")
