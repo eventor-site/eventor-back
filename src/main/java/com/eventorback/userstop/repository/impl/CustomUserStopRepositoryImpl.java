@@ -5,7 +5,7 @@ import static com.querydsl.core.types.ExpressionUtils.*;
 
 import java.util.List;
 
-import com.eventorback.userstop.domain.dto.response.GetUserStopByIdentifierResponse;
+import com.eventorback.userstop.domain.dto.response.GetUserStopByUserIdResponse;
 import com.eventorback.userstop.repository.CustomUserStopRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,14 +17,14 @@ public class CustomUserStopRepositoryImpl implements CustomUserStopRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<GetUserStopByIdentifierResponse> getUserStopByIdentifier(String identifier) {
+	public List<GetUserStopByUserIdResponse> getUserStopByUserId(Long userId) {
 		return queryFactory
 			.select(Projections.constructor(
-				GetUserStopByIdentifierResponse.class,
+				GetUserStopByUserIdResponse.class,
 				userStop.reportType.name,
 				count(userStop)))
 			.from(userStop)
-			.where(userStop.user.identifier.eq(identifier))
+			.where(userStop.user.userId.eq(userId))
 			.groupBy(userStop.reportType.name)
 			.fetch();
 	}

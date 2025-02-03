@@ -10,6 +10,7 @@ import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
+import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -17,6 +18,8 @@ import com.eventorback.user.domain.dto.response.UserTokenInfo;
 public interface UserService {
 
 	List<GetUserByIdentifier> searchUserByIdentifier(String keyword);
+
+	List<GetUserByUserId> searchUserByUserId(Long userId);
 
 	UserTokenInfo getUserTokenInfoByIdentifier(String identifier);
 

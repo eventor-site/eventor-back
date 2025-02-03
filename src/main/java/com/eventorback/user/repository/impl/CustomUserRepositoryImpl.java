@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
+import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -26,13 +28,26 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	@Override
 	public List<GetUserByIdentifier> searchUserByIdentifier(String keyword) {
 		return queryFactory
-			.select(user.identifier)
+			.select(Projections.constructor(
+				GetUserByIdentifier.class,
+				user.identifier
+			))
 			.from(user)
 			.where(user.identifier.contains(keyword))
-			.fetch()
-			.stream()
-			.map(GetUserByIdentifier::new)
-			.toList();
+			.fetch();
+	}
+
+	@Override
+	public List<GetUserByUserId> searchUserByUserId(Long userId) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetUserByUserId.class,
+				user.userId,
+				user.nickname
+			))
+			.from(user)
+			.where(user.userId.eq(userId))
+			.fetch();
 	}
 
 	@Override

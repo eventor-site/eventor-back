@@ -32,7 +32,7 @@ public class CommentReportCustomRepositoryImpl implements CommentReportCustomRep
 				commentReport.commentReportId,
 				comment.post.postId,
 				comment.commentId,
-				user.identifier,
+				user.userId,
 				comment.content,
 				commentReport.isChecked,
 				commentReport.createdAt,

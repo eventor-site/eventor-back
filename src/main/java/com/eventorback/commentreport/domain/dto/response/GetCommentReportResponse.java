@@ -9,7 +9,7 @@ public record GetCommentReportResponse(
 	Long commentReportId,
 	Long postId,
 	Long commentId,
-	String identifier,
+	Long userId,
 	String content,
 	boolean isChecked,
 	LocalDateTime createdAt,

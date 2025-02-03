@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.userstop.domain.dto.UserStopDto;
-import com.eventorback.userstop.domain.dto.response.GetUserStopByIdentifierResponse;
+import com.eventorback.userstop.domain.dto.response.GetUserStopByUserIdResponse;
 import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
 
 public interface UserStopService {
@@ -17,7 +17,7 @@ public interface UserStopService {
 
 	UserStopDto getUserStop(Long getUserStopId);
 
-	List<GetUserStopByIdentifierResponse> getUserStopByUser(String identifier);
+	List<GetUserStopByUserIdResponse> getUserStopsByUserId(Long userId);
 
 	void createUserStop(UserStopDto request);
 
