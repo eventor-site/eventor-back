@@ -63,8 +63,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetPostSimpleResponse> getPostsByUserId(Long userId) {
-		return queryFactory
+	public Page<GetPostSimpleResponse> getPostsByUserId(Pageable pageable, Long userId) {
+		List<GetPostSimpleResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetPostSimpleResponse.class,
 				post.postId,
@@ -80,7 +80,17 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(user.grade, grade)
 			.where(status.name.eq("작성됨").and(user.userId.eq(userId)))
 			.orderBy(post.createdAt.desc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(post.count())
+			.from(post)
+			.where(status.name.eq("작성됨").and(user.userId.eq(userId)))
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override

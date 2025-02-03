@@ -73,9 +73,10 @@ public class PostController {
 		return ApiResponse.createSuccess(postService.getPostsByCategoryName(categoryName));
 	}
 
-	@GetMapping("/me")
-	public ResponseEntity<List<GetPostSimpleResponse>> getPostsByUserId(@CurrentUserId Long userId) {
-		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByUserId(userId));
+	@GetMapping("/me/paging")
+	public ResponseEntity<Page<GetPostSimpleResponse>> getPostsByUserId(
+		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getPostsByUserId(pageable, userId));
 	}
 
 	@GetMapping("/{postId}")
