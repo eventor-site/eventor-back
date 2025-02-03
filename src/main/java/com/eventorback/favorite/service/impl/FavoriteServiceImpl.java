@@ -1,8 +1,7 @@
 package com.eventorback.favorite.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +28,10 @@ public class FavoriteServiceImpl implements FavoriteService {
 	private final PostRepository postRepository;
 
 	@Override
-	public List<GetFavoriteResponse> getFavoritesByUserId(Long userId) {
-		return favoriteRepository.getFavoritePosts(userId);
-	}
-
-	@Override
 	public Page<GetFavoriteResponse> getFavoritesByUserId(Pageable pageable, Long userId) {
-		return null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return favoriteRepository.getFavoritePosts(PageRequest.of(page, pageSize), userId);
 	}
 
 	@Override

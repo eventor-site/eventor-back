@@ -1,9 +1,10 @@
 package com.eventorback.favorite.repository;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.eventorback.favorite.domain.dto.response.GetFavoriteResponse;
 
 public interface CustomFavoriteRepository {
-	List<GetFavoriteResponse> getFavoritePosts(Long userId);
+	Page<GetFavoriteResponse> getFavoritePosts(Pageable pageable, Long userId);
 }

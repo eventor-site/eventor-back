@@ -1,7 +1,8 @@
 package com.eventorback.favorite.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,9 +24,10 @@ import lombok.RequiredArgsConstructor;
 public class FavoriteController {
 	private final FavoriteService favoriteService;
 
-	@GetMapping("/users/me/favorites")
-	public ResponseEntity<List<GetFavoriteResponse>> getFavoritesByUserId(@CurrentUserId Long userId) {
-		return ResponseEntity.status(HttpStatus.OK).body(favoriteService.getFavoritesByUserId(userId));
+	@GetMapping("/users/me/favorites/paging")
+	public ResponseEntity<Page<GetFavoriteResponse>> getFavoritesByUserId(
+		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(favoriteService.getFavoritesByUserId(pageable, userId));
 	}
 
 	@PostMapping("/post/{postId}/favorites")
