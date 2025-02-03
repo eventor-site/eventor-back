@@ -44,7 +44,7 @@ public class CategoryController {
 	}
 
 	@GetMapping("/page")
-	public ResponseEntity<Page<GetCategoryResponse>> getCategories(
+	public ResponseEntity<Page<GetCategoryListResponse>> getCategories(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories(pageable));
 	}

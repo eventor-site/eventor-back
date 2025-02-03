@@ -17,7 +17,7 @@ public interface CategoryService {
 
 	List<GetCategoryListResponse> getCategories();
 
-	Page<GetCategoryResponse> getCategories(Pageable pageable);
+	Page<GetCategoryListResponse> getCategories(Pageable pageable);
 
 	GetCategoryResponse getCategory(Long categoryId);
 
