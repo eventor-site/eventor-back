@@ -1,7 +1,5 @@
 package com.eventorback.role.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 	private final RoleRepository roleRepository;
-
-	@Override
-	public List<RoleDto> getRoles() {
-		return roleRepository.findAll().stream().map(RoleDto::fromEntity).toList();
-	}
 
 	@Override
 	public Page<RoleDto> getRoles(Pageable pageable) {

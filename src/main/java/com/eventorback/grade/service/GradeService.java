@@ -1,14 +1,11 @@
 package com.eventorback.grade.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.grade.domain.dto.GradeDto;
 
 public interface GradeService {
-	List<GradeDto> getGrades();
 
 	Page<GradeDto> getGrades(Pageable pageable);
 

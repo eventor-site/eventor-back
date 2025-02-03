@@ -1,7 +1,8 @@
 package com.eventorback.comment.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,20 +32,24 @@ import lombok.RequiredArgsConstructor;
 public class CommentController {
 	private final CommentService commentService;
 
-	@GetMapping("/posts/{postId}/comments")
-	public ResponseEntity<List<GetCommentResponse>> getCommentsByPostId(@CurrentUser CurrentUserDto currentUser,
+	@GetMapping("/posts/{postId}/comments/paging")
+	public ResponseEntity<Page<GetCommentResponse>> getCommentsByPostId(
+		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.getCommentsByPostId(currentUser, postId));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(commentService.getCommentsByPostId(pageable, currentUser, postId));
 	}
 
-	@GetMapping("/users/admin/comments")
-	public ResponseEntity<List<GetCommentByUserIdResponse>> getComments() {
-		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments());
+	@GetMapping("/users/admin/comments/paging")
+	public ResponseEntity<Page<GetCommentByUserIdResponse>> getComments(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(pageable));
 	}
 
-	@GetMapping("/users/me/comments")
-	public ResponseEntity<List<GetCommentByUserIdResponse>> getCommentsByUserId(@CurrentUserId Long userId) {
-		return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByUserId(userId));
+	@GetMapping("/users/me/comments/paging")
+	public ResponseEntity<Page<GetCommentByUserIdResponse>> getCommentsByUserId(
+		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByUserId(pageable, userId));
 	}
 
 	@PostMapping("/posts/{postId}/comments")

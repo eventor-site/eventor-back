@@ -56,11 +56,6 @@ public class PostServiceImpl implements PostService {
 	private final FavoriteRepository favoriteRepository;
 
 	@Override
-	public List<GetPostSimpleResponse> getPosts() {
-		return postRepository.getPosts();
-	}
-
-	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();

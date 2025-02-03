@@ -35,19 +35,6 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 	}
 
 	@Override
-	public List<GetCategoryListResponse> getCategories() {
-		return queryFactory
-			.select(Projections.constructor(
-				GetCategoryListResponse.class,
-				category.categoryId,
-				category.name,
-				category.depth))
-			.from(category)
-			.orderBy(category.group.asc(), category.groupOrder.asc())
-			.fetch();
-	}
-
-	@Override
 	public Page<GetCategoryListResponse> getCategories(Pageable pageable) {
 		List<GetCategoryListResponse> result = queryFactory
 			.select(Projections.constructor(
