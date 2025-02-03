@@ -3,10 +3,16 @@ package com.eventorback.statustype.repository.impl;
 import static com.eventorback.statustype.domain.entity.QStatusType.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.eventorback.statustype.domain.dto.StatusTypeDto;
 import com.eventorback.statustype.domain.entity.StatusType;
 import com.eventorback.statustype.repository.CustomStatusTypeRepository;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
@@ -31,6 +37,41 @@ public class CustomStatusTypeRepositoryImpl implements CustomStatusTypeRepositor
 			.stream()
 			.map(st -> new StatusTypeDto(st.get(statusType.statusTypeId), st.get(statusType.name)))
 			.toList();
+	}
+
+	@Override
+	public List<StatusTypeDto> getStatusTypes() {
+		return queryFactory
+			.select(Projections.constructor(
+				StatusTypeDto.class,
+				statusType.statusTypeId,
+				statusType.name
+			))
+			.from(statusType)
+			.orderBy(statusType.name.asc())
+			.fetch();
+	}
+
+	@Override
+	public Page<StatusTypeDto> getStatusTypes(Pageable pageable) {
+		List<StatusTypeDto> result = queryFactory
+			.select(Projections.constructor(
+				StatusTypeDto.class,
+				statusType.statusTypeId,
+				statusType.name
+			))
+			.from(statusType)
+			.orderBy(statusType.name.asc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
+			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(statusType.count())
+			.from(statusType)
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override

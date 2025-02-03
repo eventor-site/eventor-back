@@ -4,11 +4,17 @@ import static com.eventorback.status.domain.entity.QStatus.*;
 import static com.eventorback.statustype.domain.entity.QStatusType.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.eventorback.status.domain.dto.response.GetStatusResponse;
 import com.eventorback.status.domain.entity.Status;
-import com.eventorback.status.repository.CustomStatusRepository;
+import com.eventorback.status.repository.StatusCustomRepository;
 import com.eventorback.statustype.domain.entity.StatusType;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
@@ -16,7 +22,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CustomStatusRepositoryImpl implements CustomStatusRepository {
+public class StatusCustomRepositoryImpl implements StatusCustomRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -24,16 +30,39 @@ public class CustomStatusRepositoryImpl implements CustomStatusRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<GetStatusResponse> getStatusesByStatusTypeName(String statusTypeName) {
-		return queryFactory
-			.select(status.statusId, status.name)
+	public Page<GetStatusResponse> getStatuses(Pageable pageable) {
+		List<GetStatusResponse> result = queryFactory
+			.select(Projections.constructor(
+				GetStatusResponse.class,
+				status.statusId,
+				status.name,
+				status.statusType.name
+			))
 			.from(status)
-			.join(status.statusType, statusType)
-			.where(statusType.name.eq(statusTypeName))
-			.fetch()
-			.stream()
-			.map(st -> new GetStatusResponse(st.get(status.statusId), st.get(status.name), st.get(statusType.name)))
-			.toList();
+			.orderBy(status.statusType.name.asc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
+			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(status.count())
+			.from(status)
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
+	}
+
+	@Override
+	public Optional<GetStatusResponse> getStatus(Long statusId) {
+		return Optional.ofNullable(queryFactory
+			.select(Projections.constructor(
+				GetStatusResponse.class,
+				status.statusId,
+				status.name,
+				status.statusType.name
+			))
+			.from(status)
+			.fetchOne());
 	}
 
 	@Override

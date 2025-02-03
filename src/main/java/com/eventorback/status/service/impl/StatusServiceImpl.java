@@ -1,8 +1,7 @@
 package com.eventorback.status.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,27 +28,16 @@ public class StatusServiceImpl implements StatusService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<GetStatusResponse> getStatusesByStatusTypeName(String statusTypeName) {
-		return statusRepository.getStatusesByStatusTypeName(statusTypeName);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<GetStatusResponse> getStatuses() {
-		return statusRepository.findAll().stream().map(GetStatusResponse::fromEntity).toList();
-	}
-
-	@Override
-	@Transactional(readOnly = true)
 	public Page<GetStatusResponse> getStatuses(Pageable pageable) {
-		return null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return statusRepository.getStatuses(PageRequest.of(page, pageSize));
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public GetStatusResponse getStatus(Long statusId) {
-		Status status = statusRepository.findById(statusId).orElseThrow(() -> new StatusNotFoundException(statusId));
-		return GetStatusResponse.fromEntity(status);
+		return statusRepository.getStatus(statusId).orElseThrow(() -> new StatusNotFoundException(statusId));
 	}
 
 	@Override

@@ -24,7 +24,6 @@ public class UserStopCustomRepositoryImpl implements UserStopCustomRepository {
 
 	@Override
 	public Page<GetUserStopResponse> getUserStops(Pageable pageable) {
-
 		List<GetUserStopResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetUserStopResponse.class,
@@ -36,6 +35,8 @@ public class UserStopCustomRepositoryImpl implements UserStopCustomRepository {
 				userStop.endTime
 			))
 			.from(userStop)
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
 
 		Long total = Optional.ofNullable(queryFactory
