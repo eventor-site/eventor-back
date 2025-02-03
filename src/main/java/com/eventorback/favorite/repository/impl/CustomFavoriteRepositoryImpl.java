@@ -6,6 +6,11 @@ import static com.eventorback.status.domain.entity.QStatus.*;
 import static com.eventorback.user.domain.entity.QUser.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import com.eventorback.favorite.domain.dto.response.GetFavoriteResponse;
 import com.eventorback.favorite.repository.CustomFavoriteRepository;
@@ -19,8 +24,8 @@ public class CustomFavoriteRepositoryImpl implements CustomFavoriteRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<GetFavoriteResponse> getFavoritePosts(Long userId) {
-		return queryFactory
+	public Page<GetFavoriteResponse> getFavoritePosts(Pageable pageable, Long userId) {
+		List<GetFavoriteResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetFavoriteResponse.class,
 				favorite.favoriteId,
@@ -34,6 +39,16 @@ public class CustomFavoriteRepositoryImpl implements CustomFavoriteRepository {
 			.join(post.status, status)
 			.where(status.name.eq("작성됨").and(user.userId.eq(userId)))
 			.orderBy(favorite.favoriteId.desc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(favorite.count())
+			.from(favorite)
+			.where(favorite.post.status.name.eq("작성됨").and(favorite.post.user.userId.eq(userId)))
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 }
