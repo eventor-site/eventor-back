@@ -26,6 +26,7 @@ import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
+import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -46,6 +47,11 @@ public class UserController {
 	@GetMapping("/search")
 	public ResponseEntity<List<GetUserByIdentifier>> searchUserByIdentifier(@RequestParam String keyword) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserByIdentifier(keyword));
+	}
+
+	@GetMapping("/search/userId")
+	public ResponseEntity<List<GetUserByUserId>> searchUserByUserId(@RequestParam Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserByUserId(userId));
 	}
 
 	/**

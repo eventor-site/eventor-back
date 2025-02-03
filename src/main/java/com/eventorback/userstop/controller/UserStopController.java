@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.userstop.domain.dto.UserStopDto;
-import com.eventorback.userstop.domain.dto.response.GetUserStopByIdentifierResponse;
+import com.eventorback.userstop.domain.dto.response.GetUserStopByUserIdResponse;
 import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
 import com.eventorback.userstop.service.UserStopService;
 
@@ -37,8 +37,8 @@ public class UserStopController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<List<GetUserStopByIdentifierResponse>> getUserStopByUser(@RequestParam String identifier) {
-		return ResponseEntity.status(HttpStatus.OK).body(userStopService.getUserStopByUser(identifier));
+	public ResponseEntity<List<GetUserStopByUserIdResponse>> getUserStopsByUserId(@RequestParam Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(userStopService.getUserStopsByUserId(userId));
 	}
 
 	@PostMapping

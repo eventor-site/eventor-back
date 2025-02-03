@@ -8,7 +8,7 @@ import lombok.Builder;
 public record GetPostReportResponse(
 	Long postReportId,
 	Long postId,
-	String identifier,
+	Long userId,
 	String title,
 	boolean isChecked,
 	LocalDateTime createdAt,
