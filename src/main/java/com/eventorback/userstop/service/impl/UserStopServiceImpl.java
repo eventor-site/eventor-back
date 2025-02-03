@@ -3,6 +3,7 @@ package com.eventorback.userstop.service.impl;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,13 +35,10 @@ public class UserStopServiceImpl implements UserStopService {
 	private final StatusRepository statusRepository;
 
 	@Override
-	public List<GetUserStopResponse> getUserStops() {
-		return userStopRepository.findAll().stream().map(GetUserStopResponse::fromEntity).toList();
-	}
-
-	@Override
-	public Page<UserStopDto> getUserStops(Pageable pageable) {
-		return null;
+	public Page<GetUserStopResponse> getUserStops(Pageable pageable) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return userStopRepository.getUserStops(PageRequest.of(page, pageSize));
 	}
 
 	@Override

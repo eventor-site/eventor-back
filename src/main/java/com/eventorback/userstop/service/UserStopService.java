@@ -11,9 +11,7 @@ import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
 
 public interface UserStopService {
 
-	List<GetUserStopResponse> getUserStops();
-
-	Page<UserStopDto> getUserStops(Pageable pageable);
+	Page<GetUserStopResponse> getUserStops(Pageable pageable);
 
 	UserStopDto getUserStop(Long getUserStopId);
 
