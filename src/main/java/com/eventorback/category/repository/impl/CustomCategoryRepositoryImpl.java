@@ -43,9 +43,9 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 				category.name,
 				category.depth))
 			.from(category)
+			.orderBy(category.group.asc(), category.groupOrder.asc())
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
-			.orderBy(category.group.asc(), category.groupOrder.asc())
 			.fetch();
 
 		Long total = Optional.ofNullable(queryFactory

@@ -30,9 +30,9 @@ public class CustomGradeRepositoryImpl implements CustomGradeRepository {
 				grade.minAmount,
 				grade.maxAmount))
 			.from(grade)
+			.orderBy(grade.minAmount.asc())
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
-			.orderBy(grade.minAmount.asc())
 			.fetch();
 
 		Long total = Optional.ofNullable(queryFactory

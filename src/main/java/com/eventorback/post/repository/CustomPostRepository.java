@@ -15,7 +15,7 @@ public interface CustomPostRepository {
 
 	Page<GetPostSimpleResponse> getPosts(Pageable pageable);
 
-	List<GetPostSimpleResponse> getPostsByUserId(Long userId);
+	Page<GetPostSimpleResponse> getPostsByUserId(Pageable pageable, Long userId);
 
 	List<GetMainPostResponse> getHotEventPosts();
 

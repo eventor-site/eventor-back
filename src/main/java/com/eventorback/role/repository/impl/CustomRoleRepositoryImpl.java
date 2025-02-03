@@ -28,9 +28,9 @@ public class CustomRoleRepositoryImpl implements CustomRoleRepository {
 				role.roleId,
 				role.name))
 			.from(role)
+			.orderBy(role.roleId.asc())
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
-			.orderBy(role.roleId.asc())
 			.fetch();
 
 		Long total = Optional.ofNullable(queryFactory
