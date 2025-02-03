@@ -1,8 +1,7 @@
 package com.eventorback.commentreport.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +32,10 @@ public class CommentReportServiceImpl implements CommentReportService {
 	private final ReportTypeRepository reportTypeRepository;
 
 	@Override
-	public List<GetCommentReportResponse> getCommentReports() {
-		return commentReportRepository.getCommentReports();
-	}
-
-	@Override
 	public Page<GetCommentReportResponse> getCommentReports(Pageable pageable) {
-		return null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return commentReportRepository.getCommentReports(PageRequest.of(page, pageSize));
 	}
 
 	@Override
