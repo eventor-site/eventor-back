@@ -1,4 +1,4 @@
-package com.eventorback.role.repository;
+package com.eventorback.role.repository.impl;
 
 import static com.eventorback.role.domain.entity.QRole.*;
 
@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.role.domain.dto.RoleDto;
+import com.eventorback.role.repository.CustomRoleRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
