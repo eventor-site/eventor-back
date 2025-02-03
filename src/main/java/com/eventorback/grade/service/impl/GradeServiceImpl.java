@@ -3,6 +3,7 @@ package com.eventorback.grade.service.impl;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,9 @@ public class GradeServiceImpl implements GradeService {
 
 	@Override
 	public Page<GradeDto> getGrades(Pageable pageable) {
-		return null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return gradeRepository.getGrades(PageRequest.of(page, pageSize));
 	}
 
 	@Override
@@ -51,7 +54,7 @@ public class GradeServiceImpl implements GradeService {
 	public void updateGrade(Long gradeId, GradeDto request) {
 		Grade grade = gradeRepository.findById(gradeId)
 			.orElseThrow(() -> new GradeNotFoundException(gradeId));
-		grade.updateGrade(request.name(), request.minAmount(), request.maxAmount(), request.pointRate());
+		grade.updateGrade(request);
 	}
 
 	@Override
