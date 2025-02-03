@@ -1,7 +1,5 @@
 package com.eventorback.grade.service.impl;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GradeServiceImpl implements GradeService {
 	private final GradeRepository gradeRepository;
-
-	@Override
-	public List<GradeDto> getGrades() {
-		return gradeRepository.findAll().stream().map(GradeDto::fromEntity).toList();
-	}
 
 	@Override
 	public Page<GradeDto> getGrades(Pageable pageable) {

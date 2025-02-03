@@ -38,11 +38,6 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
 	private final PostService postService;
 
-	@GetMapping("/all")
-	public ResponseEntity<List<GetPostSimpleResponse>> getPosts() {
-		return ResponseEntity.status(HttpStatus.OK).body(postService.getPosts());
-	}
-
 	@GetMapping("/all/paging")
 	public ResponseEntity<Page<GetPostSimpleResponse>> getPosts(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

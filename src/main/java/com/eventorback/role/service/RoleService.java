@@ -1,15 +1,11 @@
 package com.eventorback.role.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.role.domain.dto.RoleDto;
 
 public interface RoleService {
-
-	List<RoleDto> getRoles();
 
 	Page<RoleDto> getRoles(Pageable pageable);
 

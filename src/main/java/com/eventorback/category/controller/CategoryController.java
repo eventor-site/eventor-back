@@ -38,11 +38,6 @@ public class CategoryController {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.searchCategories(keyword));
 	}
 
-	@GetMapping
-	public ResponseEntity<List<GetCategoryListResponse>> getCategories() {
-		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories());
-	}
-
 	@GetMapping("/paging")
 	public ResponseEntity<Page<GetCategoryListResponse>> getCategories(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

@@ -2,6 +2,9 @@ package com.eventorback.comment.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,19 +46,26 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId) {
-		return commentRepository.getCommentsByPostId(currentUser, postId);
-	}
-
-	@Override
-	public List<GetCommentByUserIdResponse> getComments() {
-		return commentRepository.getComments();
+	public Page<GetCommentResponse> getCommentsByPostId(Pageable pageable, CurrentUserDto currentUser, Long postId) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return commentRepository.getCommentsByPostId(PageRequest.of(page, pageSize), currentUser, postId);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId) {
-		return commentRepository.getCommentsByUserId(userId);
+	public Page<GetCommentByUserIdResponse> getComments(Pageable pageable) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return commentRepository.getComments(PageRequest.of(page, pageSize));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<GetCommentByUserIdResponse> getCommentsByUserId(Pageable pageable, Long userId) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return commentRepository.getCommentsByUserId(PageRequest.of(page, pageSize), userId);
 	}
 
 	@Override

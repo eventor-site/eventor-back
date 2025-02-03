@@ -13,8 +13,6 @@ import com.eventorback.post.domain.entity.Post;
 
 public interface CustomPostRepository {
 
-	List<GetPostSimpleResponse> getPosts();
-
 	Page<GetPostSimpleResponse> getPosts(Pageable pageable);
 
 	List<GetPostSimpleResponse> getPostsByUserId(Long userId);

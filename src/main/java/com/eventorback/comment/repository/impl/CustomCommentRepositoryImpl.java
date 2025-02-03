@@ -7,6 +7,10 @@ import static com.eventorback.user.domain.entity.QUser.*;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
@@ -25,8 +29,8 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<GetCommentByUserIdResponse> getComments() {
-		return queryFactory
+	public Page<GetCommentByUserIdResponse> getComments(Pageable pageable) {
+		List<GetCommentByUserIdResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetCommentByUserIdResponse.class,
 				comment.post.postId,
@@ -39,11 +43,21 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 			.from(comment)
 			.where(comment.status.name.eq("작성됨"))
 			.orderBy(comment.createdAt.desc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(comment.count())
+			.from(comment)
+			.where(comment.status.name.eq("작성됨"))
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override
-	public List<GetCommentResponse> getCommentsByPostId(CurrentUserDto currentUser, Long postId) {
+	public Page<GetCommentResponse> getCommentsByPostId(Pageable pageable, CurrentUserDto currentUser, Long postId) {
 		BooleanExpression isAdmin = Expressions.FALSE;
 		BooleanExpression isOwner = Expressions.FALSE;
 
@@ -53,7 +67,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 			isOwner = comment.user.userId.eq(currentUser.userId());
 		}
 
-		return queryFactory
+		List<GetCommentResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetCommentResponse.class,
 				comment.commentId,
@@ -77,12 +91,22 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 			.join(comment.post, post)
 			.where(post.postId.eq(postId))
 			.orderBy(comment.group.asc(), comment.groupOrder.asc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(comment.count())
+			.from(comment)
+			.where(comment.post.postId.eq(postId))
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override
-	public List<GetCommentByUserIdResponse> getCommentsByUserId(Long userId) {
-		return queryFactory
+	public Page<GetCommentByUserIdResponse> getCommentsByUserId(Pageable pageable, Long userId) {
+		List<GetCommentByUserIdResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetCommentByUserIdResponse.class,
 				comment.post.postId,
@@ -95,7 +119,17 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 			.from(comment)
 			.where(user.userId.eq(userId).and(comment.status.name.eq("작성됨")))
 			.orderBy(comment.createdAt.desc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(comment.count())
+			.from(comment)
+			.where(user.userId.eq(userId).and(comment.status.name.eq("작성됨")))
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override

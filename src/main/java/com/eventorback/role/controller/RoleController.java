@@ -1,7 +1,5 @@
 package com.eventorback.role.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,11 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/back/roles")
 public class RoleController {
 	private final RoleService roleService;
-
-	@GetMapping
-	public ResponseEntity<List<RoleDto>> getRoles() {
-		return ResponseEntity.status(HttpStatus.OK).body(roleService.getRoles());
-	}
 
 	@GetMapping("/paging")
 	public ResponseEntity<Page<RoleDto>> getRoles(@PageableDefault(page = 1, size = 10) Pageable pageable) {

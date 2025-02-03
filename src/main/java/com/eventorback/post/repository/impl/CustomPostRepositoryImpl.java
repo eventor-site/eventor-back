@@ -32,27 +32,6 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<GetPostSimpleResponse> getPosts() {
-		return queryFactory
-			.select(Projections.constructor(
-				GetPostSimpleResponse.class,
-				post.postId,
-				post.writer,
-				post.title,
-				post.recommendationCount,
-				post.viewCount,
-				post.createdAt,
-				grade.name))
-			.from(post)
-			.join(post.status, status)
-			.join(post.user, user)
-			.join(user.grade, grade)
-			.where(status.name.eq("작성됨"))
-			.orderBy(post.createdAt.desc())
-			.fetch();
-	}
-
-	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
 		List<GetPostSimpleResponse> result = queryFactory
 			.select(Projections.constructor(
@@ -69,14 +48,15 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.user, user)
 			.join(user.grade, grade)
 			.where(status.name.eq("작성됨"))
+			.orderBy(post.createdAt.desc())
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
-			.orderBy(post.createdAt.desc())
 			.fetch();
 
 		Long total = Optional.ofNullable(queryFactory
 			.select(post.count())
 			.from(post)
+			.where(status.name.eq("작성됨"))
 			.fetchOne()).orElse(0L);
 
 		return new PageImpl<>(result, pageable, total);
