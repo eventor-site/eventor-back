@@ -3,6 +3,7 @@ package com.eventorback.reporttype.service.impl;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +26,15 @@ public class ReportTypeServiceImpl implements ReportTypeService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<ReportTypeDto> getReportTypes() {
-		return reportTypeRepository.findAll().stream().map(ReportTypeDto::fromEntity).toList();
+		return reportTypeRepository.getReportTypes();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<ReportTypeDto> getReportTypes(Pageable pageable) {
-		return null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return reportTypeRepository.getReportTypes(PageRequest.of(page, pageSize));
 	}
 
 	@Override

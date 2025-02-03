@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.role.domain.dto.RoleDto;
 
-public interface CustomRoleRepository {
+public interface RoleCustomRepository {
 
 	Page<RoleDto> getRoles(Pageable pageable);
 }
