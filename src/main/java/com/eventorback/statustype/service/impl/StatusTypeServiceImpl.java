@@ -3,6 +3,7 @@ package com.eventorback.statustype.service.impl;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,13 +32,15 @@ public class StatusTypeServiceImpl implements StatusTypeService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<StatusTypeDto> getStatusTypes() {
-		return statusTypeRepository.findAll().stream().map(StatusTypeDto::fromEntity).toList();
+		return statusTypeRepository.getStatusTypes();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<StatusTypeDto> getStatusTypes(Pageable pageable) {
-		return null;
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return statusTypeRepository.getStatusTypes(PageRequest.of(page, pageSize));
 	}
 
 	@Override
