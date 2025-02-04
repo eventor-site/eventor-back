@@ -87,10 +87,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<GetPostsByCategoryNameResponse> getPostsByCategoryName(String categoryName) {
-
+	public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, String categoryName) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
 		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
-		return postRepository.getPostsByCategoryName(categoryIds);
+		return postRepository.getPostsByCategoryName(PageRequest.of(page, pageSize), categoryIds);
 	}
 
 	@Override
@@ -205,7 +206,7 @@ public class PostServiceImpl implements PostService {
 	public void deletePost(Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 		Status postStatus = statusRepository.findOrCreateStatus("게시글", "삭제됨");
-		
+
 		post.setDeletedAt();
 		post.updatePostStatus(postStatus);
 

@@ -68,9 +68,9 @@ public class PostController {
 	}
 
 	@GetMapping
-	public ApiResponse<List<GetPostsByCategoryNameResponse>> getPostsByCategoryName(
-		@RequestParam String categoryName) {
-		return ApiResponse.createSuccess(postService.getPostsByCategoryName(categoryName));
+	public ApiResponse<Page<GetPostsByCategoryNameResponse>> getPostsByCategoryName(
+		@PageableDefault(page = 1, size = 10) Pageable pageable, @RequestParam String categoryName) {
+		return ApiResponse.createSuccess(postService.getPostsByCategoryName(pageable, categoryName));
 	}
 
 	@GetMapping("/me/paging")
