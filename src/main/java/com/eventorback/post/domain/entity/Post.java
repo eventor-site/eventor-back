@@ -59,6 +59,9 @@ public class Post {
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
+
 	@Column(name = "is_notification")
 	private Boolean isNotification;
 
@@ -109,6 +112,10 @@ public class Post {
 
 	public void updatePostStatus(Status status) {
 		this.status = status;
+	}
+
+	public void setDeletedAt() {
+		this.deletedAt = LocalDateTime.now();
 	}
 
 	public void update(UpdatePostRequest request) {

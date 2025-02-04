@@ -2,6 +2,9 @@ package com.eventorback.favorite.domain.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.user.domain.entity.User;
 
@@ -32,6 +35,7 @@ public class Favorite {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "post_id")
+	@OnDelete(action = OnDeleteAction.CASCADE) // DB 에서 자동 삭제 처리
 	private Post post;
 
 	@Column(name = "created_at")

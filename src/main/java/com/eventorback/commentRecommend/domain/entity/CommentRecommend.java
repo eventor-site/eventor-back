@@ -1,5 +1,8 @@
 package com.eventorback.commentRecommend.domain.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.recommendtype.domain.entity.RecommendType;
 import com.eventorback.user.domain.entity.User;
@@ -31,6 +34,7 @@ public class CommentRecommend {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "comment_id")
+	@OnDelete(action = OnDeleteAction.CASCADE) // DB 에서 자동 삭제 처리
 	private Comment comment;
 
 	@ManyToOne(optional = false)

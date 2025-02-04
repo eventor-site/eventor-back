@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.category.exception.CategoryNotFoundException;
 import com.eventorback.category.repository.CategoryRepository;
+import com.eventorback.comment.domain.entity.Comment;
+import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.favorite.repository.FavoriteRepository;
 import com.eventorback.global.exception.AccessDeniedException;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
@@ -54,6 +56,7 @@ public class PostServiceImpl implements PostService {
 	private final PostViewRepository postViewRepository;
 	private final RecommendTypeService recommendTypeService;
 	private final FavoriteRepository favoriteRepository;
+	private final CommentRepository commentRepository;
 
 	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
@@ -201,8 +204,18 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deletePost(Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
-		Status status = statusRepository.findOrCreateStatus("게시글", "삭제됨");
+		Status postStatus = statusRepository.findOrCreateStatus("게시글", "삭제됨");
+		
+		post.setDeletedAt();
+		post.updatePostStatus(postStatus);
 
-		post.updatePostStatus(status);
+		List<Comment> comments = commentRepository.getCommentsByPostId(postId);
+		Status commentStatus = statusRepository.findOrCreateStatus("댓글", "삭제됨");
+
+		comments.forEach(comment -> {
+			comment.updateStatus(commentStatus);
+			comment.setDeletedAt();
+		});
+
 	}
 }

@@ -1,5 +1,8 @@
 package com.eventorback.bookmark.domain.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.user.domain.entity.User;
 
@@ -30,6 +33,7 @@ public class Bookmark {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "category_id")
+	@OnDelete(action = OnDeleteAction.CASCADE) // DB 에서 자동 삭제 처리
 	private Category category;
 
 	@Builder
