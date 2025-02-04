@@ -177,7 +177,8 @@ public class CommentServiceImpl implements CommentService {
 
 		Status status = statusRepository.findOrCreateStatus("댓글", "삭제됨");
 
-		comment.updatePostStatus(status);
+		comment.setDeletedAt();
+		comment.updateStatus(status);
 	}
 
 }

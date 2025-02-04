@@ -16,6 +16,8 @@ public interface CustomCommentRepository {
 
 	Page<GetCommentByUserIdResponse> getComments(Pageable pageable);
 
+	List<Comment> getCommentsByPostId(Long postId);
+
 	Page<GetCommentResponse> getCommentsByPostId(Pageable pageable, CurrentUserDto currentUser, Long postId);
 
 	Page<GetCommentByUserIdResponse> getCommentsByUserId(Pageable pageable, Long userId);

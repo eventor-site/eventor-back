@@ -60,6 +60,9 @@ public class Comment {
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
+
 	@Column(name = "group")
 	private Long group;
 
@@ -126,8 +129,12 @@ public class Comment {
 		this.content = request.content();
 	}
 
-	public void updatePostStatus(Status status) {
+	public void updateStatus(Status status) {
 		this.status = status;
+	}
+
+	public void setDeletedAt() {
+		this.deletedAt = LocalDateTime.now();
 	}
 
 	public void recommendComment() {

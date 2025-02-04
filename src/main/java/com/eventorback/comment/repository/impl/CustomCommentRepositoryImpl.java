@@ -60,6 +60,14 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	}
 
 	@Override
+	public List<Comment> getCommentsByPostId(Long postId) {
+		return queryFactory
+			.selectFrom(comment)
+			.where(comment.post.postId.eq(postId))
+			.fetch();
+	}
+
+	@Override
 	public Page<GetCommentResponse> getCommentsByPostId(Pageable pageable, CurrentUserDto currentUser, Long postId) {
 		BooleanExpression isAdmin = Expressions.FALSE;
 		BooleanExpression isOwner = Expressions.FALSE;
@@ -157,7 +165,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 			.from(comment)
 			.where(
 				comment.post.postId.eq(postId),
-				// (1) group이 작은 경우 OR (2) 같은 group에서 groupOrder가 작은 경우
+				// (1) group 이 작은 경우 OR (2) 같은 group 에서 groupOrder 가 작은 경우
 				comment.group.lt(groupValue)
 					.or(comment.group.eq(groupValue).and(comment.groupOrder.lt(groupOrderValue)))
 			)
