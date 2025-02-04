@@ -26,7 +26,7 @@ public interface PostService {
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName);
 
-	List<GetPostsByCategoryNameResponse> getPostsByCategoryName(String categoryName);
+	Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, String categoryName);
 
 	Page<GetPostSimpleResponse> getPostsByUserId(Pageable pageable, Long userId);
 

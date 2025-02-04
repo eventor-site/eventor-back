@@ -25,7 +25,7 @@ public interface CustomPostRepository {
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
 
-	List<GetPostsByCategoryNameResponse> getPostsByCategoryName(List<Long> categoryIds);
+	Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, List<Long> categoryIds);
 
 	Optional<Post> getPost(Long postId);
 }

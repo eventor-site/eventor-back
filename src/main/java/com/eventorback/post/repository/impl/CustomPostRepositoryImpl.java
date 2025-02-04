@@ -199,8 +199,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetPostsByCategoryNameResponse> getPostsByCategoryName(List<Long> categoryIds) {
-		return queryFactory
+	public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, List<Long> categoryIds) {
+		List<GetPostsByCategoryNameResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetPostsByCategoryNameResponse.class,
 				post.postId,
@@ -227,7 +227,17 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			))
 			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
 			.orderBy(post.createdAt.desc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(post.count())
+			.from(post)
+			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
 	}
 
 	@Override
