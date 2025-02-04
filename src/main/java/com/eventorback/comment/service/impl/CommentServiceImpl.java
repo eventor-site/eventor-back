@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
+import com.eventorback.comment.domain.dto.response.GetCommentPageResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.exception.CommentNotFoundException;
@@ -69,6 +70,11 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	public GetCommentPageResponse getComment(Long postId, Long commentId) {
+		return commentRepository.getComment(postId, commentId);
+	}
+
+	@Override
 	public void createComment(CreateCommentRequest request, Long postId, Long userId) {
 		Post post = postRepository.getPost(postId).orElseThrow(() -> new PostNotFoundException(postId));
 
@@ -84,7 +90,6 @@ public class CommentServiceImpl implements CommentService {
 
 		Comment parentComment = null;
 		if (request.parentCommentId() == null) {
-
 			commentRepository.save(
 				Comment.toEntity(request, parentComment, post, user, status, commentRepository.getMaxGroup() + 1));
 		} else {

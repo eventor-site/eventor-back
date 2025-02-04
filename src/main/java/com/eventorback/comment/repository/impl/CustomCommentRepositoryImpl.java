@@ -12,14 +12,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
+import com.eventorback.comment.domain.dto.response.GetCommentPageResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CustomCommentRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -130,6 +133,37 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 			.fetchOne()).orElse(0L);
 
 		return new PageImpl<>(result, pageable, total);
+	}
+
+	@Override
+	public GetCommentPageResponse getComment(Long postId, Long commentId) {
+		// 특정 댓글의 group과 groupOrder 조회
+		Tuple commentTuple = queryFactory
+			.select(comment.group, comment.groupOrder)
+			.from(comment)
+			.where(comment.commentId.eq(commentId))
+			.fetchOne();
+
+		if (commentTuple == null) {
+			return new GetCommentPageResponse(1L); // 댓글이 존재하지 않으면 첫 페이지로 반환
+		}
+
+		Long groupValue = commentTuple.get(comment.group);
+		Long groupOrderValue = commentTuple.get(comment.groupOrder);
+
+		// 특정 댓글보다 앞에 있는 댓글 개수 카운트
+		Long commentIndex = queryFactory
+			.select(Wildcard.count)
+			.from(comment)
+			.where(
+				comment.post.postId.eq(postId),
+				// (1) group이 작은 경우 OR (2) 같은 group에서 groupOrder가 작은 경우
+				comment.group.lt(groupValue)
+					.or(comment.group.eq(groupValue).and(comment.groupOrder.lt(groupOrderValue)))
+			)
+			.fetchOne();
+
+		return new GetCommentPageResponse(commentIndex / 10L + 1L);
 	}
 
 	@Override

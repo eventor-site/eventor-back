@@ -19,6 +19,7 @@ import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
 import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
+import com.eventorback.comment.domain.dto.response.GetCommentPageResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.service.CommentService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
@@ -57,6 +58,12 @@ public class CommentController {
 		@CurrentUserId Long userId) {
 		commentService.createComment(request, postId, userId);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
+	@GetMapping("/posts/{postId}/comments/{commentId}")
+	public ResponseEntity<GetCommentPageResponse> getComment(
+		@PathVariable Long commentId, @PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComment(postId, commentId));
 	}
 
 	@PutMapping("/posts/{postId}/comments/{commentId}")
