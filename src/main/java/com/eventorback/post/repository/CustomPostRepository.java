@@ -24,6 +24,8 @@ public interface CustomPostRepository {
 
 	List<GetRecommendPostResponse> getRecommendationEventPosts();
 
+	List<GetRecommendPostResponse> getTrendingEventPosts();
+
 	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
 
 	Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, List<Long> categoryIds);

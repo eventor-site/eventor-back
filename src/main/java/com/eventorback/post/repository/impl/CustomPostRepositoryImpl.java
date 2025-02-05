@@ -4,9 +4,11 @@ import static com.eventorback.category.domain.entity.QCategory.*;
 import static com.eventorback.grade.domain.entity.QGrade.*;
 import static com.eventorback.image.domain.entity.QImage.*;
 import static com.eventorback.post.domain.entity.QPost.*;
+import static com.eventorback.postview.domain.entity.QPostView.*;
 import static com.eventorback.status.domain.entity.QStatus.*;
 import static com.eventorback.user.domain.entity.QUser.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -173,6 +175,39 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.on(image.post.postId.eq(post.postId)) // 게시물과 연결된 이미지
 			.where(status.name.eq("작성됨"))
 			.orderBy(post.recommendationCount.desc())
+			.limit(10)  // 상위 10권으로 결과 제한
+			.fetch();
+	}
+
+	@Override
+	public List<GetRecommendPostResponse> getTrendingEventPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetRecommendPostResponse.class,
+				post.postId,
+				post.title,
+				post.writer,
+				post.recommendationCount,
+				postView.count(),
+				post.createdAt,
+				image.url.min() // 첫 번째 이미지 URL
+			))
+			.from(postView)
+			.join(postView.post, post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.leftJoin(image)
+			.on(image.post.postId.eq(post.postId))
+			.on(image.imageId.eq(
+				JPAExpressions
+					.select(image.imageId.min())  // 가장 작은 imageId 선택
+					.from(image)
+					.where(image.post.postId.eq(post.postId))
+			))
+			.on(image.post.postId.eq(post.postId)) // 게시물과 연결된 이미지
+			.where(status.name.eq("작성됨").and(postView.createdAt.gt(LocalDateTime.now().minusDays(7))))
+			.groupBy(postView.post.postId)
+			.orderBy(postView.count().desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();
 	}
