@@ -24,6 +24,7 @@ import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
+import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -76,7 +77,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<GetMainPostResponse> getRecommendationEventPosts() {
+	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
 		return postRepository.getRecommendationEventPosts();
 	}
 
