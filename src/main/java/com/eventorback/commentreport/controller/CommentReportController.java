@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.commentreport.domain.dto.response.GetCommentReportResponse;
 import com.eventorback.commentreport.service.CommentReportService;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class CommentReportController {
 	private final CommentReportService commentReportService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/commentReports/paging")
 	public ResponseEntity<Page<GetCommentReportResponse>> getCommentReports(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

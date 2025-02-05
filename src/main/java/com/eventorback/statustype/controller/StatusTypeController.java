@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.statustype.domain.dto.StatusTypeDto;
 import com.eventorback.statustype.service.StatusTypeService;
 
@@ -38,6 +39,7 @@ public class StatusTypeController {
 		return ResponseEntity.status(HttpStatus.OK).body(statusTypeService.getStatusTypes());
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/paging")
 	public ResponseEntity<Page<StatusTypeDto>> getStatusTypes(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

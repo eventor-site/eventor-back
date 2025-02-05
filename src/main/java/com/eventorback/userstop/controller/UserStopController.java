@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.userstop.domain.dto.UserStopDto;
 import com.eventorback.userstop.domain.dto.response.GetUserStopByUserIdResponse;
 import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class UserStopController {
 	private final UserStopService userStopService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/paging")
 	public ResponseEntity<Page<GetUserStopResponse>> getUserStops(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

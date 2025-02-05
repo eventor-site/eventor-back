@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.role.domain.dto.RoleDto;
 import com.eventorback.role.service.RoleService;
 
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class RoleController {
 	private final RoleService roleService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/paging")
 	public ResponseEntity<Page<RoleDto>> getRoles(@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(roleService.getRoles(pageable));

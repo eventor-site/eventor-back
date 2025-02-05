@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.category.domain.dto.request.CreateCategoryRequest;
 import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
 import com.eventorback.category.domain.dto.response.GetCategoryListResponse;
@@ -38,6 +39,7 @@ public class CategoryController {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.searchCategories(keyword));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/paging")
 	public ResponseEntity<Page<GetCategoryListResponse>> getCategories(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

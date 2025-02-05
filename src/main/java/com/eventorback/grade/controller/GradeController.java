@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.grade.domain.dto.GradeDto;
 import com.eventorback.grade.service.GradeService;
 
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class GradeController {
 	private final GradeService gradeService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/paging")
 	public ResponseEntity<Page<GradeDto>> getGrades(@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(gradeService.getGrades(pageable));

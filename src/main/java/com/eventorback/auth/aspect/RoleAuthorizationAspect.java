@@ -45,7 +45,7 @@ public class RoleAuthorizationAspect {
 		List<String> requiredRoles = Arrays.asList(authorizeRole.value());
 
 		// 헤더에서 역할 목록을 ','로 구분하여 리스트로 변환
-		List<String> userRoles = Arrays.asList(rolesHeader.split(","));
+		List<String> userRoles = Arrays.asList(rolesHeader.replaceAll("[\\[\\]\\s]", "").split(","));
 
 		Long userId = Long.parseLong(userIdHeader);
 		User user = userRepository.findById(userId).orElseThrow();

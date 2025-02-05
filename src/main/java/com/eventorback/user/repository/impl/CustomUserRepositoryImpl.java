@@ -113,8 +113,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			return Optional.empty();
 		}
 
-		// 리스트 데이터를 문자열로 변환
-		String userRoles = String.join(", ", roles);
+		// // 리스트 데이터를 문자열로 변환
+		// String userRoles = String.join(", ", roles);
 
 		// 사용자 정보 조회
 		User userInfo = queryFactory
@@ -134,7 +134,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			userInfo.getGender(),
 			userInfo.getStatus().getName(),
 			userInfo.getGrade().getName(),
-			userRoles,
+			roles,
 			userInfo.getOauthType(),
 			userInfo.getCreatedAt(),
 			userInfo.getUpdatedTime(),

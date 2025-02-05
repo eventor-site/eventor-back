@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.global.util.NumberUtil;
@@ -67,6 +68,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfoByOauth(request));
 	}
 
+	@AuthorizeRole("member")
 	@GetMapping("/me")
 	public ResponseEntity<GetUserResponse> getUserInfo(@CurrentUserId Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(userId));

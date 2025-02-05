@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.reporttype.domain.dto.ReportTypeDto;
 import com.eventorback.reporttype.service.ReportTypeService;
 
@@ -32,6 +33,7 @@ public class ReportTypeController {
 		return ResponseEntity.status(HttpStatus.OK).body(reportTypeService.getReportTypes());
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/paging")
 	public ResponseEntity<Page<ReportTypeDto>> getReportTypes(@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ResponseEntity.status(HttpStatus.OK).body(reportTypeService.getReportTypes(pageable));
