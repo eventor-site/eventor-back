@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.comment.domain.dto.request.CreateCommentRequest;
@@ -41,6 +42,7 @@ public class CommentController {
 			.body(commentService.getCommentsByPostId(pageable, currentUser, postId));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/users/admin/comments/paging")
 	public ResponseEntity<Page<GetCommentByUserIdResponse>> getComments(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUser;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.global.dto.ApiResponse;
@@ -38,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
 	private final PostService postService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/all/paging")
 	public ResponseEntity<Page<GetPostSimpleResponse>> getPosts(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

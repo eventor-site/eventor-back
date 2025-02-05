@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.postreport.domain.dto.response.GetPostReportResponse;
 import com.eventorback.postreport.service.PostReportService;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class PostReportController {
 	private final PostReportService postReportService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/postReports/paging")
 	public ResponseEntity<Page<GetPostReportResponse>> getPostReports(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
