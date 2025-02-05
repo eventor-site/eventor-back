@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
+import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.CustomPostRepository;
 import com.querydsl.core.types.Projections;
@@ -146,12 +147,16 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetMainPostResponse> getRecommendationEventPosts() {
+	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
-				GetMainPostResponse.class,
+				GetRecommendPostResponse.class,
 				post.postId,
 				post.title,
+				post.writer,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt,
 				image.url // 첫 번째 이미지 URL
 			))
 			.from(post)

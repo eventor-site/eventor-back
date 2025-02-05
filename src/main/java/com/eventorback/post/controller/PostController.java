@@ -28,6 +28,7 @@ import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
+import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.service.PostService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
@@ -57,7 +58,7 @@ public class PostController {
 	}
 
 	@GetMapping("/event/recommendation")
-	public ResponseEntity<List<GetMainPostResponse>> getRecommendationEventPosts() {
+	public ResponseEntity<List<GetRecommendPostResponse>> getRecommendationEventPosts() {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getRecommendationEventPosts());
 	}
 

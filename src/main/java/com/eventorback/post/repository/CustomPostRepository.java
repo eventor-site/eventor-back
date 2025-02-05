@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
+import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.domain.entity.Post;
 
 public interface CustomPostRepository {
@@ -21,7 +22,7 @@ public interface CustomPostRepository {
 
 	List<GetMainPostResponse> getLatestEventPosts();
 
-	List<GetMainPostResponse> getRecommendationEventPosts();
+	List<GetRecommendPostResponse> getRecommendationEventPosts();
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
 
