@@ -82,6 +82,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public List<GetRecommendPostResponse> getTrendingEventPosts() {
+		return postRepository.getTrendingEventPosts();
+	}
+
+	@Override
 	public List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
 		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
 		return postRepository.getHotPostsByCategoryName(categoryIds);

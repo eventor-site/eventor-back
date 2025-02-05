@@ -62,6 +62,11 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getRecommendationEventPosts());
 	}
 
+	@GetMapping("/event/trending")
+	ResponseEntity<List<GetRecommendPostResponse>> getTrendingEventPosts() {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getTrendingEventPosts());
+	}
+
 	@GetMapping("/hot")
 	public ResponseEntity<List<GetMainPostResponse>> getHotPostsByCategoryName(
 		@CurrentUser CurrentUserDto currentUser,
