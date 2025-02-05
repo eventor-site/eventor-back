@@ -62,6 +62,7 @@ public class StatusCustomRepositoryImpl implements StatusCustomRepository {
 				status.statusType.name
 			))
 			.from(status)
+			.where(status.statusId.eq(statusId))
 			.fetchOne());
 	}
 
