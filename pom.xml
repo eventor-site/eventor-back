@@ -90,7 +90,7 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -99,16 +99,16 @@
         </dependency>
 
         <!-- Elasticsearch Dependency -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.elasticsearch.client</groupId>-->
-        <!--            <artifactId>elasticsearch-rest-high-level-client</artifactId>-->
-        <!--            <version>7.14.0</version>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.14.0</version>
+        </dependency>
 
 
         <!-- JSON Parsing Dependency -->
