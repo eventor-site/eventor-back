@@ -60,6 +60,11 @@ public class PostServiceImpl implements PostService {
 	private final CommentRepository commentRepository;
 
 	@Override
+	public List<GetPostSimpleResponse> searchPosts(String keyword) {
+		return postRepository.searchPosts(keyword).stream().map(GetPostSimpleResponse::formEntity).toList();
+	}
+
+	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();

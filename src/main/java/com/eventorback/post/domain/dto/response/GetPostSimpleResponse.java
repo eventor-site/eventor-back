@@ -2,6 +2,8 @@ package com.eventorback.post.domain.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.eventorback.post.domain.entity.Post;
+
 import lombok.Builder;
 
 @Builder
@@ -12,5 +14,16 @@ public record GetPostSimpleResponse(
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
-	String gradeName) {
+	String gradeName
+) {
+	public static GetPostSimpleResponse formEntity(Post post) {
+		return GetPostSimpleResponse.builder()
+			.postId(post.getPostId())
+			.writer(post.getWriter())
+			.title(post.getTitle())
+			.recommendationCount(post.getRecommendationCount())
+			.viewCount(post.getViewCount())
+			.createdAt(post.getCreatedAt())
+			.build();
+	}
 }

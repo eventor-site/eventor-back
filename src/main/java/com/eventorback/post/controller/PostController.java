@@ -40,6 +40,11 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
 	private final PostService postService;
 
+	@GetMapping("/search")
+	public ResponseEntity<List<GetPostSimpleResponse>> searchPosts(@RequestParam String keyword) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.searchPosts(keyword));
+	}
+
 	@AuthorizeRole("admin")
 	@GetMapping("/all/paging")
 	public ResponseEntity<Page<GetPostSimpleResponse>> getPosts(

@@ -17,6 +17,8 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface PostService {
 
+	List<GetPostSimpleResponse> searchPosts(String keyword);
+
 	Page<GetPostSimpleResponse> getPosts(Pageable pageable);
 
 	List<GetMainPostResponse> getHotEventPosts();
