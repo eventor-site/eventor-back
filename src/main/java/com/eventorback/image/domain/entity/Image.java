@@ -38,15 +38,19 @@ public class Image {
 	@Column(name = "url")
 	private String url;
 
+	@Column(name = "size")
+	private Long size;
+
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
 	@Builder
-	public Image(Post post, String originalName, String newName, String url) {
+	public Image(Post post, String originalName, String newName, String url, Long size) {
 		this.post = post;
 		this.originalName = originalName;
 		this.newName = newName;
 		this.url = url;
+		this.size = size;
 		this.createdAt = LocalDateTime.now();
 	}
 

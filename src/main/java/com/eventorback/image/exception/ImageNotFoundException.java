@@ -8,9 +8,9 @@ import com.eventorback.global.exception.NotFoundException;
 import com.eventorback.global.exception.payload.ErrorStatus;
 
 public class ImageNotFoundException extends NotFoundException {
-	public ImageNotFoundException(Object value) {
+	public ImageNotFoundException() {
 		super(
-			ErrorStatus.from(String.format("해당 이미지 '%s'는 존재하지 않는 이미지 입니다.", value),
+			ErrorStatus.from("이미지를 찾을 수 없습니다.",
 				HttpStatus.NOT_FOUND,
 				LocalDateTime.now()));
 	}
