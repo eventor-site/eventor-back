@@ -29,8 +29,8 @@ public class ImageController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<Void> uploadImage(@RequestParam List<Long> deleteImageIds) {
-		imageService.deleteImage(deleteImageIds);
+	public ResponseEntity<Void> uploadImage(@RequestParam Long postId, @RequestParam List<Long> deleteImageIds) {
+		imageService.deleteImage(postId, deleteImageIds);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

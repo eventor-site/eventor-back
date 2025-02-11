@@ -25,5 +25,5 @@ public interface ImageService {
 
 	void createImage(Long postId, String originalName, String newName, String url, Long size);
 
-	void deleteImage(List<Long> deleteImageIds);
+	void deleteImage(Long postId, List<Long> deleteImageIds);
 }

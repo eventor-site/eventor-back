@@ -53,6 +53,8 @@ spring:
 
   elasticsearch:
     uris: http://localhost:9200
+    username: elastic
+    password: 1q2w3e4r!
   data:
     elasticsearch:
       repositories:
