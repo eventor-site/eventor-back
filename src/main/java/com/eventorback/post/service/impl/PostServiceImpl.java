@@ -1,6 +1,7 @@
 package com.eventorback.post.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,11 +59,6 @@ public class PostServiceImpl implements PostService {
 	private final RecommendTypeService recommendTypeService;
 	private final FavoriteRepository favoriteRepository;
 	private final CommentRepository commentRepository;
-
-	@Override
-	public List<GetPostSimpleResponse> searchPosts(String keyword) {
-		return postRepository.searchPosts(keyword).stream().map(GetPostSimpleResponse::formEntity).toList();
-	}
 
 	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
@@ -132,8 +128,11 @@ public class PostServiceImpl implements PostService {
 			throw new PostNotFoundException(postId);
 		}
 
-		// 회원의 경우 최초 1회 조회수 증가
-		if (currentUser != null && !postViewRepository.existsByUserUserIdAndPostPostId(currentUser.userId(), postId)) {
+		// 회원의 경우 최초 1회 조회수 증가 ( 1. 회원이고 2. 자기자신이 쓴글이 아니며 3. 이미 본 글이 아닐 경우)
+		if (currentUser != null
+			&& !Objects.equals(post.getUser().getUserId(), currentUser.userId())
+			&& !postViewRepository.existsByUserUserIdAndPostPostId(currentUser.userId(), postId)) {
+
 			User user = userRepository.getUser(currentUser.userId())
 				.orElseThrow(() -> new UserNotFoundException(currentUser.userId()));
 			postViewRepository.save(PostView.toEntity(user, post));
@@ -179,11 +178,12 @@ public class PostServiceImpl implements PostService {
 	public String recommendPost(Long userId, Long postId) {
 		PostRecommend postRecommend = postRecommendRepository.findByUserUserIdAndPostPostId(userId, postId)
 			.orElse(null);
+		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 
-		if (postRecommend == null) {
+		if (postRecommend == null && post.getUser().getUserId().equals(userId)) {
+			return "추천할 수 없습니다.";
+		} else if (postRecommend == null) {
 			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-			Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new PostNotFoundException(postId));
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
 			post.recommendPost();
@@ -198,11 +198,13 @@ public class PostServiceImpl implements PostService {
 	public String disrecommendPost(Long userId, Long postId) {
 		PostRecommend postRecommend = postRecommendRepository.findByUserUserIdAndPostPostId(userId, postId)
 			.orElse(null);
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new PostNotFoundException(postId));
 
-		if (postRecommend == null) {
+		if (postRecommend == null && post.getUser().getUserId().equals(userId)) {
+			return "비추천할 수 없습니다.";
+		} else if (postRecommend == null) {
 			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-			Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new PostNotFoundException(postId));
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("비추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
 			post.disrecommendPost();

@@ -30,6 +30,8 @@ import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.service.PostService;
+import com.eventorback.search.document.dto.reponse.SearchPostsResponse;
+import com.eventorback.search.service.ElasticSearchService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 import lombok.RequiredArgsConstructor;
@@ -39,10 +41,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/back/posts")
 public class PostController {
 	private final PostService postService;
+	private final ElasticSearchService elasticSearchService;
 
 	@GetMapping("/search")
-	public ResponseEntity<List<GetPostSimpleResponse>> searchPosts(@RequestParam String keyword) {
-		return ResponseEntity.status(HttpStatus.OK).body(postService.searchPosts(keyword));
+	public ResponseEntity<Page<SearchPostsResponse>> searchBooks(
+		@PageableDefault(page = 1, size = 10) Pageable pageable, @RequestParam String keyword) {
+		return ResponseEntity.status(HttpStatus.OK).body(elasticSearchService.searchPosts(pageable, keyword));
 	}
 
 	@AuthorizeRole("admin")

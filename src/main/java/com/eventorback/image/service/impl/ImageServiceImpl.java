@@ -119,7 +119,7 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void deleteImage(List<Long> deleteImageIds) {
+	public void deleteImage(Long postId, List<Long> deleteImageIds) {
 		if (deleteImageIds != null) {
 			deleteImageIds.forEach(imageId -> {
 				// 1. DB 에서 이미지 정보 조회

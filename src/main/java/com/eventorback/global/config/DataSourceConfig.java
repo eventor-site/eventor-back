@@ -16,10 +16,10 @@ public class DataSourceConfig {
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
 		// 최적화 파라미터 설정
-		dataSource.setInitialSize(5);
-		dataSource.setMaxTotal(5);
-		dataSource.setMaxIdle(5);
-		dataSource.setMinIdle(5);
+		dataSource.setInitialSize(100);
+		dataSource.setMaxTotal(100);
+		dataSource.setMaxIdle(100);
+		dataSource.setMinIdle(100);
 
 		// 추가 최적화 설정
 		dataSource.setTestOnBorrow(true);

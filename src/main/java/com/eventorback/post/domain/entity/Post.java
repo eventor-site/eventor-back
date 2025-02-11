@@ -102,28 +102,24 @@ public class Post {
 			.build();
 	}
 
-	public void increaseRecommendationCount() {
-		this.recommendationCount++;
-	}
-
-	public void increaseViewCount() {
-		this.viewCount++;
-	}
-
-	public void updatePostStatus(Status status) {
-		this.status = status;
-	}
-
-	public void setDeletedAt() {
-		this.deletedAt = LocalDateTime.now();
-	}
-
 	public void update(UpdatePostRequest request) {
 		this.title = request.title();
 		this.content = request.content();
 		this.isNotification = request.isNotification();
 		this.startTime = request.startTime();
 		this.endTime = request.endTime();
+	}
+
+	public void updatePostStatus(Status status) {
+		this.status = status;
+	}
+
+	public void increaseViewCount() {
+		this.viewCount++;
+	}
+
+	public void setDeletedAt() {
+		this.deletedAt = LocalDateTime.now();
 	}
 
 	public void recommendPost() {
