@@ -6,6 +6,9 @@ spring:
     livereload:
       enabled: true
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/eventor
+
   # JPA 설정
   jpa:
     open-in-view: false

@@ -6,6 +6,9 @@ spring:
     livereload:
       enabled: false
 
+  datasource:
+    url: jdbc:mysql://www.eventor.store:3306/eventor
+
   # JPA 설정
   jpa:
     open-in-view: false
