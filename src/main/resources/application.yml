@@ -21,6 +21,11 @@ spring:
     multipart:
       max-file-size: 10MB # 파일 하나의 최대 크기
       max-request-size: 10MB # 요청 전체 크기 (여러 파일 포함 가능)
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
   
   mail:
     host: smtp.gmail.com
