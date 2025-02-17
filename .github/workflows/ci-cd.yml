@@ -30,7 +30,6 @@ jobs:
           mysql database: eventor
           mysql user: root
           mysql password: 1q2w3e4r!
-          mysql port: 3306
 
       - name: Clean with Maven
         run: mvn clean
