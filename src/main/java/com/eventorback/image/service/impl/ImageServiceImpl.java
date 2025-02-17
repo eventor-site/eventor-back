@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,8 +34,8 @@ public class ImageServiceImpl implements ImageService {
 
 	private static final String DOMAIN_URL = "https://www.eventor.store/";
 
-	// TODO: 배포시 파일 저장 경로 별도 설정 필요
-	private static final String UPLOAD_DIRECTORY = "C:/Users/dlrud/Desktop/infra/";
+	@Value("${upload.path}")
+	private String uploadPath;
 
 	@Override
 	// @Async("imageUploadExecutor")
@@ -42,7 +43,7 @@ public class ImageServiceImpl implements ImageService {
 		for (MultipartFile file : files) {
 			// 1. 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
 			String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
-			Path folderPath = Paths.get(UPLOAD_DIRECTORY, folderName, today);
+			Path folderPath = Paths.get(uploadPath, folderName, today);
 			createDirectoryIfNotExists(folderPath);
 
 			// 2. 파일 이름 생성 (UUID 로 중복 방지)
@@ -127,8 +128,8 @@ public class ImageServiceImpl implements ImageService {
 					.orElseThrow(ImageNotFoundException::new);
 
 				// 2. 실제 파일 경로 가져오기
-				Path filePath = Paths.get(UPLOAD_DIRECTORY,
-					image.getUrl().replaceFirst("https://www.eventor.store/", ""));
+				Path filePath = Paths.get(uploadPath,
+					image.getUrl().replaceFirst(DOMAIN_URL, ""));
 
 				try {
 					// 3. 실제 파일 삭제
