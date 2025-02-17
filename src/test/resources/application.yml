@@ -18,5 +18,6 @@ spring:
       enabled: true
 
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: create-drop
