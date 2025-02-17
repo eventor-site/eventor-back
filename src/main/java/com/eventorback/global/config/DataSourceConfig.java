@@ -1,16 +1,20 @@
 package com.eventorback.global.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DataSourceConfig {
 
+	@Value("${spring.datasource.url}")
+	private String url;
+
 	@Bean
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
-		// dataSource.setUrl("jdbc:mysql://localhost:3306/eventor");
+		dataSource.setUrl(url);
 		dataSource.setUsername("root");
 		dataSource.setPassword("1q2w3e4r!");
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
