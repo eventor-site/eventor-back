@@ -9,6 +9,11 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/eventor
 
+  # SQL 초기화 설정
+  sql:
+    init:
+      mode: always
+
   # JPA 설정
   jpa:
     open-in-view: false
