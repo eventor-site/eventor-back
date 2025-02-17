@@ -24,6 +24,14 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Setup MySQL
+        uses: samin/mysql-action@v1
+        with:
+          character set server: 'utf8'
+          mysql database: eventor
+          mysql user: root
+          mysql password: 1q2w3e4r!
+
       - name: Clean with Maven
         run: mvn clean
 
