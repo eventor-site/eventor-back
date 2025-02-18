@@ -9,11 +9,6 @@ spring:
   datasource:
     url: jdbc:mysql://mysql:3306/eventor
 
-  elasticsearch:
-    uris: elasticsearch-es01-1
-    username: elastic
-    password: elastic
-
   # JPA 설정
   jpa:
     open-in-view: false
