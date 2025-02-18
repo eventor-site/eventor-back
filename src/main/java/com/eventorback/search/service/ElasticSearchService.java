@@ -32,7 +32,7 @@ public class ElasticSearchService {
 			Pageable newPageable = PageRequest.of(page, pageSize);
 
 			SearchRequest searchRequest = new SearchRequest.Builder()
-				.index("eventor")
+				.index("post")
 				.query(query -> query
 					.bool(boolQuery -> boolQuery
 						.should(shouldQuery -> shouldQuery
