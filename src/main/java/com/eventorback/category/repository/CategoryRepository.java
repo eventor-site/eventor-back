@@ -15,16 +15,16 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
 	Optional<Category> findByName(String name);
 
 	@Query(value = """
-		    WITH RECURSIVE category_hierarchy AS (
+		    WITH RECURSIVE categories_hierarchy AS (
 		        SELECT category_id, parent_category_id
 		        FROM categories
 		        WHERE name = :categoryName  -- 카테고리 이름을 기준으로 조회
 		        UNION ALL
 		        SELECT c.category_id, c.parent_category_id
-		        FROM category c
+		        FROM categories c
 		        INNER JOIN category_hierarchy ch ON c.parent_category_id = ch.category_id
 		    )
-		    SELECT category_id FROM category_hierarchy
+		    SELECT category_id FROM categories_hierarchy
 		""", nativeQuery = true)
 	List<Long> getCategoryIdsByName(String categoryName);
 
