@@ -9,6 +9,10 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/eventor
 
+  data:
+    redis:
+      host: localhost
+
   # JPA 설정
   jpa:
     show-sql: true    # Hibernate 가 생성하는 SQL 쿼리를 콘솔에 출력

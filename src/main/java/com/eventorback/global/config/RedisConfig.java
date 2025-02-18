@@ -1,5 +1,6 @@
 package com.eventorback.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -15,10 +16,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RedisConfig {
 
+	@Value("${spring.data.redis.host}")
+	private String hostname;
+
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName("localhost");
+		redisStandaloneConfiguration.setHostName(hostname);
 		redisStandaloneConfiguration.setPort(6379);
 		redisStandaloneConfiguration.setPassword("1q2w3e4r!");
 		redisStandaloneConfiguration.setDatabase(2);

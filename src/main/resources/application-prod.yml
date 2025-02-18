@@ -9,6 +9,10 @@ spring:
   datasource:
     url: jdbc:mysql://mysql:3306/eventor
 
+  data:
+    redis:
+      host: redis
+
   # JPA 설정
   jpa:
     open-in-view: false
