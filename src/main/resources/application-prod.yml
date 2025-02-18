@@ -13,9 +13,9 @@ spring:
     username: elastic
     password: elastic
     uris:
-      - elasticsearch-es01-1:9200
-      - elasticsearch-es02-1:9200
-      - elasticsearch-es03-1:9200
+      - es01-1:9200
+      - es02-1:9200
+      - es03-1:9200
 
 
 
