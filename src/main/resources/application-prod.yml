@@ -9,17 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://mysql:3306/eventor
 
-  elasticsearch:
-    username: elastic
-    password: elastic
-    uris:
-      - 172.18.0.12:9200
-      - 172.18.0.11:9200
-      - 172.18.0.8:9200
-
-
-
-      # JPA 설정
+    # JPA 설정
   jpa:
     open-in-view: false
     show-sql: false    # Hibernate 가 생성하는 SQL 쿼리를 콘솔에 출력

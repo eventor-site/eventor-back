@@ -1,7 +1,11 @@
 package com.eventorback.search.config;
 
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -28,23 +32,35 @@ public class ElasticsearchConfig {
 		return new ElasticsearchClient(transport);
 	}
 
-	// @Profile("prod")
-	// @Bean
-	// public static ElasticsearchClient pordCreateElasticsearchClient() {
-	// 	ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
-	//
-	// 	// 여러 노드로 구성된 클러스터 연결
-	// 	RestClient restClient = RestClient.builder(
-	// 			new HttpHost("elasticsearch-es01-1", 9200, "http"),
-	// 			new HttpHost("elasticsearch-es02-1", 9200, "http"),
-	// 			new HttpHost("elasticsearch-es03-1", 9200, "http")
-	// 		)
-	// 		.setStrictDeprecationMode(false)
-	// 		.build();
-	//
-	// 	ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper(objectMapper));
-	//
-	// 	return new ElasticsearchClient(transport);
-	//
-	// }
+	@Profile("prod")
+	@Bean
+	public static ElasticsearchClient pordCreateElasticsearchClient() {
+		// ObjectMapper 설정
+		ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+		// 자격 증명 제공자 설정 (사용자 이름과 비밀번호)
+		BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+		credentialsProvider.setCredentials(
+			new AuthScope("elasticsearch-es01-1", 9200),
+			new UsernamePasswordCredentials("elastic", "elastic") // username, password
+		);
+
+		// RestClient 설정
+		RestClientBuilder restClientBuilder = RestClient.builder(
+			new HttpHost("elasticsearch-es01-1", 9200, "http"),
+			new HttpHost("elasticsearch-es02-1", 9200, "http"),
+			new HttpHost("elasticsearch-es03-1", 9200, "http")
+		).setHttpClientConfigCallback(httpClientBuilder ->
+			httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+
+		// RestClientTransport 설정
+		RestClient restClient = restClientBuilder.build();
+		ElasticsearchTransport transport = new RestClientTransport(
+			restClient,
+			new JacksonJsonpMapper(objectMapper)
+		);
+
+		// ElasticsearchClient 생성 및 반환
+		return new ElasticsearchClient(transport);
+	}
 }
