@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "eventor", writeTypeHint = WriteTypeHint.FALSE)
+@Document(indexName = "post", writeTypeHint = WriteTypeHint.FALSE)
 public class EsPost {
 
 	@Id
