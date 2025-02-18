@@ -22,7 +22,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
 		        UNION ALL
 		        SELECT c.category_id, c.parent_category_id
 		        FROM categories c
-		        INNER JOIN category_hierarchy ch ON c.parent_category_id = ch.category_id
+		        INNER JOIN categories_hierarchy ch ON c.parent_category_id = ch.category_id
 		    )
 		    SELECT category_id FROM categories_hierarchy
 		""", nativeQuery = true)
