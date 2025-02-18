@@ -35,9 +35,9 @@ public class ElasticsearchConfig {
 
 		// 여러 노드로 구성된 클러스터 연결
 		RestClient restClient = RestClient.builder(
-			new HttpHost("es01-1", 9200),
-			new HttpHost("es02-1", 9200),
-			new HttpHost("es03-1", 9200)
+			new HttpHost("elasticsearch-es01-1", 9200),
+			new HttpHost("elasticsearch-es02-1", 9200),
+			new HttpHost("elasticsearch-es03-1", 9200)
 		).build();
 
 		ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper(objectMapper));
