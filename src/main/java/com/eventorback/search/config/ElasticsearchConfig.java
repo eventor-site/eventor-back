@@ -47,9 +47,9 @@ public class ElasticsearchConfig {
 
 		// RestClient 설정
 		RestClientBuilder restClientBuilder = RestClient.builder(
-			new HttpHost("elasticsearch-es01-1", 9200, "http"),
-			new HttpHost("elasticsearch-es02-1", 9200, "http"),
-			new HttpHost("elasticsearch-es03-1", 9200, "http")
+			new HttpHost("elasticsearch-es01-1", 9200, "https"),
+			new HttpHost("elasticsearch-es02-1", 9200, "https"),
+			new HttpHost("elasticsearch-es03-1", 9200, "https")
 		).setHttpClientConfigCallback(httpClientBuilder ->
 			httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
 
