@@ -17,7 +17,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
 	@Query(value = """
 		    WITH RECURSIVE category_hierarchy AS (
 		        SELECT category_id, parent_category_id
-		        FROM category
+		        FROM categories
 		        WHERE name = :categoryName  -- 카테고리 이름을 기준으로 조회
 		        UNION ALL
 		        SELECT c.category_id, c.parent_category_id
