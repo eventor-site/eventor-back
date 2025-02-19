@@ -198,8 +198,7 @@ public class PostServiceImpl implements PostService {
 	public String disrecommendPost(Long userId, Long postId) {
 		PostRecommend postRecommend = postRecommendRepository.findByUserUserIdAndPostPostId(userId, postId)
 			.orElse(null);
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new PostNotFoundException(postId));
+		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
 
 		if (postRecommend == null && post.getUser().getUserId().equals(userId)) {
 			return "비추천할 수 없습니다.";

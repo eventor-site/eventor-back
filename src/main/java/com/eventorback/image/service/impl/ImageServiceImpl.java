@@ -32,7 +32,8 @@ public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 	private final PostRepository postRepository;
 
-	private static final String DOMAIN_URL = "https://www.eventor.store/";
+	@Value("${upload.domainUrl}")
+	private String domainUrl;
 
 	@Value("${upload.path}")
 	private String uploadPath;
@@ -58,7 +59,7 @@ public class ImageServiceImpl implements ImageService {
 			saveFile(folderPath, newFileName, file);
 
 			//임시 백엔드 리소스 URL
-			String url = DOMAIN_URL + folderName + "/" + today + "/" + newFileName;
+			String url = domainUrl + folderName + "/" + today + "/" + newFileName;
 
 			// 5. DB에 이미지 정보 저장
 			createImage(postId, originalFilename, newFileName, url, file.getSize());
@@ -129,7 +130,7 @@ public class ImageServiceImpl implements ImageService {
 
 				// 2. 실제 파일 경로 가져오기
 				Path filePath = Paths.get(uploadPath,
-					image.getUrl().replaceFirst(DOMAIN_URL, ""));
+					image.getUrl().replaceFirst(domainUrl, ""));
 
 				try {
 					// 3. 실제 파일 삭제

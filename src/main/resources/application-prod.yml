@@ -21,4 +21,5 @@ spring:
       ddl-auto: update #validate로 변경 예정
 
 upload:
+  domainUrl: https://www.eventor.store/
   path: ./image

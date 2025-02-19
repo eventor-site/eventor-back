@@ -34,4 +34,5 @@ logging:
         web: debug
 
 upload:
+  domainUrl: https://localhost/
   path: C:/Users/dlrud/Desktop/infra/
