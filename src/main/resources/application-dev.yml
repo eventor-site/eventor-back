@@ -12,7 +12,7 @@ spring:
   data:
     redis:
       host: localhost
-
+  
   # JPA 설정
   jpa:
     show-sql: true    # Hibernate 가 생성하는 SQL 쿼리를 콘솔에 출력
@@ -32,6 +32,13 @@ logging:
         interceptor: trace
         security: debug
         web: debug
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://root:1q2w3e4r!@localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
 
 upload:
   domainUrl: https://localhost/
