@@ -83,7 +83,7 @@ public class PostSyncToElasticSearch {
 	@After("execution(* com.eventorback.postrecommend.repository.PostRecommendRepository.save(..))")
 	public void syncPostToElasticsearchAfterRecommendPost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
-		if (args.length > 0 && args[1] instanceof PostRecommend postRecommend) {
+		if (args.length > 0 && args[0] instanceof PostRecommend postRecommend) {
 			EsPost esPost = elasticsearchRepository.findById(postRecommend.getPost().getPostId())
 				.orElse(null);
 
