@@ -13,11 +13,12 @@ import com.eventorback.post.domain.entity.Post;
 import com.eventorback.postrecommend.domain.entity.PostRecommend;
 import com.eventorback.postview.domain.entity.PostView;
 import com.eventorback.search.document.EsPost;
-import com.eventorback.search.exception.ElasticSearchNotFoundException;
 import com.eventorback.search.repository.ElasticSearchRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -33,9 +34,15 @@ public class PostSyncToElasticSearch {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof PostView postView) {
 			EsPost esPost = elasticsearchRepository.findById(postView.getPost().getPostId())
-				.orElseThrow(ElasticSearchNotFoundException::new);
-			esPost.increaseViewCount();
-			elasticsearchRepository.save(esPost);
+				.orElse(null);
+
+			if (esPost != null) {
+				esPost.increaseViewCount();
+				elasticsearchRepository.save(esPost);
+			} else {
+				log.warn("엘라스틱서치 NOT FOUND 발생");
+			}
+
 		}
 	}
 
@@ -58,9 +65,15 @@ public class PostSyncToElasticSearch {
 	public void syncPostToElasticsearchAfterUpdatePost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[1] instanceof Long postId && args[2] instanceof UpdatePostRequest request) {
-			EsPost esPost = elasticsearchRepository.findById(postId).orElseThrow(ElasticSearchNotFoundException::new);
-			esPost.update(request);
-			elasticsearchRepository.save(esPost);
+			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
+
+			if (esPost != null) {
+				esPost.update(request);
+				elasticsearchRepository.save(esPost);
+			} else {
+				log.warn("엘라스틱서치 NOT FOUND 발생");
+			}
+
 		}
 	}
 
@@ -72,15 +85,20 @@ public class PostSyncToElasticSearch {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[1] instanceof PostRecommend postRecommend) {
 			EsPost esPost = elasticsearchRepository.findById(postRecommend.getPost().getPostId())
-				.orElseThrow(ElasticSearchNotFoundException::new);
+				.orElse(null);
 
-			if (postRecommend.getRecommendType().getName().equals("추천")) {
-				esPost.recommendPost();
+			if (esPost != null) {
+				if (postRecommend.getRecommendType().getName().equals("추천")) {
+					esPost.recommendPost();
+				} else {
+					esPost.disrecommendPost();
+				}
+
+				elasticsearchRepository.save(esPost);
 			} else {
-				esPost.disrecommendPost();
+				log.warn("엘라스틱서치 NOT FOUND 발생");
 			}
 
-			elasticsearchRepository.save(esPost);
 		}
 	}
 
@@ -91,9 +109,15 @@ public class PostSyncToElasticSearch {
 	public void syncPostToElasticsearchAfterDeletePost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof Long postId) {
-			EsPost esPost = elasticsearchRepository.findById(postId).orElseThrow(ElasticSearchNotFoundException::new);
-			esPost.updatePostStatus("삭제됨");
-			elasticsearchRepository.save(esPost);
+			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
+
+			if (esPost != null) {
+				esPost.updatePostStatus("삭제됨");
+				elasticsearchRepository.save(esPost);
+			} else {
+				log.warn("엘라스틱서치 NOT FOUND 발생");
+			}
+
 		}
 	}
 
@@ -105,11 +129,17 @@ public class PostSyncToElasticSearch {
 		Object[] args = joinPoint.getArgs();
 
 		if (args.length > 0 && args[2] instanceof Long postId) {
-			EsPost esPost = elasticsearchRepository.findById(postId).orElseThrow(ElasticSearchNotFoundException::new);
-			Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
-				.orElseThrow(ImageNotFoundException::new);
-			esPost.updateImageUrl(image.getUrl());
-			elasticsearchRepository.save(esPost);
+			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
+
+			if (esPost != null) {
+				Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
+					.orElseThrow(ImageNotFoundException::new);
+				esPost.updateImageUrl(image.getUrl());
+				elasticsearchRepository.save(esPost);
+			} else {
+				log.warn("엘라스틱서치 NOT FOUND 발생");
+			}
+
 		}
 	}
 
@@ -121,14 +151,20 @@ public class PostSyncToElasticSearch {
 		Object[] args = joinPoint.getArgs();
 
 		if (args.length > 0 && args[0] instanceof Long postId) {
-			EsPost esPost = elasticsearchRepository.findById(postId).orElseThrow(ElasticSearchNotFoundException::new);
-			Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
-			if (image != null) {
-				esPost.updateImageUrl(image.getUrl());
+			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
+
+			if (esPost != null) {
+				Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
+				if (image != null) {
+					esPost.updateImageUrl(image.getUrl());
+				} else {
+					esPost.updateImageUrl(null);
+				}
+				elasticsearchRepository.save(esPost);
 			} else {
-				esPost.updateImageUrl(null);
+				log.warn("엘라스틱서치 NOT FOUND 발생");
 			}
-			elasticsearchRepository.save(esPost);
+
 		}
 	}
 
