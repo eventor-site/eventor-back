@@ -1,4 +1,4 @@
-package com.eventorback.commentRecommend.domain.entity;
+package com.eventorback.commentrecommend.domain.entity;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;

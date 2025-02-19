@@ -5,6 +5,7 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -15,6 +16,7 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 @Configuration
+@EnableElasticsearchRepositories(basePackages = "com.eventorback.search.repository")
 public class ElasticsearchConfig {
 
 	@Profile("dev")
