@@ -126,8 +126,8 @@ public class CommentServiceImpl implements CommentService {
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new CommentNotFoundException(commentId));
 
-		if (currentUser != null && (!comment.getUser().getUserId().equals(currentUser.userId())) || !currentUser.roles()
-			.contains("admin")) {
+		if (currentUser == null || (!comment.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles()
+			.contains("admin"))) {
 			throw new AccessDeniedException();
 		}
 

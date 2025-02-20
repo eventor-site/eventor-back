@@ -122,7 +122,30 @@ public class PostSyncToElasticSearch {
 	}
 
 	/**
-	 * 엘라스틱서치 게시물 이미지 업로드 시 썸네일 업데이트
+	 * 이벤트 게시물 썸네일 업로드 시 엘라스틱서치 동기화
+	 */
+	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.uploadThumbnail(..))")
+	public void syncPostToElasticsearchAfterReturningUploadThumbnail(JoinPoint joinPoint) {
+		Object[] args = joinPoint.getArgs();
+
+		if (args.length > 0 && args[2] instanceof Long postId) {
+			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
+
+			if (esPost != null) {
+				Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true)
+					.orElseThrow(ImageNotFoundException::new);
+				esPost.updateImageUrl(image.getUrl());
+				elasticsearchRepository.save(esPost);
+
+			} else {
+				log.warn("엘라스틱서치 NOT FOUND 발생");
+			}
+
+		}
+	}
+
+	/**
+	 * 공지, 핫딜, 자유, 맛집 게시물 이미지 업로드 시 썸네일 엘라스틱서치 업데이트
 	 */
 	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.upload(..))")
 	public void syncPostToElasticsearchAfterReturningSaveImage(JoinPoint joinPoint) {
@@ -132,10 +155,15 @@ public class PostSyncToElasticSearch {
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
 
 			if (esPost != null) {
-				Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
-					.orElseThrow(ImageNotFoundException::new);
-				esPost.updateImageUrl(image.getUrl());
-				elasticsearchRepository.save(esPost);
+				String categoryName = esPost.getCategoryName();
+				if (categoryName.equals("공지") || categoryName.equals("핫딜") || categoryName.equals("자유")
+					|| categoryName.equals("맛집")) {
+					Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
+						.orElseThrow(ImageNotFoundException::new);
+					esPost.updateImageUrl(image.getUrl());
+					elasticsearchRepository.save(esPost);
+				}
+
 			} else {
 				log.warn("엘라스틱서치 NOT FOUND 발생");
 			}
@@ -144,7 +172,7 @@ public class PostSyncToElasticSearch {
 	}
 
 	/**
-	 * 엘라스틱서치 게시물 이미지 삭제 시 썸네일 업데이트
+	 * 공지, 핫딜, 자유, 맛집 게시물 이미지 삭제 시 엘라스틱서치 썸네일 업데이트
 	 */
 	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.deleteImage(..))")
 	public void syncPostToElasticsearchAfterReturningDeleteImage(JoinPoint joinPoint) {
@@ -154,19 +182,24 @@ public class PostSyncToElasticSearch {
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
 
 			if (esPost != null) {
-				Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
-				if (image != null) {
-					esPost.updateImageUrl(image.getUrl());
-				} else {
-					esPost.updateImageUrl(null);
-				}
-				elasticsearchRepository.save(esPost);
-			} else {
-				log.warn("엘라스틱서치 NOT FOUND 발생");
-			}
+				String categoryName = esPost.getCategoryName();
+				if (categoryName.equals("공지") || categoryName.equals("핫딜") || categoryName.equals("자유")
+					|| categoryName.equals("맛집")) {
 
+					Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
+
+					if (image != null) {
+						esPost.updateImageUrl(image.getUrl());
+					} else {
+						esPost.updateImageUrl(null);
+					}
+
+					elasticsearchRepository.save(esPost);
+				} else {
+					log.warn("엘라스틱서치 NOT FOUND 발생");
+				}
+			}
 		}
 	}
-
 }
 

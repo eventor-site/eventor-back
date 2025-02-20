@@ -97,59 +97,49 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetMainPostResponse> getHotEventPosts() {
+	public List<GetMainPostResponse> getHotEventPosts(List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
 				GetMainPostResponse.class,
 				post.postId,
 				post.title,
-				image.url
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.leftJoin(image)
-			.on(image.post.postId.eq(post.postId))
-			.on(image.imageId.eq(
-				JPAExpressions
-					.select(image.imageId.min())  // 가장 작은 imageId 선택
-					.from(image)
-					.where(image.post.postId.eq(post.postId))
-			))
-			.where(status.name.eq("작성됨"))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물만 반환
 			.fetch();
 	}
 
 	@Override
-	public List<GetMainPostResponse> getLatestEventPosts() {
+	public List<GetMainPostResponse> getLatestEventPosts(List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
 				GetMainPostResponse.class,
 				post.postId,
 				post.title,
-				image.url
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.leftJoin(image)
-			.on(image.post.postId.eq(post.postId))
-			.on(image.imageId.eq(
-				JPAExpressions
-					.select(image.imageId.min())  // 가장 작은 imageId 선택
-					.from(image)
-					.where(image.post.postId.eq(post.postId))
-			))
-			.where(status.name.eq("작성됨"))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물 제한
 			.fetch();
 	}
 
 	@Override
-	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
+	public List<GetRecommendPostResponse> getRecommendationEventPosts(List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
 				GetRecommendPostResponse.class,
@@ -159,28 +149,22 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
-				image.url // 첫 번째 이미지 URL
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.leftJoin(image)
-			.on(image.post.postId.eq(post.postId))
-			.on(image.imageId.eq(
-				JPAExpressions
-					.select(image.imageId.min())  // 가장 작은 imageId 선택
-					.from(image)
-					.where(image.post.postId.eq(post.postId))
-			))
-			.on(image.post.postId.eq(post.postId)) // 게시물과 연결된 이미지
-			.where(status.name.eq("작성됨"))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(post.recommendationCount.desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();
 	}
 
 	@Override
-	public List<GetRecommendPostResponse> getTrendingEventPosts() {
+	public List<GetRecommendPostResponse> getTrendingEventPosts(List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
 				GetRecommendPostResponse.class,
@@ -190,22 +174,18 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				postView.count(),
 				post.createdAt,
-				image.url.min() // 첫 번째 이미지 URL
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(postView)
 			.join(postView.post, post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.leftJoin(image)
-			.on(image.post.postId.eq(post.postId))
-			.on(image.imageId.eq(
-				JPAExpressions
-					.select(image.imageId.min())  // 가장 작은 imageId 선택
-					.from(image)
-					.where(image.post.postId.eq(post.postId))
-			))
-			.on(image.post.postId.eq(post.postId)) // 게시물과 연결된 이미지
-			.where(status.name.eq("작성됨").and(postView.createdAt.gt(LocalDateTime.now().minusDays(7))))
+			.where(status.name.eq("작성됨")
+				.and(postView.createdAt.gt(LocalDateTime.now().minusDays(7)))
+				.and(post.category.categoryId.in(categoryIds)))
 			.groupBy(postView.post.postId)
 			.orderBy(postView.count().desc())
 			.limit(10)  // 상위 10권으로 결과 제한
@@ -232,7 +212,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.from(image)
 					.where(image.post.postId.eq(post.postId))
 			))
-			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물만 반환
 			.fetch();
@@ -260,7 +240,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.join(post.user, user)
 			.join(user.grade, grade)
-			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(post.createdAt.desc())
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
@@ -269,7 +249,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 		Long total = Optional.ofNullable(queryFactory
 			.select(post.count())
 			.from(post)
-			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.fetchOne()).orElse(0L);
 
 		return new PageImpl<>(result, pageable, total);
@@ -302,7 +282,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.from(image)
 					.where(image.post.postId.eq(post.postId))
 			))
-			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(post.createdAt.desc())
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
@@ -311,7 +291,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 		Long total = Optional.ofNullable(queryFactory
 			.select(post.count())
 			.from(post)
-			.where(status.name.eq("작성됨"), post.category.categoryId.in(categoryIds))
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.fetchOne()).orElse(0L);
 
 		return new PageImpl<>(result, pageable, total);
