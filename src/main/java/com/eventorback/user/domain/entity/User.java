@@ -149,4 +149,12 @@ public class User {
 	public void updateStatus(Status status) {
 		this.status = status;
 	}
+
+	public void updatePoint(Long point) {
+		this.point += point;
+
+		if (this.point < 0) {
+			this.point = 0L;
+		}
+	}
 }
