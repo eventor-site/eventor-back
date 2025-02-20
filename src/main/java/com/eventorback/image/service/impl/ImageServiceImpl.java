@@ -11,10 +11,12 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eventorback.image.domain.entity.Image;
 import com.eventorback.image.exception.FileExtensionException;
+import com.eventorback.image.exception.FileUploadException;
 import com.eventorback.image.exception.ImageNotFoundException;
 import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.image.service.ImageService;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
@@ -37,6 +40,34 @@ public class ImageServiceImpl implements ImageService {
 
 	@Value("${upload.path}")
 	private String uploadPath;
+
+	@Override
+	public void uploadThumbnail(MultipartFile thumbnail, String folderName, Long postId) throws FileUploadException {
+		// 1. 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
+		String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
+		Path folderPath = Paths.get(uploadPath, folderName, today);
+		createDirectoryIfNotExists(folderPath);
+
+		// 2. 파일 이름 생성 (UUID 로 중복 방지)
+		String originalFilename = thumbnail.getOriginalFilename();
+		String fileExtension = getFileExtension(originalFilename);
+		String newFileName = postId.toString() + "_" + UUID.randomUUID() + fileExtension;
+
+		// 3. 파일 확장자 검사
+		checkFileExtension(fileExtension);
+
+		// 4. 파일 저장
+		saveFile(folderPath, newFileName, thumbnail);
+
+		//임시 백엔드 리소스 URL
+		String url = domainUrl + folderName + "/" + today + "/" + newFileName;
+
+		// 기존 썸네일 존재하면 제거
+		imageRepository.deleteByPostPostIdAndIsThumbnail(postId, true);
+
+		// 5. DB에 이미지 정보 저장
+		createImage(postId, originalFilename, newFileName, url, thumbnail.getSize(), true);
+	}
 
 	@Override
 	// @Async("imageUploadExecutor")
@@ -62,7 +93,7 @@ public class ImageServiceImpl implements ImageService {
 			String url = domainUrl + folderName + "/" + today + "/" + newFileName;
 
 			// 5. DB에 이미지 정보 저장
-			createImage(postId, originalFilename, newFileName, url, file.getSize());
+			createImage(postId, originalFilename, newFileName, url, file.getSize(), false);
 		}
 	}
 
@@ -115,9 +146,10 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void createImage(Long postId, String originalName, String newName, String url, Long size) {
+	public void createImage(Long postId, String originalName, String newName, String url, Long size,
+		Boolean isThumbnail) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
-		imageRepository.save(new Image(post, originalName, newName, url, size));
+		imageRepository.save(new Image(post, originalName, newName, url, size, isThumbnail));
 	}
 
 	@Override
@@ -145,4 +177,5 @@ public class ImageServiceImpl implements ImageService {
 		}
 
 	}
+
 }

@@ -98,7 +98,14 @@ public class PostServiceImpl implements PostService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
-		return postRepository.getPostsByCategoryName(PageRequest.of(page, pageSize), categoryIds);
+
+		if (!categoryName.equals("공지") && !categoryName.equals("핫딜") && !categoryName.equals("자유")
+			&& !categoryName.equals("맛집")) {
+			return postRepository.getPostsByEventCategory(PageRequest.of(page, pageSize), categoryIds);
+		} else {
+			return postRepository.getPostsByCategoryName(PageRequest.of(page, pageSize), categoryIds);
+		}
+
 	}
 
 	@Override
@@ -111,9 +118,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public GetPostResponse getPost(CurrentUserDto currentUser, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
-
-		List<GetImageResponse> images = imageRepository.findAllByPostPostId(postId)
-			.stream().map(GetImageResponse::fromEntity).toList();
+		List<GetImageResponse> images = imageRepository.getAllByPostId(postId);
 
 		boolean isAuthorized = false;
 		boolean isFavorite = false;

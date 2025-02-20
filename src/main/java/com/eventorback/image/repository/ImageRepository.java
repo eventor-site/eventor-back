@@ -7,11 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.eventorback.image.domain.entity.Image;
 
-public interface ImageRepository extends JpaRepository<Image, Long> {
+public interface ImageRepository extends JpaRepository<Image, Long>, CustomImageRepository {
 
 	Optional<Image> findTopByPostPostIdOrderByImageIdAsc(Long postId);
 
 	List<Image> findAllByPostPostId(Long postId);
 
-	void deleteAllByPostPostId(Long postId);
+	void deleteByPostPostIdAndIsThumbnail(Long postId, Boolean isThumbnail);
+
 }

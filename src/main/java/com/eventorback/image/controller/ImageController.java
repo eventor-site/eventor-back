@@ -21,15 +21,22 @@ import lombok.RequiredArgsConstructor;
 public class ImageController {
 	private final ImageService imageService;
 
+	@PostMapping(value = "/upload/thumbnail", consumes = "multipart/form-data")
+	public ResponseEntity<Void> uploadThumbnail(@RequestParam("thumbnail") MultipartFile thumbnail,
+		@RequestParam String folderName, @RequestParam Long postId) {
+		imageService.uploadThumbnail(thumbnail, folderName, postId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
 	@PostMapping(value = "/upload", consumes = "multipart/form-data")
 	public ResponseEntity<Void> uploadImage(@RequestParam("files") List<MultipartFile> files,
 		@RequestParam String folderName, @RequestParam Long postId) {
 		imageService.upload(files, folderName, postId);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@DeleteMapping
-	public ResponseEntity<Void> uploadImage(@RequestParam Long postId, @RequestParam List<Long> deleteImageIds) {
+	public ResponseEntity<Void> deleteImage(@RequestParam Long postId, @RequestParam List<Long> deleteImageIds) {
 		imageService.deleteImage(postId, deleteImageIds);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
