@@ -132,6 +132,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			userInfo.getPhone(),
 			userInfo.getBirth(),
 			userInfo.getGender(),
+			userInfo.getPoint(),
 			userInfo.getStatus().getName(),
 			userInfo.getGrade().getName(),
 			roles,
