@@ -14,6 +14,7 @@ public record GetUserResponse(
 	String phone,
 	LocalDate birth,
 	String gender,
+	Long point,
 	String statusName,
 	String gradeName,
 	List<String> roles,
