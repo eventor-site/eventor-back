@@ -43,16 +43,20 @@ public class Image {
 	@Column(name = "size")
 	private Long size;
 
+	@Column(name = "is_thumbnail")
+	private Boolean isThumbnail;
+
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
 	@Builder
-	public Image(Post post, String originalName, String newName, String url, Long size) {
+	public Image(Post post, String originalName, String newName, String url, Long size, Boolean isThumbnail) {
 		this.post = post;
 		this.originalName = originalName;
 		this.newName = newName;
 		this.url = url;
 		this.size = size;
+		this.isThumbnail = isThumbnail;
 		this.createdAt = LocalDateTime.now();
 	}
 
