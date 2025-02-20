@@ -9,6 +9,8 @@ import com.eventorback.image.domain.entity.Image;
 
 public interface ImageRepository extends JpaRepository<Image, Long>, CustomImageRepository {
 
+	Optional<Image> findByPostPostIdAndIsThumbnail(Long postId, Boolean isThumbnail);
+
 	Optional<Image> findTopByPostPostIdOrderByImageIdAsc(Long postId);
 
 	List<Image> findAllByPostPostId(Long postId);

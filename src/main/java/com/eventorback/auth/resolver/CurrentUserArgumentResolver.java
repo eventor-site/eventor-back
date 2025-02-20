@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -41,13 +40,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		// roles 파싱
 		List<String> roles = null;
 		if (userRolesHeader != null) {
-			userRolesHeader = userRolesHeader.replace("[", "").replace("]", "");  // 대괄호 제거
-			roles = null;
-			if (StringUtils.hasText(userRolesHeader)) {
-				roles = Arrays.asList(userRolesHeader.split(",")); // 쉼표로 구분
-				// 각 역할에서 공백을 제거하고, 필요시 trim() 적용
-				roles = roles.stream().map(String::trim).toList();
-			}
+			roles = Arrays.asList(userRolesHeader.replaceAll("[\\[\\]\\s]", "").split(","));
 
 			return CurrentUserDto.builder()
 				.userId(userId)

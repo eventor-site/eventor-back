@@ -69,22 +69,26 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<GetMainPostResponse> getHotEventPosts() {
-		return postRepository.getHotEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getHotEventPosts(categoryIds);
 	}
 
 	@Override
 	public List<GetMainPostResponse> getLatestEventPosts() {
-		return postRepository.getLatestEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getLatestEventPosts(categoryIds);
 	}
 
 	@Override
 	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
-		return postRepository.getRecommendationEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getRecommendationEventPosts(categoryIds);
 	}
 
 	@Override
 	public List<GetRecommendPostResponse> getTrendingEventPosts() {
-		return postRepository.getTrendingEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getTrendingEventPosts(categoryIds);
 	}
 
 	@Override
@@ -172,8 +176,8 @@ public class PostServiceImpl implements PostService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(postId));
 
-		if (currentUser != null && (!post.getUser().getUserId().equals(currentUser.userId())) || !currentUser.roles()
-			.contains("admin")) {
+		if (currentUser == null || (!post.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles()
+			.contains("admin"))) {
 			throw new AccessDeniedException();
 		}
 		post.update(request);

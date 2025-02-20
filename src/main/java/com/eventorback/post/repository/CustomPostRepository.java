@@ -18,13 +18,13 @@ public interface CustomPostRepository {
 
 	Page<GetPostSimpleResponse> getPostsByUserId(Pageable pageable, Long userId);
 
-	List<GetMainPostResponse> getHotEventPosts();
+	List<GetMainPostResponse> getHotEventPosts(List<Long> categoryIds);
 
-	List<GetMainPostResponse> getLatestEventPosts();
+	List<GetMainPostResponse> getLatestEventPosts(List<Long> categoryIds);
 
-	List<GetRecommendPostResponse> getRecommendationEventPosts();
+	List<GetRecommendPostResponse> getRecommendationEventPosts(List<Long> categoryIds);
 
-	List<GetRecommendPostResponse> getTrendingEventPosts();
+	List<GetRecommendPostResponse> getTrendingEventPosts(List<Long> categoryIds);
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
 
