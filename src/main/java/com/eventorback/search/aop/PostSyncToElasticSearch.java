@@ -1,7 +1,7 @@
 package com.eventorback.search.aop;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
@@ -29,8 +29,8 @@ public class PostSyncToElasticSearch {
 	/**
 	 * 엘라스틱서치 게시물 조회수 증가
 	 */
-	@After("execution(* com.eventorback.postview.repository.PostViewRepository.save(..))")
-	public void syncPostToElasticsearchAfterGetPost(JoinPoint joinPoint) {
+	@AfterReturning("execution(* com.eventorback.postview.repository.PostViewRepository.save(..))")
+	public void syncPostToElasticsearchAfterReturningGetPost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof PostView postView) {
 			EsPost esPost = elasticsearchRepository.findById(postView.getPost().getPostId())
@@ -49,8 +49,8 @@ public class PostSyncToElasticSearch {
 	/**
 	 * 엘라스틱서치 게시물 저장
 	 */
-	@After("execution(* com.eventorback.post.repository.PostRepository.save(..))")
-	public void syncPostToElasticsearchAfterSavePost(JoinPoint joinPoint) {
+	@AfterReturning("execution(* com.eventorback.post.repository.PostRepository.save(..))")
+	public void syncPostToElasticsearchAfterReturningSavePost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof Post post) {
 			EsPost esPost = EsPost.fromEntity(post);
@@ -61,8 +61,8 @@ public class PostSyncToElasticSearch {
 	/**
 	 * 엘라스틱서치 게시물 업데이트
 	 */
-	@After("execution(* com.eventorback.post.service.impl.PostServiceImpl.updatePost(..))")
-	public void syncPostToElasticsearchAfterUpdatePost(JoinPoint joinPoint) {
+	@AfterReturning("execution(* com.eventorback.post.service.impl.PostServiceImpl.updatePost(..))")
+	public void syncPostToElasticsearchAfterReturningUpdatePost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[1] instanceof Long postId && args[2] instanceof UpdatePostRequest request) {
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
@@ -80,8 +80,8 @@ public class PostSyncToElasticSearch {
 	/**
 	 * 엘라스틱서치 게시물 추천/비추천
 	 */
-	@After("execution(* com.eventorback.postrecommend.repository.PostRecommendRepository.save(..))")
-	public void syncPostToElasticsearchAfterRecommendPost(JoinPoint joinPoint) {
+	@AfterReturning("execution(* com.eventorback.postrecommend.repository.PostRecommendRepository.save(..))")
+	public void syncPostToElasticsearchAfterReturningRecommendPost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof PostRecommend postRecommend) {
 			EsPost esPost = elasticsearchRepository.findById(postRecommend.getPost().getPostId())
@@ -105,8 +105,8 @@ public class PostSyncToElasticSearch {
 	/**
 	 * 엘라스틱서치 게시물 삭제
 	 */
-	@After("execution(* com.eventorback.post.service.impl.PostServiceImpl.deletePost(..))")
-	public void syncPostToElasticsearchAfterDeletePost(JoinPoint joinPoint) {
+	@AfterReturning("execution(* com.eventorback.post.service.impl.PostServiceImpl.deletePost(..))")
+	public void syncPostToElasticsearchAfterReturningDeletePost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof Long postId) {
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
@@ -124,8 +124,8 @@ public class PostSyncToElasticSearch {
 	/**
 	 * 엘라스틱서치 게시물 이미지 업로드 시 썸네일 업데이트
 	 */
-	@After("execution(* com.eventorback.image.service.impl.ImageServiceImpl.upload(..))")
-	public void syncPostToElasticsearchAfterSaveImage(JoinPoint joinPoint) {
+	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.upload(..))")
+	public void syncPostToElasticsearchAfterReturningSaveImage(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 
 		if (args.length > 0 && args[2] instanceof Long postId) {
@@ -146,8 +146,8 @@ public class PostSyncToElasticSearch {
 	/**
 	 * 엘라스틱서치 게시물 이미지 삭제 시 썸네일 업데이트
 	 */
-	@After("execution(* com.eventorback.image.service.impl.ImageServiceImpl.deleteImage(..))")
-	public void syncPostToElasticsearchAfterDeleteImage(JoinPoint joinPoint) {
+	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.deleteImage(..))")
+	public void syncPostToElasticsearchAfterReturningDeleteImage(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 
 		if (args.length > 0 && args[0] instanceof Long postId) {
