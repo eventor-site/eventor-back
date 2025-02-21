@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.eventorback.status.domain.dto.response.GetStatusResponse;
 import com.eventorback.status.domain.entity.Status;
 
-public interface StatusCustomRepository {
+public interface CustomStatusRepository {
 
 	Page<GetStatusResponse> getStatuses(Pageable pageable);
 

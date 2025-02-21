@@ -14,14 +14,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.commentreport.domain.dto.response.GetCommentReportResponse;
-import com.eventorback.commentreport.repository.CommentReportCustomRepository;
+import com.eventorback.commentreport.repository.CustomCommentReportRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CommentReportCustomRepositoryImpl implements CommentReportCustomRepository {
+public class CustomCommentReportRepositoryImpl implements CustomCommentReportRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override

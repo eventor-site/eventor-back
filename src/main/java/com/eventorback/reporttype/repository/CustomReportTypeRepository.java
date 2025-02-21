@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.reporttype.domain.dto.ReportTypeDto;
 
-public interface ReportTypeCustomRepository {
+public interface CustomReportTypeRepository {
 
 	List<ReportTypeDto> getReportTypes();
 

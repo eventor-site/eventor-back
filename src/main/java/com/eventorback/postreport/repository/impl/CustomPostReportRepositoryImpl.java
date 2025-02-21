@@ -14,14 +14,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.postreport.domain.dto.response.GetPostReportResponse;
-import com.eventorback.postreport.repository.PostReportCustomRepository;
+import com.eventorback.postreport.repository.CustomPostReportRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class PostReportCustomRepositoryImpl implements PostReportCustomRepository {
+public class CustomPostReportRepositoryImpl implements CustomPostReportRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override

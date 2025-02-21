@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import com.eventorback.userstop.domain.dto.response.GetUserStopByUserIdResponse;
 import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
 
-public interface UserStopCustomRepository {
+public interface CustomUserStopRepository {
 
 	Page<GetUserStopResponse> getUserStops(Pageable pageable);
 

@@ -10,14 +10,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.role.domain.dto.RoleDto;
-import com.eventorback.role.repository.RoleCustomRepository;
+import com.eventorback.role.repository.CustomRoleRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class RoleCustomRepositoryImpl implements RoleCustomRepository {
+public class CustomRoleRepositoryImpl implements CustomRoleRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override

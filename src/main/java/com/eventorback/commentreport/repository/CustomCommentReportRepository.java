@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.commentreport.domain.dto.response.GetCommentReportResponse;
 
-public interface CommentReportCustomRepository {
+public interface CustomCommentReportRepository {
 
 	Page<GetCommentReportResponse> getCommentReports(Pageable pageable);
 }
