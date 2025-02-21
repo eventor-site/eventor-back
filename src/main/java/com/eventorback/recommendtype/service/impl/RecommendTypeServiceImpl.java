@@ -38,14 +38,14 @@ public class RecommendTypeServiceImpl implements RecommendTypeService {
 	@Transactional(readOnly = true)
 	public RecommendTypeDto getRecommendType(Long recommendTypeId) {
 		RecommendType recommendType = recommendTypeRepository.findById(recommendTypeId)
-			.orElseThrow(() -> new RecommendTypeNotFoundException(recommendTypeId));
+			.orElseThrow(RecommendTypeNotFoundException::new);
 		return RecommendTypeDto.fromEntity(recommendType);
 	}
 
 	@Override
 	public void createRecommendType(RecommendTypeDto request) {
 		if (recommendTypeRepository.existsByName(request.name())) {
-			throw new RecommendTypeAlreadyExistsException(request.name());
+			throw new RecommendTypeAlreadyExistsException();
 		}
 		recommendTypeRepository.save(RecommendType.toEntity(request));
 	}
@@ -53,10 +53,10 @@ public class RecommendTypeServiceImpl implements RecommendTypeService {
 	@Override
 	public void updateRecommendType(Long recommendId, RecommendTypeDto request) {
 		RecommendType recommendType = recommendTypeRepository.findById(recommendId)
-			.orElseThrow(() -> new RecommendTypeNotFoundException(recommendId));
+			.orElseThrow(RecommendTypeNotFoundException::new);
 
 		if (recommendTypeRepository.existsByName(request.name())) {
-			throw new RecommendTypeAlreadyExistsException(request.name());
+			throw new RecommendTypeAlreadyExistsException();
 		}
 
 		recommendType.updateRecommendType(request.name());

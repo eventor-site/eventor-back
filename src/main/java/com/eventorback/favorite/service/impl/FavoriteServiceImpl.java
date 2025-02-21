@@ -42,9 +42,9 @@ public class FavoriteServiceImpl implements FavoriteService {
 			favoriteRepository.deleteByUserUserIdAndPostPostId(userId, postId);
 			return "하트가 삭제 되었습니다.";
 		} else {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new PostNotFoundException(postId));
+				.orElseThrow(PostNotFoundException::new);
 			favoriteRepository.save(Favorite.toEntity(user, post));
 			return "게시물을 하트 하였습니다.";
 		}

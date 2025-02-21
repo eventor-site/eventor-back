@@ -86,18 +86,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public GetUserResponse getUserInfo(Long userId) {
-		return userRepository.getUserInfo(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		return userRepository.getUserInfo(userId).orElseThrow(UserNotFoundException::new);
 	}
 
 	@Override
 	public void updateUser(Long userId, UpdateUserRequest request) {
-		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
 		user.updateUser(request);
 	}
 
 	@Override
 	public void withdrawUser(Long userId) {
-		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
 		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
 		user.updateStatus(status);
 	}
@@ -122,14 +122,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
-		User user = userRepository.getUser(request.userId())
-			.orElseThrow(() -> new UserNotFoundException(request.userId()));
+		User user = userRepository.getUser(request.userId()).orElseThrow(UserNotFoundException::new);
 		user.updateLastLoginTime(request);
 	}
 
 	@Override
 	public String modifyPassword(Long userId, ModifyPasswordRequest request) {
-		User user = userRepository.getUser(userId).orElseThrow(() -> new UserNotFoundException(userId));
+		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
 
 		// 현재 비밀번호 확인
 		if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
@@ -148,14 +147,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void signup(SignUpRequest request) {
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-		Grade grade = gradeRepository.findByName("1")
-			.orElseThrow(() -> new StatusNotFoundException("1"));
+		Grade grade = gradeRepository.findByName("1").orElseThrow(StatusNotFoundException::new);
 
 		String encodedPassword = request.password() != null ? passwordEncoder.encode(request.password()) : null;
 		User user = userRepository.save(User.toEntity(status, grade, request, encodedPassword));
 
 		// 회원 가입시 기본 권한 데이터 설정
-		Role role = roleRepository.findByName("member").orElseThrow(() -> new RoleNotFoundException("member"));
+		Role role = roleRepository.findByName("member").orElseThrow(RoleNotFoundException::new);
 		userRoleRepository.save(UserRole.toEntity(user, role));
 	}
 

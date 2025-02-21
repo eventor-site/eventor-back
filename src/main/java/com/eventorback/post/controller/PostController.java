@@ -90,6 +90,7 @@ public class PostController {
 		return ApiResponse.createSuccess(postService.getPostsByCategoryName(pageable, categoryName));
 	}
 
+	@AuthorizeRole("member")
 	@GetMapping("/me/paging")
 	public ResponseEntity<Page<GetPostSimpleResponse>> getPostsByUserId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
@@ -129,6 +130,13 @@ public class PostController {
 	public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
 		postService.deletePost(postId);
 		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@AuthorizeRole("member")
+	@GetMapping("/{postId}/isAuthorized")
+	public ResponseEntity<Boolean> isAuthorizedToEdit(@CurrentUser CurrentUserDto currentUser,
+		@PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.isAuthorizedToEdit(currentUser, postId));
 	}
 
 }

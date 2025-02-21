@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eventorback.image.domain.entity.Image;
+import com.eventorback.image.exception.CreateFolderException;
 import com.eventorback.image.exception.FileExtensionException;
+import com.eventorback.image.exception.FileSaveException;
 import com.eventorback.image.exception.FileUploadException;
 import com.eventorback.image.exception.ImageNotFoundException;
 import com.eventorback.image.repository.ImageRepository;
@@ -103,7 +105,7 @@ public class ImageServiceImpl implements ImageService {
 		try {
 			Files.write(filePath, file.getBytes());
 		} catch (IOException e) {
-			throw new RuntimeException("파일 저장 실패: " + e.getMessage(), e);
+			throw new FileSaveException(e.getMessage());
 		}
 		return filePath.toString();
 	}
@@ -117,7 +119,7 @@ public class ImageServiceImpl implements ImageService {
 			try {
 				Files.createDirectories(folderPath);
 			} catch (IOException e) {
-				throw new RuntimeException("폴더 생성 실패: " + e.getMessage(), e);
+				throw new CreateFolderException(e.getMessage());
 			}
 		}
 	}
@@ -148,7 +150,7 @@ public class ImageServiceImpl implements ImageService {
 	@Override
 	public void createImage(Long postId, String originalName, String newName, String url, Long size,
 		Boolean isThumbnail) {
-		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
+		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		imageRepository.save(new Image(post, originalName, newName, url, size, isThumbnail));
 	}
 

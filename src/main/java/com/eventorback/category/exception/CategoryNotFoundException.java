@@ -1,17 +1,9 @@
 package com.eventorback.category.exception;
 
-import java.time.LocalDateTime;
-
-import org.springframework.http.HttpStatus;
-
 import com.eventorback.global.exception.NotFoundException;
-import com.eventorback.global.exception.payload.ErrorStatus;
 
 public class CategoryNotFoundException extends NotFoundException {
-	public CategoryNotFoundException(Object value) {
-		super(
-			ErrorStatus.from(String.format("해당 카테고리 '%s'는 존재하지 않는 카테고리 입니다.", value),
-				HttpStatus.NOT_FOUND,
-				LocalDateTime.now()));
+	public CategoryNotFoundException() {
+		super("카테고리를 찾을 수 없습니다.");
 	}
 }

@@ -37,17 +37,17 @@ public class StatusServiceImpl implements StatusService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetStatusResponse getStatus(Long statusId) {
-		return statusRepository.getStatus(statusId).orElseThrow(() -> new StatusNotFoundException(statusId));
+		return statusRepository.getStatus(statusId).orElseThrow(StatusNotFoundException::new);
 	}
 
 	@Override
 	public void createStatus(StatusRequest request) {
 		if (statusRepository.existsByName(request.name())) {
-			throw new StatusAlreadyExistsException(request.name());
+			throw new StatusAlreadyExistsException();
 		}
 
 		StatusType statusType = statusTypeRepository.findById(request.statusTypeId())
-			.orElseThrow(() -> new StatusTypeNotFoundException(request.statusTypeId()));
+			.orElseThrow(StatusTypeNotFoundException::new);
 
 		statusRepository.save(Status.toEntity(statusType, request));
 	}
@@ -55,12 +55,12 @@ public class StatusServiceImpl implements StatusService {
 	@Override
 	public void updateStatus(Long statusId, StatusRequest request) {
 		if (statusRepository.existsByName(request.name())) {
-			throw new StatusAlreadyExistsException(request.name());
+			throw new StatusAlreadyExistsException();
 		}
 
-		Status status = statusRepository.findById(statusId).orElseThrow(() -> new StatusNotFoundException(statusId));
+		Status status = statusRepository.findById(statusId).orElseThrow(StatusNotFoundException::new);
 		StatusType statusType = statusTypeRepository.findById(request.statusTypeId())
-			.orElseThrow(() -> new StatusTypeNotFoundException(request.statusTypeId()));
+			.orElseThrow(StatusTypeNotFoundException::new);
 		status.updateName(statusType, request.name());
 
 	}

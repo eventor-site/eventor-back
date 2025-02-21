@@ -44,7 +44,7 @@ public class UserStopServiceImpl implements UserStopService {
 	@Override
 	public UserStopDto getUserStop(Long userStopId) {
 		UserStop userStop = userStopRepository.findById(userStopId)
-			.orElseThrow(() -> new UserStopNotFoundException(userStopId));
+			.orElseThrow(UserStopNotFoundException::new);
 		return UserStopDto.fromEntity(userStop);
 	}
 
@@ -57,12 +57,12 @@ public class UserStopServiceImpl implements UserStopService {
 	public void createUserStop(UserStopDto request) {
 		Status status = statusRepository.findOrCreateStatus("회원", "정지");
 		User user = userRepository.findByUserId(request.userId())
-			.orElseThrow(() -> new UserStopNotFoundException(request.userId()));
+			.orElseThrow(UserStopNotFoundException::new);
 
 		user.updateStatus(status);
 
 		ReportType reportType = reportTypeRepository.findById(request.reportTypeId())
-			.orElseThrow(() -> new ReportTypeNotFoundException(request.reportTypeId()));
+			.orElseThrow(ReportTypeNotFoundException::new);
 
 		userStopRepository.save(UserStop.toEntity(user, reportType, request));
 	}
@@ -70,7 +70,7 @@ public class UserStopServiceImpl implements UserStopService {
 	@Override
 	public void deleteUserStop(Long userStopId) {
 		UserStop userStop = userStopRepository.findById(userStopId)
-			.orElseThrow(() -> new UserStopNotFoundException(userStopId));
+			.orElseThrow(UserStopNotFoundException::new);
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
 
 		userStop.getUser().updateStatus(status);

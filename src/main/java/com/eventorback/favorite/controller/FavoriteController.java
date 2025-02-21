@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.favorite.domain.dto.response.GetFavoriteResponse;
 import com.eventorback.favorite.service.FavoriteService;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class FavoriteController {
 	private final FavoriteService favoriteService;
 
+	@AuthorizeRole("member")
 	@GetMapping("/users/me/favorites/paging")
 	public ResponseEntity<Page<GetFavoriteResponse>> getFavoritesByUserId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {

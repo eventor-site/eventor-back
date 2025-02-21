@@ -45,11 +45,11 @@ public class CommentReportServiceImpl implements CommentReportService {
 		} else if (commentReportRepository.existsByUserUserIdAndCommentCommentId(userId, commentId)) {
 			return "이미 신고한 댓글 입니다.";
 		} else {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			Comment comment = commentRepository.findById(commentId)
-				.orElseThrow(() -> new CommentNotFoundException(commentId));
+				.orElseThrow(CommentNotFoundException::new);
 			ReportType reportType = reportTypeRepository.findByName(reportTypeName)
-				.orElseThrow(() -> new ReportTypeNotFoundException(reportTypeName));
+				.orElseThrow(ReportTypeNotFoundException::new);
 			commentReportRepository.save(CommentReport.toEntity(user, comment, reportType));
 			return "댓글을 신고 하였습니다.";
 		}
@@ -58,7 +58,7 @@ public class CommentReportServiceImpl implements CommentReportService {
 	@Override
 	public void confirmCommentReport(Long commentReportId) {
 		CommentReport commentReport = commentReportRepository.findById(commentReportId)
-			.orElseThrow(() -> new CommentNotFoundException(commentReportId));
+			.orElseThrow(CommentNotFoundException::new);
 		commentReport.confirm();
 	}
 

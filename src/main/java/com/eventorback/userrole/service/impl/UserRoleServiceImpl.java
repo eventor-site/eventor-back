@@ -33,8 +33,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
 	@Override
 	public UserRoleDto getUserRole(Long userRoleId) {
-		UserRole userRole = userRoleRepository.findById(userRoleId)
-			.orElseThrow(() -> new UserRoleNotFoundException(userRoleId));
+		UserRole userRole = userRoleRepository.findById(userRoleId).orElseThrow(UserRoleNotFoundException::new);
 		return UserRoleDto.fromEntity(userRole);
 	}
 

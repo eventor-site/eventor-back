@@ -49,9 +49,9 @@ public class BookmarkServiceImpl implements BookmarkService {
 			bookmarkRepository.deleteByUserUserIdAndCategoryName(userId, categoryName);
 			return "즐겨찾기가 삭제 되었습니다.";
 		} else {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			Category category = categoryRepository.findByName(categoryName)
-				.orElseThrow(() -> new CategoryNotFoundException(categoryName));
+				.orElseThrow(CategoryNotFoundException::new);
 			bookmarkRepository.save(Bookmark.toEntity(user, category));
 			return "즐겨찾기에 추가 하였습니다.";
 		}
