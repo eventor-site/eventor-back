@@ -45,11 +45,13 @@ public class UserController {
 	private final UserService userService;
 	private final MailServiceImpl mailService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/search")
 	public ResponseEntity<List<GetUserByIdentifier>> searchUserByIdentifier(@RequestParam String keyword) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserByIdentifier(keyword));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/search/userId")
 	public ResponseEntity<List<GetUserByUserId>> searchUserByUserId(@RequestParam Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.searchUserByUserId(userId));

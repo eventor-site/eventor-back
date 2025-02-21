@@ -37,16 +37,19 @@ public class UserStopController {
 		return ResponseEntity.status(HttpStatus.OK).body(userStopService.getUserStops(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{userStopId}")
 	public ResponseEntity<UserStopDto> getUserStop(@PathVariable Long userStopId) {
 		return ResponseEntity.status(HttpStatus.OK).body(userStopService.getUserStop(userStopId));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/users")
 	public ResponseEntity<List<GetUserStopByUserIdResponse>> getUserStopsByUserId(@RequestParam Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(userStopService.getUserStopsByUserId(userId));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<Void> createUserStop(
 		@RequestBody UserStopDto request) {
@@ -54,6 +57,7 @@ public class UserStopController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{userStopId}")
 	public ResponseEntity<Void> deleteUserStop(@PathVariable Long userStopId) {
 		userStopService.deleteUserStop(userStopId);

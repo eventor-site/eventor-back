@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class StatusTypeController {
 	private final StatusTypeService statusTypeService;
 
+	@AuthorizeRole("admin")
 	@GetMapping("/search")
 	public ResponseEntity<List<StatusTypeDto>> searchStatusTypes(@RequestParam String keyword) {
 		return ResponseEntity.status(HttpStatus.OK).body(statusTypeService.searchStatusTypes(keyword));
