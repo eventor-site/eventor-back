@@ -49,12 +49,14 @@ public class CommentController {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(pageable));
 	}
 
+	@AuthorizeRole("member")
 	@GetMapping("/users/me/comments/paging")
 	public ResponseEntity<Page<GetCommentByUserIdResponse>> getCommentsByUserId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsByUserId(pageable, userId));
 	}
 
+	@AuthorizeRole("member")
 	@PostMapping("/posts/{postId}/comments")
 	public ResponseEntity<Void> createComment(@RequestBody CreateCommentRequest request, @PathVariable Long postId,
 		@CurrentUserId Long userId) {
@@ -68,6 +70,7 @@ public class CommentController {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComment(postId, commentId));
 	}
 
+	@AuthorizeRole("member")
 	@PutMapping("/posts/{postId}/comments/{commentId}")
 	public ResponseEntity<Void> updateComment(@CurrentUser CurrentUserDto currentUser, @PathVariable Long commentId,
 		@Valid @RequestBody UpdateCommentRequest request, @PathVariable Long postId) {

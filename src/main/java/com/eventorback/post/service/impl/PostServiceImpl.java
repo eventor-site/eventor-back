@@ -15,7 +15,6 @@ import com.eventorback.category.repository.CategoryRepository;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.favorite.repository.FavoriteRepository;
-import com.eventorback.global.exception.AccessDeniedException;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
@@ -40,6 +39,7 @@ import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.UserForbiddenException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
 
@@ -121,7 +121,7 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public GetPostResponse getPost(CurrentUserDto currentUser, Long postId) {
-		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
+		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		List<GetImageResponse> images = imageRepository.getAllByPostId(postId);
 
 		boolean isAuthorized = false;
@@ -134,7 +134,7 @@ public class PostServiceImpl implements PostService {
 
 		// 삭제된 게시글인지 확인
 		if (post.getStatus().getName().equals("삭제됨")) {
-			throw new PostNotFoundException(postId);
+			throw new PostNotFoundException();
 		}
 
 		// 회원의 경우 최초 1회 조회수 증가 ( 1. 회원이고 2. 자기자신이 쓴글이 아니며 3. 이미 본 글이 아닐 경우)
@@ -143,7 +143,7 @@ public class PostServiceImpl implements PostService {
 			&& !postViewRepository.existsByUserUserIdAndPostPostId(currentUser.userId(), postId)) {
 
 			User user = userRepository.getUser(currentUser.userId())
-				.orElseThrow(() -> new UserNotFoundException(currentUser.userId()));
+				.orElseThrow(UserNotFoundException::new);
 			postViewRepository.save(PostView.toEntity(user, post));
 			post.increaseViewCount();
 		}
@@ -156,14 +156,14 @@ public class PostServiceImpl implements PostService {
 		Category category = null;
 		if (request.categoryName() != null) {
 			category = categoryRepository.findByName(request.categoryName())
-				.orElseThrow(() -> new CategoryNotFoundException(request.categoryName()));
+				.orElseThrow(CategoryNotFoundException::new);
 		}
 
 		User user = null;
 		if (userId != null) {
-			user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			if (user.getStatus().getName().equals("정지")) {
-				throw new AccessDeniedException();
+				throw new UserForbiddenException();
 			}
 		}
 
@@ -174,11 +174,11 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request) {
 		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new PostNotFoundException(postId));
+			.orElseThrow(PostNotFoundException::new);
 
 		if (currentUser == null || (!post.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles()
 			.contains("admin"))) {
-			throw new AccessDeniedException();
+			throw new UserForbiddenException();
 		}
 		post.update(request);
 	}
@@ -187,12 +187,12 @@ public class PostServiceImpl implements PostService {
 	public String recommendPost(Long userId, Long postId) {
 		PostRecommend postRecommend = postRecommendRepository.findByUserUserIdAndPostPostId(userId, postId)
 			.orElse(null);
-		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
+		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
 		if (postRecommend == null && post.getUser().getUserId().equals(userId)) {
 			return "추천할 수 없습니다.";
 		} else if (postRecommend == null) {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
 			post.recommendPost();
@@ -207,12 +207,12 @@ public class PostServiceImpl implements PostService {
 	public String disrecommendPost(Long userId, Long postId) {
 		PostRecommend postRecommend = postRecommendRepository.findByUserUserIdAndPostPostId(userId, postId)
 			.orElse(null);
-		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
+		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
 		if (postRecommend == null && post.getUser().getUserId().equals(userId)) {
 			return "비추천할 수 없습니다.";
 		} else if (postRecommend == null) {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("비추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
 			post.disrecommendPost();
@@ -225,7 +225,7 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public void deletePost(Long postId) {
-		Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
+		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		Status postStatus = statusRepository.findOrCreateStatus("게시글", "삭제됨");
 
 		post.setDeletedAt();
@@ -239,5 +239,12 @@ public class PostServiceImpl implements PostService {
 			comment.setDeletedAt();
 		});
 
+	}
+
+	@Override
+	public Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId) {
+		return currentUser != null &&
+			(currentUser.roles().contains("admin")
+				|| postRepository.existsByPostIdAndUserUserId(postId, currentUser.userId()));
 	}
 }

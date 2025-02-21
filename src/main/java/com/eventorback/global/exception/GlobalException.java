@@ -9,6 +9,7 @@ public class GlobalException extends RuntimeException {
 	private final ErrorStatus errorStatus;
 
 	public GlobalException(ErrorStatus errorStatus) {
+		super(errorStatus.getMessage());
 		this.errorStatus = errorStatus;
 	}
 }

@@ -47,14 +47,14 @@ public class StatusTypeServiceImpl implements StatusTypeService {
 	@Transactional(readOnly = true)
 	public StatusTypeDto getStatusType(Long statusTypeId) {
 		StatusType statusType = statusTypeRepository.findById(statusTypeId)
-			.orElseThrow(() -> new StatusTypeNotFoundException(statusTypeId));
+			.orElseThrow(StatusTypeNotFoundException::new);
 		return StatusTypeDto.fromEntity(statusType);
 	}
 
 	@Override
 	public void createStatusType(StatusTypeDto request) {
 		if (statusTypeRepository.existsByName(request.name())) {
-			throw new StatusTypeAlreadyExistsException(request.name());
+			throw new StatusTypeAlreadyExistsException();
 		}
 		statusTypeRepository.save(StatusType.toEntity(request));
 	}
@@ -62,10 +62,10 @@ public class StatusTypeServiceImpl implements StatusTypeService {
 	@Override
 	public void updateStatusType(Long statusId, StatusTypeDto request) {
 		StatusType statusType = statusTypeRepository.findById(statusId)
-			.orElseThrow(() -> new StatusTypeNotFoundException(statusId));
+			.orElseThrow(StatusTypeNotFoundException::new);
 
 		if (statusTypeRepository.existsByName(request.name())) {
-			throw new StatusTypeAlreadyExistsException(request.name());
+			throw new StatusTypeAlreadyExistsException();
 		}
 
 		statusType.updateStatusType(request.name());

@@ -42,14 +42,14 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public GetCategoryResponse getCategory(Long categoryId) {
 		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
+			.orElseThrow(CategoryNotFoundException::new);
 		return GetCategoryResponse.fromEntity(category);
 	}
 
 	@Override
 	public void createCategory(CreateCategoryRequest request) {
 		if (categoryRepository.existsByName(request.name())) {
-			throw new CategoryAlreadyExistsException(request.name());
+			throw new CategoryAlreadyExistsException();
 		}
 
 		Category parentCategory = null;
@@ -57,7 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
 			categoryRepository.save(new Category(parentCategory, request.name(), categoryRepository.getMaxGroup() + 1));
 		} else {
 			parentCategory = categoryRepository.findByName(request.parentCategoryName())
-				.orElseThrow(() -> new CategoryNotFoundException(request.parentCategoryName()));
+				.orElseThrow(CategoryNotFoundException::new);
 
 			parentCategory.addChildCount();
 
@@ -86,10 +86,10 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public void updateCategory(Long categoryId, UpdateCategoryRequest request) {
 		if (categoryRepository.existsByName(request.name())) {
-			throw new CategoryAlreadyExistsException(request.name());
+			throw new CategoryAlreadyExistsException();
 		}
 		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
+			.orElseThrow(CategoryNotFoundException::new);
 
 		Category parentCategory = null;
 		if (request.parentCategoryId() != null) {
@@ -101,7 +101,7 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public void deleteCategory(Long categoryId) {
 		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new CategoryNotFoundException(categoryId));
+			.orElseThrow(CategoryNotFoundException::new);
 
 		category.getParentCategory().minusChildCount();
 

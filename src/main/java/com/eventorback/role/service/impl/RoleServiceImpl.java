@@ -30,14 +30,14 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	public RoleDto getRole(Long roleId) {
-		Role role = roleRepository.findById(roleId).orElseThrow(() -> new RoleNotFoundException(roleId));
+		Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
 		return RoleDto.fromEntity(role);
 	}
 
 	@Override
 	public void createRole(RoleDto request) {
 		if (roleRepository.existsByName(request.name())) {
-			throw new RoleAlreadyExistsException(request.name());
+			throw new RoleAlreadyExistsException();
 		}
 		roleRepository.save(Role.toEntity(request));
 	}
@@ -45,10 +45,10 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	public void updateRole(Long roleId, RoleDto request) {
 		Role role = roleRepository.findById(roleId)
-			.orElseThrow(() -> new RoleNotFoundException(roleId));
+			.orElseThrow(RoleNotFoundException::new);
 
 		if (roleRepository.existsByName(request.name())) {
-			throw new RoleAlreadyExistsException(request.name());
+			throw new RoleAlreadyExistsException();
 		}
 
 		role.updateRoleName(request.name());

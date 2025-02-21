@@ -41,14 +41,14 @@ public class ReportTypeServiceImpl implements ReportTypeService {
 	@Transactional(readOnly = true)
 	public ReportTypeDto getReportType(Long reportTypeId) {
 		ReportType reportType = reportTypeRepository.findById(reportTypeId)
-			.orElseThrow(() -> new ReportTypeNotFoundException(reportTypeId));
+			.orElseThrow(ReportTypeNotFoundException::new);
 		return ReportTypeDto.fromEntity(reportType);
 	}
 
 	@Override
 	public void createReportType(ReportTypeDto request) {
 		if (reportTypeRepository.existsByName(request.name())) {
-			throw new ReportTypeAlreadyExistsException(request.name());
+			throw new ReportTypeAlreadyExistsException();
 		}
 		reportTypeRepository.save(ReportType.toEntity(request));
 	}
@@ -56,11 +56,11 @@ public class ReportTypeServiceImpl implements ReportTypeService {
 	@Override
 	public void updateReportType(Long reportId, ReportTypeDto request) {
 		ReportType reportType = reportTypeRepository.findById(reportId)
-			.orElseThrow(() -> new ReportTypeNotFoundException(reportId));
+			.orElseThrow(ReportTypeNotFoundException::new);
 
 		if (reportTypeRepository.existsByName(request.name()) && !reportType.getReportTypeId()
 			.equals(request.reportTypeId())) {
-			throw new ReportTypeAlreadyExistsException(request.name());
+			throw new ReportTypeAlreadyExistsException();
 		}
 
 		reportType.updateReportType(request);

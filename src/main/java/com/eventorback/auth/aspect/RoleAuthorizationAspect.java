@@ -13,9 +13,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.global.exception.UnauthorizedException;
-import com.eventorback.global.exception.UnavailableAuthorizationException;
-import com.eventorback.global.exception.UserNotActiveException;
 import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.UserForbiddenException;
+import com.eventorback.user.exception.UserNotActiveException;
 import com.eventorback.user.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,7 +57,7 @@ public class RoleAuthorizationAspect {
 		boolean hasRequiredRole = userRoles.stream().anyMatch(requiredRoles::contains);
 
 		if (!hasRequiredRole) {
-			throw new UnavailableAuthorizationException();
+			throw new UserForbiddenException();
 		}
 	}
 }

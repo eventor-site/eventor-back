@@ -6,12 +6,15 @@ import org.springframework.http.HttpStatus;
 
 import com.eventorback.global.exception.payload.ErrorStatus;
 
-public class UserNotActiveException extends GlobalException {
-	public UserNotActiveException() {
+import lombok.Getter;
+
+@Getter
+public class ServerException extends GlobalException {
+	public ServerException(String message) {
 		super(ErrorStatus.from(
-			"현재 사용자는 휴면 계정입니다.",
-			HttpStatus.FORBIDDEN,
-			LocalDateTime.now()
-		));
+			message,
+			HttpStatus.INTERNAL_SERVER_ERROR,
+			LocalDateTime.now())
+		);
 	}
 }

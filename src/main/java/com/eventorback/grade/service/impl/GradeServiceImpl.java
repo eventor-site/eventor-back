@@ -32,13 +32,13 @@ public class GradeServiceImpl implements GradeService {
 	public GradeDto getGrade(Long gradeId) {
 		return gradeRepository.findById(gradeId)
 			.map(GradeDto::fromEntity)
-			.orElseThrow(() -> new GradeNotFoundException(gradeId));
+			.orElseThrow(GradeNotFoundException::new);
 	}
 
 	@Override
 	public void createGrade(GradeDto request) {
 		if (gradeRepository.existsByName(request.name())) {
-			throw new GradeAlreadyExistsException(request.name());
+			throw new GradeAlreadyExistsException();
 		}
 		gradeRepository.save(Grade.toEntity(request));
 	}
@@ -46,7 +46,7 @@ public class GradeServiceImpl implements GradeService {
 	@Override
 	public void updateGrade(Long gradeId, GradeDto request) {
 		Grade grade = gradeRepository.findById(gradeId)
-			.orElseThrow(() -> new GradeNotFoundException(gradeId));
+			.orElseThrow(GradeNotFoundException::new);
 		grade.updateGrade(request);
 	}
 

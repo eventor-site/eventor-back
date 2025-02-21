@@ -45,11 +45,11 @@ public class PostReportServiceImpl implements PostReportService {
 		} else if (postReportRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
 			return "이미 신고한 게시물 입니다.";
 		} else {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			Post post = postRepository.findById(postId)
-				.orElseThrow(() -> new PostNotFoundException(postId));
+				.orElseThrow(PostNotFoundException::new);
 			ReportType reportType = reportTypeRepository.findByName(reportTypeName)
-				.orElseThrow(() -> new ReportTypeNotFoundException(reportTypeName));
+				.orElseThrow(ReportTypeNotFoundException::new);
 			postReportRepository.save(PostReport.toEntity(user, post, reportType));
 			return "게시물을 신고 하였습니다.";
 		}
@@ -58,7 +58,7 @@ public class PostReportServiceImpl implements PostReportService {
 	@Override
 	public void confirmPostReport(Long postReportId) {
 		PostReport postReport = postReportRepository.findById(postReportId)
-			.orElseThrow(() -> new PostNotFoundException(postReportId));
+			.orElseThrow(PostNotFoundException::new);
 		postReport.confirm();
 	}
 

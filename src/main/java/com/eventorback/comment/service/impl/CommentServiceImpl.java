@@ -19,7 +19,6 @@ import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.comment.service.CommentService;
 import com.eventorback.commentrecommend.domain.entity.CommentRecommend;
 import com.eventorback.commentrecommend.repository.CommentRecommendRepository;
-import com.eventorback.global.exception.AccessDeniedException;
 import com.eventorback.point.repository.PointRepository;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
@@ -30,6 +29,7 @@ import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.UserForbiddenException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
 
@@ -78,13 +78,13 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	public void createComment(CreateCommentRequest request, Long postId, Long userId) {
-		Post post = postRepository.getPost(postId).orElseThrow(() -> new PostNotFoundException(postId));
+		Post post = postRepository.getPost(postId).orElseThrow(PostNotFoundException::new);
 
 		User user = null;
 		if (userId != null) {
-			user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 			if (user.getStatus().getName().equals("정지")) {
-				throw new AccessDeniedException();
+				throw new UserForbiddenException();
 			}
 		}
 
@@ -96,7 +96,7 @@ public class CommentServiceImpl implements CommentService {
 				Comment.toEntity(request, parentComment, post, user, status, commentRepository.getMaxGroup() + 1));
 		} else {
 			parentComment = commentRepository.findById(request.parentCommentId())
-				.orElseThrow(() -> new CommentNotFoundException(request.parentCommentId()));
+				.orElseThrow(CommentNotFoundException::new);
 
 			parentComment.addChildCount();
 
@@ -124,11 +124,11 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public void updateComment(CurrentUserDto currentUser, Long commentId, UpdateCommentRequest request) {
 		Comment comment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new CommentNotFoundException(commentId));
+			.orElseThrow(CommentNotFoundException::new);
 
 		if (currentUser == null || (!comment.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles()
 			.contains("admin"))) {
-			throw new AccessDeniedException();
+			throw new UserForbiddenException();
 		}
 
 		comment.updateComment(request);
@@ -139,12 +139,12 @@ public class CommentServiceImpl implements CommentService {
 		CommentRecommend commentRecommend = commentRecommendRepository.findByUserUserIdAndCommentCommentId(userId,
 			commentId).orElse(null);
 		Comment comment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new CommentNotFoundException(commentId));
+			.orElseThrow(CommentNotFoundException::new);
 
 		if (commentRecommend == null && comment.getUser().getUserId().equals(userId)) {
 			return "추천할 수 없습니다.";
 		} else if (commentRecommend == null) {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("추천");
 			commentRecommendRepository.save(CommentRecommend.toEntity(user, comment, recommendType));
@@ -162,12 +162,12 @@ public class CommentServiceImpl implements CommentService {
 			commentId).orElse(null);
 
 		Comment comment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new CommentNotFoundException(commentId));
+			.orElseThrow(CommentNotFoundException::new);
 
 		if (commentRecommend == null && comment.getUser().getUserId().equals(userId)) {
 			return "추천할 수 없습니다.";
 		} else if (commentRecommend == null) {
-			User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+			User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("비추천");
 			commentRecommendRepository.save(CommentRecommend.toEntity(user, comment, recommendType));
@@ -182,7 +182,7 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public void deleteComment(Long commentId) {
 		Comment comment = commentRepository.findById(commentId)
-			.orElseThrow(() -> new CommentNotFoundException(commentId));
+			.orElseThrow(CommentNotFoundException::new);
 
 		Status status = statusRepository.findOrCreateStatus("댓글", "삭제됨");
 

@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 
 import com.eventorback.global.exception.payload.ErrorStatus;
 
-public class UnavailableAuthorizationException extends GlobalException {
-	public UnavailableAuthorizationException() {
+public class ForbiddenException extends GlobalException {
+	public ForbiddenException(String message) {
 		super(ErrorStatus.from(
-			"해당 요청에 대한 권한이 없습니다.",
+			message,
 			HttpStatus.FORBIDDEN,
 			LocalDateTime.now()
 		));
