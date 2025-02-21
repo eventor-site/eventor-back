@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.eventorback.status.domain.entity.Status;
 
-public interface StatusRepository extends JpaRepository<Status, Long>, StatusCustomRepository {
+public interface StatusRepository extends JpaRepository<Status, Long>, CustomStatusRepository {
 
 	boolean existsByName(String name);
 

@@ -10,14 +10,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.reporttype.domain.dto.ReportTypeDto;
-import com.eventorback.reporttype.repository.ReportTypeCustomRepository;
+import com.eventorback.reporttype.repository.CustomReportTypeRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ReportTypeCustomRepositoryImpl implements ReportTypeCustomRepository {
+public class CustomReportTypeRepositoryImpl implements CustomReportTypeRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override

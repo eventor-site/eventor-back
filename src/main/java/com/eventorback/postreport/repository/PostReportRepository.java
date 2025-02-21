@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.eventorback.postreport.domain.entity.PostReport;
 
-public interface PostReportRepository extends JpaRepository<PostReport, Long>, PostReportCustomRepository {
+public interface PostReportRepository extends JpaRepository<PostReport, Long>, CustomPostReportRepository {
 
 	Optional<PostReport> findByUserUserIdAndPostPostId(Long userId, Long postId);
 

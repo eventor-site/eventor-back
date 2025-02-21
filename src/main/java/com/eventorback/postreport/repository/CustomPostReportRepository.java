@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.postreport.domain.dto.response.GetPostReportResponse;
 
-public interface PostReportCustomRepository {
+public interface CustomPostReportRepository {
 
 	Page<GetPostReportResponse> getPostReports(Pageable pageable);
 }

@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.status.domain.dto.response.GetStatusResponse;
 import com.eventorback.status.domain.entity.Status;
-import com.eventorback.status.repository.StatusCustomRepository;
+import com.eventorback.status.repository.CustomStatusRepository;
 import com.eventorback.statustype.domain.entity.StatusType;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,7 +22,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class StatusCustomRepositoryImpl implements StatusCustomRepository {
+public class CustomStatusRepositoryImpl implements CustomStatusRepository {
 
 	@PersistenceContext
 	private EntityManager entityManager;

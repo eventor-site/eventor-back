@@ -12,14 +12,14 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.userstop.domain.dto.response.GetUserStopByUserIdResponse;
 import com.eventorback.userstop.domain.dto.response.GetUserStopResponse;
-import com.eventorback.userstop.repository.UserStopCustomRepository;
+import com.eventorback.userstop.repository.CustomUserStopRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class UserStopCustomRepositoryImpl implements UserStopCustomRepository {
+public class CustomUserStopRepositoryImpl implements CustomUserStopRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
