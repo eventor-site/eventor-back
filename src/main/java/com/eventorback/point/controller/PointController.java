@@ -42,7 +42,7 @@ public class PointController {
 	@PostMapping
 	public ResponseEntity<Void> createPoint(@RequestBody PointRequest request) {
 		pointService.createPoint(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@AuthorizeRole("admin")

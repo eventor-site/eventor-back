@@ -43,7 +43,7 @@ public class StatusController {
 	public ResponseEntity<Void> createStatus(
 		@RequestBody StatusRequest request) {
 		statusService.createStatus(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{statusId}")

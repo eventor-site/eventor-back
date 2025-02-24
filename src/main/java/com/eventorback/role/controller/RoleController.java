@@ -41,7 +41,7 @@ public class RoleController {
 	public ResponseEntity<Void> createRole(
 		@RequestBody RoleDto request) {
 		roleService.createRole(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{roleId}")

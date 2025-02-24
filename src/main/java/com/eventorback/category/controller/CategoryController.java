@@ -54,7 +54,7 @@ public class CategoryController {
 	@PostMapping
 	public ResponseEntity<Void> createCategory(@Valid @RequestBody CreateCategoryRequest request) {
 		categoryService.createCategory(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{categoryId}")

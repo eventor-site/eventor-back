@@ -41,7 +41,7 @@ public class GradeController {
 	public ResponseEntity<Void> createGrade(
 		@RequestBody GradeDto request) {
 		gradeService.createGrade(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{gradeId}")
