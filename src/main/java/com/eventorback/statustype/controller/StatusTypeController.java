@@ -56,7 +56,7 @@ public class StatusTypeController {
 	public ResponseEntity<Void> createStatusType(
 		@RequestBody StatusTypeDto request) {
 		statusTypeService.createStatusType(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PutMapping("/{statusTypeId}")

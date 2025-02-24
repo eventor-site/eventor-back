@@ -119,7 +119,7 @@ public class UserController {
 	@PostMapping("/signup")
 	public ResponseEntity<Void> signup(@RequestBody SignUpRequest request) {
 		userService.signup(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@PostMapping("/signup/oauth2/exists")

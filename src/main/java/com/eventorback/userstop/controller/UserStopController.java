@@ -54,7 +54,7 @@ public class UserStopController {
 	public ResponseEntity<Void> createUserStop(
 		@RequestBody UserStopDto request) {
 		userStopService.createUserStop(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@AuthorizeRole("admin")

@@ -38,7 +38,7 @@ public class CommentController {
 	public ResponseEntity<Page<GetCommentResponse>> getCommentsByPostId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.CREATED)
+		return ResponseEntity.status(HttpStatus.OK)
 			.body(commentService.getCommentsByPostId(pageable, currentUser, postId));
 	}
 
@@ -61,7 +61,7 @@ public class CommentController {
 	public ResponseEntity<Void> createComment(@RequestBody CreateCommentRequest request, @PathVariable Long postId,
 		@CurrentUserId Long userId) {
 		commentService.createComment(request, postId, userId);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@GetMapping("/posts/{postId}/comments/{commentId}")

@@ -112,7 +112,7 @@ public class PostController {
 	@PostMapping
 	public ResponseEntity<CreatePostResponse> createPost(@CurrentUserId Long userId,
 		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userId, request, isTemp));
+		return ResponseEntity.status(HttpStatus.OK).body(postService.createPost(userId, request, isTemp));
 	}
 
 	@PutMapping("/{postId}")
