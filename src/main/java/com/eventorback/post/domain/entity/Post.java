@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -49,7 +50,8 @@ public class Post {
 	@Column(name = "title")
 	private String title;
 
-	@Column(name = "content")
+	@Lob
+	@Column(name = "content", columnDefinition = "TEXT")
 	private String content;
 
 	@Column(name = "recommendation_count")
@@ -64,9 +66,6 @@ public class Post {
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 
-	@Column(name = "is_notification")
-	private Boolean isNotification;
-
 	@Column(name = "start_time")
 	private LocalDateTime startTime;
 
@@ -75,7 +74,7 @@ public class Post {
 
 	@Builder
 	public Post(Category category, User user, Status status, String writer, String title, String content,
-		Boolean isNotification, LocalDateTime startTime, LocalDateTime endTime) {
+		LocalDateTime startTime, LocalDateTime endTime) {
 		this.category = category;
 		this.user = user;
 		this.status = status;
@@ -85,7 +84,6 @@ public class Post {
 		this.recommendationCount = 0L;
 		this.viewCount = 0L;
 		this.createdAt = LocalDateTime.now();
-		this.isNotification = isNotification;
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}
@@ -98,7 +96,6 @@ public class Post {
 			.writer(user.getNickname())
 			.title(request.title())
 			.content(request.content())
-			.isNotification(request.isNotification())
 			.startTime(request.startTime())
 			.endTime(request.endTime())
 			.build();
@@ -107,7 +104,6 @@ public class Post {
 	public void update(UpdatePostRequest request) {
 		this.title = request.title();
 		this.content = request.content();
-		this.isNotification = request.isNotification();
 		this.startTime = request.startTime();
 		this.endTime = request.endTime();
 	}

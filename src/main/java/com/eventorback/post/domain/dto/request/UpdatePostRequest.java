@@ -8,7 +8,7 @@ import lombok.Builder;
 public record UpdatePostRequest(
 	String title,
 	String content,
-	Boolean isNotification,
 	LocalDateTime startTime,
-	LocalDateTime endTime) {
+	LocalDateTime endTime
+) {
 }

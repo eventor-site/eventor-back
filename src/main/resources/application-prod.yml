@@ -28,5 +28,5 @@ eureka:
     prefer-ip-address: true
 
 upload:
-  domainUrl: https://www.eventor.store/
+  domainUrl: https://www.eventor.store
   path: ./image

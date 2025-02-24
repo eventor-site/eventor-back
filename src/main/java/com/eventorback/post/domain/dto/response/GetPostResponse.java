@@ -18,16 +18,25 @@ public record GetPostResponse(
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
-	Boolean isNotification,
 	LocalDateTime startTime,
 	LocalDateTime endTime,
+	String statusName,
 	List<GetImageResponse> images,
+	Double totalSize,
 	String gradeName,
 	Boolean isAuthorized,
 	Boolean isFavorite) {
 
 	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images, Boolean isAuthorized,
 		Boolean isFavorite) {
+		double totalSize = 0;
+
+		if (images != null) {
+			totalSize = images.stream()
+				.mapToLong(GetImageResponse::size)
+				.sum();
+		}
+
 		return GetPostResponse.builder()
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
@@ -37,10 +46,11 @@ public record GetPostResponse(
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(LocalDateTime.now())
-			.isNotification(post.getIsNotification())
 			.startTime(post.getStartTime())
 			.endTime(post.getEndTime())
+			.statusName(post.getStatus().getName())
 			.images(images)
+			.totalSize(totalSize)
 			.gradeName(post.getUser().getGrade().getName())
 			.isAuthorized(isAuthorized)
 			.isFavorite(isFavorite)

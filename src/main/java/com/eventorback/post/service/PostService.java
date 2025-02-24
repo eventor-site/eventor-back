@@ -13,6 +13,8 @@ import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
+import com.eventorback.post.domain.dto.response.GetTempPostResponse;
+import com.eventorback.post.domain.entity.Post;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface PostService {
@@ -35,9 +37,11 @@ public interface PostService {
 
 	GetPostResponse getPost(CurrentUserDto currentUser, Long postId);
 
-	CreatePostResponse createPost(Long userId, CreatePostRequest request);
+	GetTempPostResponse getTempPost(Long userId);
 
-	void updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request);
+	CreatePostResponse createPost(Long userId, CreatePostRequest request, boolean isTemp);
+
+	Post updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request, boolean isTemp);
 
 	String recommendPost(Long userId, Long postId);
 
@@ -46,4 +50,6 @@ public interface PostService {
 	void deletePost(Long postId);
 
 	Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId);
+
+	void deleteTempPost(Long userId);
 }

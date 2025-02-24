@@ -29,6 +29,7 @@ import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
+import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.service.PostService;
 import com.eventorback.search.document.dto.reponse.SearchPostsResponse;
 import com.eventorback.search.service.ElasticSearchService;
@@ -103,16 +104,21 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(currentUser, postId));
 	}
 
+	@GetMapping("/temp")
+	ResponseEntity<GetTempPostResponse> getTempPost(@CurrentUserId Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getTempPost(userId));
+	}
+
 	@PostMapping
 	public ResponseEntity<CreatePostResponse> createPost(@CurrentUserId Long userId,
-		@RequestBody CreatePostRequest request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userId, request));
+		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(userId, request, isTemp));
 	}
 
 	@PutMapping("/{postId}")
 	public ResponseEntity<Void> updatePost(@CurrentUser CurrentUserDto currentUser, @PathVariable Long postId,
-		@RequestBody UpdatePostRequest request) {
-		postService.updatePost(currentUser, postId, request);
+		@RequestBody UpdatePostRequest request, @RequestParam boolean isTemp) {
+		postService.updatePost(currentUser, postId, request, isTemp);
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
@@ -139,4 +145,9 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.isAuthorizedToEdit(currentUser, postId));
 	}
 
+	@DeleteMapping("/temp")
+	ResponseEntity<Void> deleteTempPost(@CurrentUserId Long userId) {
+		postService.deleteTempPost(userId);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
 }

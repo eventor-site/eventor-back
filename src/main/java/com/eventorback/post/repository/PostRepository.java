@@ -8,4 +8,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, CustomPostRep
 
 	Boolean existsByPostIdAndUserUserId(Long postId, Long userId);
 
+	void deleteAllByUserUserIdAndStatusName(Long postId, String statusName);
+
 }
