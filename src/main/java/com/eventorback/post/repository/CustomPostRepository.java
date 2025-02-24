@@ -10,6 +10,7 @@ import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
+import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 
 public interface CustomPostRepository {
@@ -33,4 +34,6 @@ public interface CustomPostRepository {
 	Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, List<Long> categoryIds);
 
 	Optional<Post> getPost(Long postId);
+
+	Optional<GetTempPostResponse> getTempPost(Long userId);
 }

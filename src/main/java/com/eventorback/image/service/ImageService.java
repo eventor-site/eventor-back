@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eventorback.image.domain.dto.request.DeleteImageRequest;
+import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.exception.FileUploadException;
 
 /**
@@ -13,11 +15,10 @@ import com.eventorback.image.exception.FileUploadException;
  */
 public interface ImageService {
 
-	void uploadThumbnail(MultipartFile thumbnail, String folderName, Long postId) throws FileUploadException;
+	List<GetImageResponse> upload(MultipartFile file, String folderName, Long postId, boolean isThumbnail,
+		boolean isPasted) throws FileUploadException;
 
-	void upload(List<MultipartFile> files, String folderName, Long postId) throws FileUploadException;
-
-	String saveFile(Path folderPath, String fileName, MultipartFile file);
+	void saveFile(Path folderPath, String fileName, MultipartFile file);
 
 	void createDirectoryIfNotExists(Path folderPath);
 
@@ -25,7 +26,10 @@ public interface ImageService {
 
 	void checkFileExtension(String fileContentType);
 
-	void createImage(Long postId, String originalName, String newName, String url, Long size, Boolean isThumbnail);
+	void createImage(Long postId, String originalName, String newName, String url, Long size, boolean isThumbnail,
+		boolean isPasted);
 
-	void deleteImage(Long postId, List<Long> deleteImageIds);
+	List<GetImageResponse> deleteImage(DeleteImageRequest request);
+
+	void deleteTempImage(Long userId);
 }

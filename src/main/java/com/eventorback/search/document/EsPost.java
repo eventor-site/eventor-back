@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
 
+import com.eventorback.image.domain.entity.Image;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.entity.Post;
 
@@ -69,6 +70,22 @@ public class EsPost {
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
 			.gradeName(post.getUser().getGrade().getName())
+			.build();
+	}
+
+	public static EsPost fromEntity(Post post, Image image) {
+		return EsPost.builder()
+			.postId(post.getPostId())
+			.categoryName(post.getCategory().getName())
+			.statusName(post.getStatus().getName())
+			.writer(post.getWriter())
+			.title(post.getTitle())
+			.content(post.getContent())
+			.recommendationCount(post.getRecommendationCount())
+			.viewCount(post.getViewCount())
+			.createdAt(post.getCreatedAt())
+			.gradeName(post.getUser().getGrade().getName())
+			.imageUrl(image.getUrl())
 			.build();
 	}
 

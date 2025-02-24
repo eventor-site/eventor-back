@@ -25,6 +25,7 @@ import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
+import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -152,7 +153,12 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public CreatePostResponse createPost(Long userId, CreatePostRequest request) {
+	public GetTempPostResponse getTempPost(Long userId) {
+		return postRepository.getTempPost(userId).orElse(null);
+	}
+
+	@Override
+	public CreatePostResponse createPost(Long userId, CreatePostRequest request, boolean isTemp) {
 		Category category = null;
 		if (request.categoryName() != null) {
 			category = categoryRepository.findByName(request.categoryName())
@@ -167,12 +173,14 @@ public class PostServiceImpl implements PostService {
 			}
 		}
 
-		Status status = statusRepository.findOrCreateStatus("게시글", "작성됨");
+		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
+			statusRepository.findOrCreateStatus("게시글", "작성중");
+
 		return CreatePostResponse.fromEntity(postRepository.save(Post.toEntity(category, user, status, request)));
 	}
 
 	@Override
-	public void updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request) {
+	public Post updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request, boolean isTemp) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(PostNotFoundException::new);
 
@@ -180,7 +188,15 @@ public class PostServiceImpl implements PostService {
 			.contains("admin"))) {
 			throw new UserForbiddenException();
 		}
+
+		if (!isTemp) {
+			Status status = statusRepository.findOrCreateStatus("게시글", "작성됨");
+			post.updatePostStatus(status);
+		}
+
 		post.update(request);
+
+		return post;
 	}
 
 	@Override
@@ -246,5 +262,10 @@ public class PostServiceImpl implements PostService {
 		return currentUser != null &&
 			(currentUser.roles().contains("admin")
 				|| postRepository.existsByPostIdAndUserUserId(postId, currentUser.userId()));
+	}
+
+	@Override
+	public void deleteTempPost(Long userId) {
+		postRepository.deleteAllByUserUserIdAndStatusName(userId, "작성중");
 	}
 }

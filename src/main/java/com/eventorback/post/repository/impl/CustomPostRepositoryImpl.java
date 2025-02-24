@@ -20,6 +20,7 @@ import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
+import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.CustomPostRepository;
 import com.querydsl.core.types.Projections;
@@ -307,6 +308,21 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				.where(post.postId.eq(postId).and(status.name.eq("작성됨")))
 				.fetchOne()
 		);
+	}
+
+	@Override
+	public Optional<GetTempPostResponse> getTempPost(Long userId) {
+		List<GetTempPostResponse> posts = queryFactory
+			.select(Projections.constructor(
+				GetTempPostResponse.class,
+				post.postId,
+				post.status.name))
+			.from(post)
+			.where(post.user.userId.eq(userId).and(post.status.name.eq("작성중")))
+			.orderBy(post.postId.asc())
+			.fetch();
+
+		return posts.isEmpty() ? Optional.empty() : Optional.of(posts.getLast());
 	}
 
 }

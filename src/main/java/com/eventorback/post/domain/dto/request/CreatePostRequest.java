@@ -9,7 +9,6 @@ public record CreatePostRequest(
 	String categoryName,
 	String title,
 	String content,
-	Boolean isNotification,
 	LocalDateTime startTime,
 	LocalDateTime endTime) {
 }

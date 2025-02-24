@@ -24,7 +24,8 @@ public class CustomImageRepositoryImpl implements CustomImageRepository {
 				image.originalName,
 				image.url,
 				image.size,
-				image.isThumbnail))
+				image.isThumbnail,
+				image.isPasted))
 			.from(image)
 			.where(image.post.postId.eq(postId))
 			.orderBy(image.imageId.asc())
