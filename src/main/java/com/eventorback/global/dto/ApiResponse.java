@@ -58,6 +58,10 @@ public class ApiResponse<T> {
 		return new ApiResponse<>(ERROR_STATUS, null, message);
 	}
 
+	public static ApiResponse<?> createError(String status, String message) {
+		return new ApiResponse<>(status, null, message);
+	}
+
 	private ApiResponse(String status, T data, String message) {
 		this.status = status;
 		this.data = data;

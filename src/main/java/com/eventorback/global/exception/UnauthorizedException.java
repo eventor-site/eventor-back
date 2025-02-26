@@ -14,4 +14,12 @@ public class UnauthorizedException extends GlobalException {
 			LocalDateTime.now()
 		));
 	}
+
+	public UnauthorizedException(String message) {
+		super(ErrorStatus.from(
+			message,
+			HttpStatus.UNAUTHORIZED,
+			LocalDateTime.now()
+		));
+	}
 }

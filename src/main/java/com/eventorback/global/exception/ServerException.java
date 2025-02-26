@@ -10,6 +10,14 @@ import lombok.Getter;
 
 @Getter
 public class ServerException extends GlobalException {
+	public ServerException() {
+		super(ErrorStatus.from(
+			"서버 에러",
+			HttpStatus.INTERNAL_SERVER_ERROR,
+			LocalDateTime.now())
+		);
+	}
+
 	public ServerException(String message) {
 		super(ErrorStatus.from(
 			message,
