@@ -78,20 +78,22 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<GetMainPostResponse> getHotEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getHotEventPosts(categoryIds);
+		return postRepository.getHotEventPosts();
 	}
 
 	@Override
 	public List<GetMainPostResponse> getLatestEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getLatestEventPosts(categoryIds);
+		return postRepository.getLatestEventPosts();
+	}
+
+	@Override
+	public List<GetMainPostResponse> getDeadlineEventPosts() {
+		return postRepository.getDeadlineEventPosts();
 	}
 
 	@Override
 	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getRecommendationEventPosts(categoryIds);
+		return postRepository.getRecommendationEventPosts();
 	}
 
 	@Override

@@ -25,6 +25,8 @@ public interface PostService {
 
 	List<GetMainPostResponse> getLatestEventPosts();
 
+	List<GetMainPostResponse> getDeadlineEventPosts();
+
 	List<GetRecommendPostResponse> getRecommendationEventPosts();
 
 	List<GetRecommendPostResponse> getTrendingEventPosts();
