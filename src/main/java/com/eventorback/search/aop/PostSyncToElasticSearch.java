@@ -9,6 +9,8 @@ import com.eventorback.image.domain.dto.request.DeleteImageRequest;
 import com.eventorback.image.domain.entity.Image;
 import com.eventorback.image.exception.ImageNotFoundException;
 import com.eventorback.image.repository.ImageRepository;
+import com.eventorback.post.domain.dto.request.CreatePostRequest;
+import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
@@ -57,10 +59,15 @@ public class PostSyncToElasticSearch {
 	public void syncPostToElasticsearchAfterReturningCreatePost(JoinPoint joinPoint, Object result) {
 		Object[] args = joinPoint.getArgs();
 
-		if (args.length > 0 && !(boolean)args[2] && result instanceof CreatePostResponse createPostResponse) {
-			Post post = postRepository.findById(createPostResponse.postId())
+		if (args.length > 0 && !(boolean)args[2] && args[1] instanceof CreatePostRequest request
+			&& result instanceof CreatePostResponse response) {
+			Post post = postRepository.findById(response.postId())
 				.orElseThrow(PostNotFoundException::new);
+
 			EsPost esPost = EsPost.fromEntity(post);
+			if (post.getCategory().getName().equals("핫딜")) {
+				esPost.updateProductName(request.productName());
+			}
 			elasticsearchRepository.save(esPost);
 		}
 	}
@@ -71,19 +78,26 @@ public class PostSyncToElasticSearch {
 	@AfterReturning(value = "execution(* com.eventorback.post.service.impl.PostServiceImpl.updatePost(..))", returning = "result")
 	public void syncPostToElasticsearchAfterReturningUpdatePost(JoinPoint joinPoint, Object result) {
 		Object[] args = joinPoint.getArgs();
-		if (args.length > 0 && !(boolean)args[3] && result instanceof Post post) {
+		if (args.length > 0 && !(boolean)args[3] && args[2] instanceof UpdatePostRequest request
+			&& result instanceof Post post) {
 			Long postId = post.getPostId();
 			String categoryName = post.getCategory().getName();
 			Image image;
 
-			if (categoryName.equals("공지") || categoryName.equals("핫딜") || categoryName.equals("자유")
+			if (categoryName.equals("공지") || categoryName.equals("자유")
 				|| categoryName.equals("맛집")) {
 				image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
 					.orElseThrow(ImageNotFoundException::new);
 			} else {
 				image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
 			}
-			elasticsearchRepository.save(EsPost.fromEntity(post, image));
+			EsPost esPost = EsPost.fromEntity(post, image);
+
+			if (categoryName.equals("핫딜")) {
+				esPost.updateProductName(request.productName());
+			}
+
+			elasticsearchRepository.save(esPost);
 		}
 	}
 

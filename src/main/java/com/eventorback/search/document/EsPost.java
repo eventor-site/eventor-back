@@ -41,6 +41,9 @@ public class EsPost {
 	private String title;
 
 	@Field(type = FieldType.Text, analyzer = "nori")
+	private String productName;
+
+	@Field(type = FieldType.Text, analyzer = "nori")
 	private String content;
 
 	@Field(type = FieldType.Integer)
@@ -74,6 +77,8 @@ public class EsPost {
 	}
 
 	public static EsPost fromEntity(Post post, Image image) {
+		String imageUrl = image != null ? image.getUrl() : null;
+
 		return EsPost.builder()
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
@@ -85,13 +90,36 @@ public class EsPost {
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
 			.gradeName(post.getUser().getGrade().getName())
-			.imageUrl(image.getUrl())
+			.imageUrl(imageUrl)
+			.build();
+	}
+
+	public static EsPost fromEntity(Post post, Image image, String productName) {
+		String imageUrl = image != null ? image.getUrl() : null;
+
+		return EsPost.builder()
+			.postId(post.getPostId())
+			.categoryName(post.getCategory().getName())
+			.statusName(post.getStatus().getName())
+			.writer(post.getWriter())
+			.title(post.getTitle())
+			.productName(productName)
+			.content(post.getContent())
+			.recommendationCount(post.getRecommendationCount())
+			.viewCount(post.getViewCount())
+			.createdAt(post.getCreatedAt())
+			.gradeName(post.getUser().getGrade().getName())
+			.imageUrl(imageUrl)
 			.build();
 	}
 
 	public void update(UpdatePostRequest request) {
 		this.title = request.title();
 		this.content = request.content();
+	}
+
+	public void updateProductName(String productName) {
+		this.productName = productName;
 	}
 
 	public void increaseViewCount() {

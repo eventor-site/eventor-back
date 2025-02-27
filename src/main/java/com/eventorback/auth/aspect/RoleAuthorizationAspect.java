@@ -14,6 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.global.exception.UnauthorizedException;
 import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.UserActiveStopException;
 import com.eventorback.user.exception.UserForbiddenException;
 import com.eventorback.user.exception.UserNotActiveException;
 import com.eventorback.user.repository.UserRepository;
@@ -51,6 +52,8 @@ public class RoleAuthorizationAspect {
 		User user = userRepository.findById(userId).orElseThrow();
 		if ("휴면".equals(user.getStatus().getName())) {
 			throw new UserNotActiveException();
+		} else if ("정지".equals(user.getStatus().getName())) {
+			throw new UserActiveStopException();
 		}
 
 		// 사용자가 요구되는 역할을 가지고 있는지 확인
