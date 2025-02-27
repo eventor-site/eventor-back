@@ -1,6 +1,7 @@
 package com.eventorback.post.repository.impl;
 
 import static com.eventorback.category.domain.entity.QCategory.*;
+import static com.eventorback.eventpost.domain.entity.QEventPost.*;
 import static com.eventorback.grade.domain.entity.QGrade.*;
 import static com.eventorback.image.domain.entity.QImage.*;
 import static com.eventorback.post.domain.entity.QPost.*;
@@ -98,7 +99,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetMainPostResponse> getHotEventPosts(List<Long> categoryIds) {
+	public List<GetMainPostResponse> getHotEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
 				GetMainPostResponse.class,
@@ -112,14 +113,14 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물만 반환
 			.fetch();
 	}
 
 	@Override
-	public List<GetMainPostResponse> getLatestEventPosts(List<Long> categoryIds) {
+	public List<GetMainPostResponse> getLatestEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
 				GetMainPostResponse.class,
@@ -133,14 +134,38 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물 제한
 			.fetch();
 	}
 
 	@Override
-	public List<GetRecommendPostResponse> getRecommendationEventPosts(List<Long> categoryIds) {
+	public List<GetMainPostResponse> getDeadlineEventPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetMainPostResponse.class,
+				post.postId,
+				post.title,
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
+			))
+			.from(eventPost)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨")
+				.and(eventPost.endTime.after(LocalDateTime.now())) // 현재 이후의 이벤트
+				.and(eventPost.endTime.before(LocalDateTime.now().plusMonths(1)))  // 한 달 이내
+			)
+			.orderBy(eventPost.endTime.desc())
+			.limit(10) // 상위 10개 게시물 제한
+			.fetch();
+	}
+
+	@Override
+	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
 				GetRecommendPostResponse.class,
@@ -155,10 +180,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
-			.from(post)
+			.from(eventPost)
 			.join(post.category, category)
 			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.where(status.name.eq("작성됨"))
 			.orderBy(post.recommendationCount.desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();

@@ -67,6 +67,11 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getLatestEventPosts());
 	}
 
+	@GetMapping("/event/deadline")
+	public ResponseEntity<List<GetMainPostResponse>> getDeadlineEventPosts() {
+		return ResponseEntity.status(HttpStatus.OK).body(postService.getDeadlineEventPosts());
+	}
+
 	@GetMapping("/event/recommendation")
 	public ResponseEntity<List<GetRecommendPostResponse>> getRecommendationEventPosts() {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getRecommendationEventPosts());
