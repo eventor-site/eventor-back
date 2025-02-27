@@ -66,15 +66,8 @@ public class Post {
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 
-	@Column(name = "start_time")
-	private LocalDateTime startTime;
-
-	@Column(name = "end_time")
-	private LocalDateTime endTime;
-
 	@Builder
-	public Post(Category category, User user, Status status, String writer, String title, String content,
-		LocalDateTime startTime, LocalDateTime endTime) {
+	public Post(Category category, User user, Status status, String writer, String title, String content) {
 		this.category = category;
 		this.user = user;
 		this.status = status;
@@ -84,8 +77,6 @@ public class Post {
 		this.recommendationCount = 0L;
 		this.viewCount = 0L;
 		this.createdAt = LocalDateTime.now();
-		this.startTime = startTime;
-		this.endTime = endTime;
 	}
 
 	public static Post toEntity(Category category, User user, Status status, CreatePostRequest request) {
@@ -96,16 +87,12 @@ public class Post {
 			.writer(user.getNickname())
 			.title(request.title())
 			.content(request.content())
-			.startTime(request.startTime())
-			.endTime(request.endTime())
 			.build();
 	}
 
 	public void update(UpdatePostRequest request) {
 		this.title = request.title();
 		this.content = request.content();
-		this.startTime = request.startTime();
-		this.endTime = request.endTime();
 	}
 
 	public void updatePostStatus(Status status) {

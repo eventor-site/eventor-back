@@ -49,6 +49,13 @@ public class ElasticSearchService {
 								.operator(Operator.And)
 							)
 						)
+						.should(shouldQuery -> shouldQuery
+							.match(match -> match
+								.field("productName")  // 내용 검색
+								.query(keyword)
+								.operator(Operator.And)
+							)
+						)
 						.mustNot(mustNotQuery -> mustNotQuery
 							.term(t -> t
 								.field("statusName")

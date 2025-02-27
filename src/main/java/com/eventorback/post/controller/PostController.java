@@ -104,17 +104,20 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(currentUser, postId));
 	}
 
+	@AuthorizeRole("member")
 	@GetMapping("/temp")
 	ResponseEntity<GetTempPostResponse> getTempPost(@CurrentUserId Long userId) {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getTempPost(userId));
 	}
 
+	@AuthorizeRole("member")
 	@PostMapping
 	public ResponseEntity<CreatePostResponse> createPost(@CurrentUserId Long userId,
 		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.createPost(userId, request, isTemp));
 	}
 
+	@AuthorizeRole("member")
 	@PutMapping("/{postId}")
 	public ResponseEntity<Void> updatePost(@CurrentUser CurrentUserDto currentUser, @PathVariable Long postId,
 		@RequestBody UpdatePostRequest request, @RequestParam boolean isTemp) {
@@ -132,6 +135,7 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.disrecommendPost(userId, postId));
 	}
 
+	@AuthorizeRole("member")
 	@DeleteMapping("/{postId}")
 	public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
 		postService.deletePost(postId);
@@ -145,6 +149,7 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.isAuthorizedToEdit(currentUser, postId));
 	}
 
+	@AuthorizeRole("member")
 	@DeleteMapping("/temp")
 	ResponseEntity<Void> deleteTempPost(@CurrentUserId Long userId) {
 		postService.deleteTempPost(userId);

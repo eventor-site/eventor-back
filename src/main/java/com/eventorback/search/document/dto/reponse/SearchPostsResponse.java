@@ -13,6 +13,7 @@ public record SearchPostsResponse(
 	String statusName,
 	String writer,
 	String title,
+	String productName,
 	String content,
 	Long recommendationCount,
 	Long viewCount,
