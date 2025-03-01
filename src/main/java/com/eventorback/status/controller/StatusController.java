@@ -1,5 +1,7 @@
 package com.eventorback.status.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.auth.annotation.AuthorizeRole;
@@ -26,6 +29,13 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/back/statuses")
 public class StatusController {
 	private final StatusService statusService;
+
+	@AuthorizeRole("admin")
+	@GetMapping
+	public ResponseEntity<List<GetStatusResponse>> getStatuses(
+		@RequestParam String statusTypeName) {
+		return ResponseEntity.status(HttpStatus.OK).body(statusService.getStatuses(statusTypeName));
+	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/paging")

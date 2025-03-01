@@ -157,4 +157,9 @@ public class User {
 			this.point = 0L;
 		}
 	}
+
+	public void updateAttribute(Status status, Grade grade) {
+		this.status = status;
+		this.grade = grade;
+	}
 }

@@ -1,5 +1,7 @@
 package com.eventorback.status.service.impl;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,11 @@ public class StatusServiceImpl implements StatusService {
 	private final StatusTypeRepository statusTypeRepository;
 
 	@Override
+	public List<GetStatusResponse> getStatuses(String statusTypeName) {
+		return statusRepository.getStatuses(statusTypeName);
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public Page<GetStatusResponse> getStatuses(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
@@ -37,7 +44,7 @@ public class StatusServiceImpl implements StatusService {
 	@Override
 	@Transactional(readOnly = true)
 	public GetStatusResponse getStatus(Long statusId) {
-		return statusRepository.getStatus(statusId).orElseThrow(StatusNotFoundException::new);
+		return statusRepository.getStatusDto(statusId).orElseThrow(StatusNotFoundException::new);
 	}
 
 	@Override

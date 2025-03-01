@@ -21,6 +21,20 @@ public class CustomGradeRepositoryImpl implements CustomGradeRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
+	public List<GradeDto> getGrades() {
+		return queryFactory
+			.select(Projections.constructor(
+				GradeDto.class,
+				grade.gradeId,
+				grade.name,
+				grade.minAmount,
+				grade.maxAmount))
+			.from(grade)
+			.orderBy(grade.minAmount.asc())
+			.fetch();
+	}
+
+	@Override
 	public Page<GradeDto> getGrades(Pageable pageable) {
 		List<GradeDto> result = queryFactory
 			.select(Projections.constructor(

@@ -41,15 +41,6 @@ spring:
           starttls:
             enable: true
 
-#  elasticsearch:
-#    uris: http://localhost:9200
-#    username: elastic
-#    password: ***REMOVED***
-#  data:
-#    elasticsearch:
-#      repositories:
-#        enabled: true
-
 logging:
   file:
     path: ./logs

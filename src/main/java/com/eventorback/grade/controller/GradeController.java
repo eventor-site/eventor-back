@@ -1,5 +1,7 @@
 package com.eventorback.grade.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -25,6 +27,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/back/grades")
 public class GradeController {
 	private final GradeService gradeService;
+
+	@AuthorizeRole("admin")
+	@GetMapping
+	public ResponseEntity<List<GradeDto>> getGrades() {
+		return ResponseEntity.status(HttpStatus.OK).body(gradeService.getGrades());
+	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/paging")

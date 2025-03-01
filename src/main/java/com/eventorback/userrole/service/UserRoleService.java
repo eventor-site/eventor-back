@@ -2,23 +2,16 @@ package com.eventorback.userrole.service;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import com.eventorback.userrole.domain.dto.UserRoleDto;
+import com.eventorback.role.domain.dto.RoleDto;
 
 public interface UserRoleService {
-	List<UserRoleDto> getUserRoles();
 
-	Page<UserRoleDto> getUserRoles(Pageable pageable);
+	List<RoleDto> getUserRoles(Long userId);
 
-	UserRoleDto getUserRole(Long getUserRoleId);
+	List<RoleDto> getUnassignedUserRoles(Long userId);
 
-	void createUserRole(UserRoleDto request);
+	void createUserRole(Long userId, Long roleId);
 
-	void updateUserRole(Long userRoleId, UserRoleDto request);
+	void deleteUserRole(Long userId, Long roleId);
 
-	void deleteUserRole(Long userRoleId);
-
-	List<String> getUserRoleNameList();
 }
