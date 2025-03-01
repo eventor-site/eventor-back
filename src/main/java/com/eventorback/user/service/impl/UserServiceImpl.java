@@ -3,12 +3,16 @@ package com.eventorback.user.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.global.util.NumberUtil;
 import com.eventorback.grade.domain.entity.Grade;
+import com.eventorback.grade.exception.GradeNotFoundException;
 import com.eventorback.grade.repository.GradeRepository;
 import com.eventorback.mail.service.MailService;
 import com.eventorback.role.domain.entity.Role;
@@ -23,9 +27,11 @@ import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
+import com.eventorback.user.domain.dto.response.GetUserListResponse;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -49,6 +55,13 @@ public class UserServiceImpl implements UserService {
 	private final StatusRepository statusRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MailService mailService;
+
+	@Override
+	public Page<GetUserListResponse> getUsers(Pageable pageable) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+		return userRepository.getUsers(PageRequest.of(page, pageSize));
+	}
 
 	@Override
 	public List<GetUserByIdentifier> searchUserByIdentifier(String keyword) {
@@ -93,6 +106,15 @@ public class UserServiceImpl implements UserService {
 	public void updateUser(Long userId, UpdateUserRequest request) {
 		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
 		user.updateUser(request);
+	}
+
+	@Override
+	public void updateUserAttributeByAdmin(Long userId, UpdateUserAttributeRequest request) {
+		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
+		Status status = statusRepository.getStatus(request.statusId()).orElseThrow(StatusNotFoundException::new);
+		Grade grade = gradeRepository.findById(request.gradeId()).orElseThrow(GradeNotFoundException::new);
+
+		user.updateAttribute(status, grade);
 	}
 
 	@Override

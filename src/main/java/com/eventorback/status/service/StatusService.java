@@ -1,5 +1,7 @@
 package com.eventorback.status.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -7,6 +9,8 @@ import com.eventorback.status.domain.dto.request.StatusRequest;
 import com.eventorback.status.domain.dto.response.GetStatusResponse;
 
 public interface StatusService {
+
+	List<GetStatusResponse> getStatuses(String statusTypeName);
 
 	Page<GetStatusResponse> getStatuses(Pageable pageable);
 

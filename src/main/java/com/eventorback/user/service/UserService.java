@@ -2,20 +2,27 @@ package com.eventorback.user.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
+import com.eventorback.user.domain.dto.response.GetUserListResponse;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 
 public interface UserService {
+
+	Page<GetUserListResponse> getUsers(Pageable pageable);
 
 	List<GetUserByIdentifier> searchUserByIdentifier(String keyword);
 
@@ -30,6 +37,8 @@ public interface UserService {
 	GetUserResponse getUserInfo(Long userId);
 
 	void updateUser(Long userId, UpdateUserRequest request);
+
+	void updateUserAttributeByAdmin(Long userId, UpdateUserAttributeRequest request);
 
 	void withdrawUser(Long userId);
 

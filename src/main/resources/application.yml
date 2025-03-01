@@ -32,7 +32,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: eventor2025@gmail.com
-    password: wstp qdco txwj jhzm
+    password: qgyh xuuj wvmm uezw
     properties:
       mail:
         smtp:
@@ -40,15 +40,6 @@ spring:
           timeout: 5000
           starttls:
             enable: true
-
-#  elasticsearch:
-#    uris: http://localhost:9200
-#    username: elastic
-#    password: 1q2w3e4r!
-#  data:
-#    elasticsearch:
-#      repositories:
-#        enabled: true
 
 logging:
   file:

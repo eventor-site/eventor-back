@@ -30,6 +30,21 @@ public class CustomStatusRepositoryImpl implements CustomStatusRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
+	public List<GetStatusResponse> getStatuses(String statusTypeName) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetStatusResponse.class,
+				status.statusId,
+				status.name,
+				status.statusType.name
+			))
+			.from(status)
+			.where(status.statusType.name.eq(statusTypeName))
+			.orderBy(status.statusType.name.asc())
+			.fetch();
+	}
+
+	@Override
 	public Page<GetStatusResponse> getStatuses(Pageable pageable) {
 		List<GetStatusResponse> result = queryFactory
 			.select(Projections.constructor(
@@ -53,7 +68,15 @@ public class CustomStatusRepositoryImpl implements CustomStatusRepository {
 	}
 
 	@Override
-	public Optional<GetStatusResponse> getStatus(Long statusId) {
+	public Optional<Status> getStatus(Long statusId) {
+		return Optional.ofNullable(queryFactory
+			.selectFrom(status)
+			.where(status.statusId.eq(statusId))
+			.fetchOne());
+	}
+
+	@Override
+	public Optional<GetStatusResponse> getStatusDto(Long statusId) {
 		return Optional.ofNullable(queryFactory
 			.select(Projections.constructor(
 				GetStatusResponse.class,

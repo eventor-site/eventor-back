@@ -2,10 +2,14 @@ package com.eventorback.user.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,9 +29,11 @@ import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.SendCodeRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
+import com.eventorback.user.domain.dto.response.GetUserListResponse;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
@@ -44,6 +50,12 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 	private final UserService userService;
 	private final MailServiceImpl mailService;
+
+	@AuthorizeRole("admin")
+	@GetMapping
+	public ResponseEntity<Page<GetUserListResponse>> getUsers(@PageableDefault(page = 1, size = 10) Pageable pageable) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers(pageable));
+	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/search")
@@ -68,6 +80,27 @@ public class UserController {
 	@PostMapping("/oauth2/info")
 	public ResponseEntity<UserTokenInfo> getUserInfoByOauth(@RequestBody OauthDto request) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfoByOauth(request));
+	}
+
+	@AuthorizeRole("admin")
+	@GetMapping("/{userId}")
+	public ResponseEntity<GetUserResponse> getUser(@PathVariable Long userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(userId));
+	}
+
+	@AuthorizeRole("admin")
+	@PutMapping("/{userId}")
+	public ResponseEntity<Void> updateUserByAdmin(@PathVariable Long userId, @RequestBody UpdateUserRequest request) {
+		userService.updateUser(userId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+
+	@AuthorizeRole("admin")
+	@PutMapping("/{userId}/attribute")
+	public ResponseEntity<Void> updateUserAttributeByAdmin(@PathVariable Long userId,
+		@RequestBody UpdateUserAttributeRequest request) {
+		userService.updateUserAttributeByAdmin(userId, request);
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
 	@AuthorizeRole("member")

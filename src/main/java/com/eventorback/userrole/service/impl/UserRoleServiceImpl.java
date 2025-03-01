@@ -2,14 +2,17 @@ package com.eventorback.userrole.service.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.eventorback.userrole.domain.dto.UserRoleDto;
+import com.eventorback.role.domain.dto.RoleDto;
+import com.eventorback.role.domain.entity.Role;
+import com.eventorback.role.exception.RoleNotFoundException;
+import com.eventorback.role.repository.RoleRepository;
+import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.UserNotFoundException;
+import com.eventorback.user.repository.UserRepository;
 import com.eventorback.userrole.domain.entity.UserRole;
-import com.eventorback.userrole.exception.UserRoleNotFoundException;
 import com.eventorback.userrole.repository.UserRoleRepository;
 import com.eventorback.userrole.service.UserRoleService;
 
@@ -20,40 +23,29 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserRoleServiceImpl implements UserRoleService {
 	private final UserRoleRepository userRoleRepository;
+	private final UserRepository userRepository;
+	private final RoleRepository roleRepository;
 
 	@Override
-	public List<UserRoleDto> getUserRoles() {
-		return userRoleRepository.findAll().stream().map(UserRoleDto::fromEntity).toList();
+	public List<RoleDto> getUserRoles(Long userId) {
+		return userRoleRepository.getUserRoles(userId);
 	}
 
 	@Override
-	public Page<UserRoleDto> getUserRoles(Pageable pageable) {
-		return null;
+	public List<RoleDto> getUnassignedUserRoles(Long userId) {
+		return userRoleRepository.getUnassignedUserRoles(userId);
 	}
 
 	@Override
-	public UserRoleDto getUserRole(Long userRoleId) {
-		UserRole userRole = userRoleRepository.findById(userRoleId).orElseThrow(UserRoleNotFoundException::new);
-		return UserRoleDto.fromEntity(userRole);
+	public void createUserRole(Long userId, Long roleId) {
+		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
+		Role role = roleRepository.findById(roleId).orElseThrow(RoleNotFoundException::new);
+		userRoleRepository.save(UserRole.toEntity(user, role));
 	}
 
 	@Override
-	public void createUserRole(UserRoleDto request) {
-
+	public void deleteUserRole(Long userId, Long roleId) {
+		userRoleRepository.deleteByUserUserIdAndRoleRoleId(userId, roleId);
 	}
 
-	@Override
-	public void updateUserRole(Long userRoleId, UserRoleDto request) {
-
-	}
-
-	@Override
-	public void deleteUserRole(Long userRoleId) {
-		userRoleRepository.deleteById(userRoleId);
-	}
-
-	@Override
-	public List<String> getUserRoleNameList() {
-		return List.of();
-	}
 }
