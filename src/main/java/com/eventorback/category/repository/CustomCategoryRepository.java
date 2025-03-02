@@ -12,7 +12,7 @@ import com.eventorback.category.domain.entity.Category;
 public interface CustomCategoryRepository {
 
 	List<GetCategoryNameResponse> searchCategories(String keyword);
-	
+
 	Page<GetCategoryListResponse> getCategories(Pageable pageable);
 
 	Long getMaxGroup();

@@ -33,6 +33,11 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
+	public List<String> getCategories(String categoryName) {
+		return categoryRepository.getCategoryNames(categoryName);
+	}
+
+	@Override
 	public Page<GetCategoryListResponse> getCategories(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();

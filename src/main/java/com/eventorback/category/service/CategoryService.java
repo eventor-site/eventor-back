@@ -15,6 +15,8 @@ public interface CategoryService {
 
 	List<GetCategoryNameResponse> searchCategories(String keyword);
 
+	List<String> getCategories(String categoryName);
+
 	Page<GetCategoryListResponse> getCategories(Pageable pageable);
 
 	GetCategoryResponse getCategory(Long categoryId);
