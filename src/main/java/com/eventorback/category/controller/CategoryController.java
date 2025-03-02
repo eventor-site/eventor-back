@@ -35,8 +35,13 @@ public class CategoryController {
 	private final CategoryServiceImpl categoryService;
 
 	@GetMapping("/search")
-	public ResponseEntity<List<GetCategoryNameResponse>> getCategories(@RequestParam String keyword) {
+	public ResponseEntity<List<GetCategoryNameResponse>> searchCategories(@RequestParam String keyword) {
 		return ResponseEntity.status(HttpStatus.OK).body(categoryService.searchCategories(keyword));
+	}
+
+	@GetMapping
+	public ResponseEntity<List<String>> getCategories(@RequestParam String categoryName) {
+		return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategories(categoryName));
 	}
 
 	@AuthorizeRole("admin")
