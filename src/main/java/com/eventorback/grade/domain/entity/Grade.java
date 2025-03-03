@@ -1,7 +1,5 @@
 package com.eventorback.grade.domain.entity;
 
-import java.math.BigDecimal;
-
 import com.eventorback.grade.domain.dto.GradeDto;
 
 import jakarta.persistence.Column;
@@ -29,13 +27,13 @@ public class Grade {
 	private String name;
 
 	@Column(name = "min_amount")
-	private BigDecimal minAmount;
+	private Long minAmount;
 
 	@Column(name = "max_amount")
-	private BigDecimal maxAmount;
+	private Long maxAmount;
 
 	@Builder
-	public Grade(String name, BigDecimal minAmount, BigDecimal maxAmount) {
+	public Grade(String name, Long minAmount, Long maxAmount) {
 		this.name = name;
 		this.minAmount = minAmount;
 		this.maxAmount = maxAmount;
