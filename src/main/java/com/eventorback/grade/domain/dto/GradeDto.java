@@ -1,7 +1,5 @@
 package com.eventorback.grade.domain.dto;
 
-import java.math.BigDecimal;
-
 import com.eventorback.grade.domain.entity.Grade;
 
 import lombok.Builder;
@@ -10,8 +8,8 @@ import lombok.Builder;
 public record GradeDto(
 	Long gradeId,
 	String name,
-	BigDecimal minAmount,
-	BigDecimal maxAmount) {
+	Long minAmount,
+	Long maxAmount) {
 
 	public static GradeDto fromEntity(Grade grade) {
 		return GradeDto.builder()
