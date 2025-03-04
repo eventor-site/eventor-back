@@ -14,13 +14,11 @@ import com.eventorback.category.exception.CategoryNotFoundException;
 import com.eventorback.category.repository.CategoryRepository;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CommentRepository;
-import com.eventorback.eventpost.domain.entity.EventPost;
-import com.eventorback.eventpost.exception.EventPostNotFoundException;
-import com.eventorback.eventpost.repository.EventPostRepository;
+import com.eventorback.event.domain.entity.Event;
+import com.eventorback.event.repository.EventRepository;
 import com.eventorback.favorite.repository.FavoriteRepository;
-import com.eventorback.hotdealpost.domain.entity.HotDealPost;
-import com.eventorback.hotdealpost.exception.HotDealPostNotFoundException;
-import com.eventorback.hotdealpost.repository.HotDealPostRepository;
+import com.eventorback.hotdeal.domain.entity.HotDeal;
+import com.eventorback.hotdeal.repository.HotDealRepository;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
@@ -57,8 +55,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
-	private final EventPostRepository eventPostRepository;
-	private final HotDealPostRepository hotDealPostRepository;
+	private final EventRepository eventRepository;
+	private final HotDealRepository hotDealRepository;
 	private final CategoryRepository categoryRepository;
 	private final UserRepository userRepository;
 	private final StatusRepository statusRepository;
@@ -78,22 +76,26 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<GetMainPostResponse> getHotEventPosts() {
-		return postRepository.getHotEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getHotEventPosts(categoryIds);
 	}
 
 	@Override
 	public List<GetMainPostResponse> getLatestEventPosts() {
-		return postRepository.getLatestEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getLatestEventPosts(categoryIds);
 	}
 
 	@Override
 	public List<GetMainPostResponse> getDeadlineEventPosts() {
-		return postRepository.getDeadlineEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getDeadlineEventPosts(categoryIds);
 	}
 
 	@Override
 	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
-		return postRepository.getRecommendationEventPosts();
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getRecommendationEventPosts(categoryIds);
 	}
 
 	@Override
@@ -159,19 +161,7 @@ public class PostServiceImpl implements PostService {
 			post.increaseViewCount();
 		}
 
-		switch (post.getCategory().getName()) {
-			case "공지", "자유", "맛집":
-				return GetPostResponse.fromEntity(post, images, isAuthorized, isFavorite);
-			case "핫딜":
-				HotDealPost hotDealPost = hotDealPostRepository.findByPostPostId(postId)
-					.orElseThrow(HotDealPostNotFoundException::new);
-				return GetPostResponse.fromEntity(post, hotDealPost, images, isAuthorized, isFavorite);
-			default:
-				EventPost eventPost = eventPostRepository.findByPostPostId(postId)
-					.orElseThrow(EventPostNotFoundException::new);
-				return GetPostResponse.fromEntity(post, eventPost, images, isAuthorized, isFavorite);
-		}
-
+		return GetPostResponse.fromEntity(post, images, isAuthorized, isFavorite);
 	}
 
 	@Override
@@ -189,16 +179,19 @@ public class PostServiceImpl implements PostService {
 		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
 			statusRepository.findOrCreateStatus("게시글", "작성중");
 
-		Post post = postRepository.save(Post.toEntity(category, user, status, request));
+		Post post;
 
 		switch (request.categoryName()) {
 			case "공지", "자유", "맛집":
+				post = postRepository.save(Post.toEntity(category, user, status, request));
 				break;
 			case "핫딜":
-				hotDealPostRepository.save(HotDealPost.toEntity(post, request));
+				HotDeal hotDeal = hotDealRepository.save(HotDeal.toEntity(request));
+				post = postRepository.save(Post.toEntity(category, user, status, hotDeal, request));
 				break;
 			default:
-				eventPostRepository.save(EventPost.toEntity(post, request));
+				Event event = eventRepository.save(Event.toEntity(request));
+				post = postRepository.save(Post.toEntity(category, user, status, event, request));
 		}
 
 		return CreatePostResponse.fromEntity(post);
@@ -223,18 +216,15 @@ public class PostServiceImpl implements PostService {
 			case "공지", "자유", "맛집":
 				break;
 			case "핫딜":
-				HotDealPost hotDealPost = hotDealPostRepository.findByPostPostId(postId).orElseThrow(
-					HotDealPostNotFoundException::new);
-				hotDealPost.update(request);
+				HotDeal hotDeal = post.getHotDeal();
+				hotDeal.update(request);
 				break;
 			default:
-				EventPost eventPost = eventPostRepository.findByPostPostId(postId).orElseThrow(
-					EventPostNotFoundException::new);
+				Event eventPost = post.getEvent();
 				eventPost.update(request);
 		}
 
 		post.update(request);
-
 		return post;
 	}
 
