@@ -11,6 +11,13 @@ public class DataSourceConfig {
 	@Value("${spring.datasource.url}")
 	private String url;
 
+	/**
+	 * PoolSize = Tn × ( Cm - 1 ) + ( Tn / 2 )
+	 *
+	 * thread count : 12
+	 * simultaneous connection count : 2
+	 * pool size : 12 * ( 2 – 1 ) + (12 / 2) = 18
+	 */
 	@Bean
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
@@ -20,10 +27,10 @@ public class DataSourceConfig {
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
 		// 최적화 파라미터 설정
-		dataSource.setInitialSize(100);
-		dataSource.setMaxTotal(100);
-		dataSource.setMaxIdle(100);
-		dataSource.setMinIdle(100);
+		dataSource.setInitialSize(18);
+		dataSource.setMaxTotal(18);
+		dataSource.setMaxIdle(18);
+		dataSource.setMinIdle(18);
 
 		// 추가 최적화 설정
 		dataSource.setTestOnBorrow(true);
