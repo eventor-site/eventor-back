@@ -3,8 +3,6 @@ package com.eventorback.post.domain.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.eventorback.eventpost.domain.entity.EventPost;
-import com.eventorback.hotdealpost.domain.entity.HotDealPost;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.post.domain.entity.Post;
 
@@ -43,33 +41,24 @@ public record GetPostResponse(
 				.sum();
 		}
 
-		return GetPostResponse.builder()
-			.postId(post.getPostId())
-			.categoryName(post.getCategory().getName())
-			.writer(post.getWriter())
-			.title(post.getTitle())
-			.content(post.getContent())
-			.recommendationCount(post.getRecommendationCount())
-			.viewCount(post.getViewCount())
-			.createdAt(LocalDateTime.now())
-			.statusName(post.getStatus().getName())
-			.images(images)
-			.totalSize(totalSize)
-			.gradeName(post.getUser().getGrade().getName())
-			.isAuthorized(isAuthorized)
-			.isFavorite(isFavorite)
-			.build();
-	}
+		String link = null;
+		String shoppingMall = null;
+		String productName = null;
+		Long price = null;
 
-	public static GetPostResponse fromEntity(Post post, HotDealPost hotDealPost, List<GetImageResponse> images,
-		Boolean isAuthorized,
-		Boolean isFavorite) {
-		double totalSize = 0;
+		if (post.getHotDeal() != null) {
+			link = post.getHotDeal().getLink();
+			shoppingMall = post.getHotDeal().getShoppingMall();
+			productName = post.getHotDeal().getProductName();
+			price = post.getHotDeal().getPrice();
+		}
 
-		if (images != null) {
-			totalSize = images.stream()
-				.mapToLong(GetImageResponse::size)
-				.sum();
+		LocalDateTime startTime = null;
+		LocalDateTime endTime = null;
+		if (post.getEvent() != null) {
+			link = post.getEvent().getLink();
+			startTime = post.getEvent().getStartTime();
+			endTime = post.getEvent().getEndTime();
 		}
 
 		return GetPostResponse.builder()
@@ -77,46 +66,20 @@ public record GetPostResponse(
 			.categoryName(post.getCategory().getName())
 			.writer(post.getWriter())
 			.title(post.getTitle())
-			.link(hotDealPost.getLink())
-			.shoppingMall(hotDealPost.getShoppingMall())
-			.productName(hotDealPost.getProductName())
-			.price(hotDealPost.getPrice())
+
+			.link(link)
+
+			.shoppingMall(shoppingMall)
+			.productName(productName)
+			.price(price)
+
+			.startTime(startTime)
+			.endTime(endTime)
+
 			.content(post.getContent())
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(LocalDateTime.now())
-			.statusName(post.getStatus().getName())
-			.images(images)
-			.totalSize(totalSize)
-			.gradeName(post.getUser().getGrade().getName())
-			.isAuthorized(isAuthorized)
-			.isFavorite(isFavorite)
-			.build();
-	}
-
-	public static GetPostResponse fromEntity(Post post, EventPost eventPost, List<GetImageResponse> images,
-		Boolean isAuthorized,
-		Boolean isFavorite) {
-		double totalSize = 0;
-
-		if (images != null) {
-			totalSize = images.stream()
-				.mapToLong(GetImageResponse::size)
-				.sum();
-		}
-
-		return GetPostResponse.builder()
-			.postId(post.getPostId())
-			.categoryName(post.getCategory().getName())
-			.writer(post.getWriter())
-			.title(post.getTitle())
-			.link(eventPost.getLink())
-			.content(post.getContent())
-			.recommendationCount(post.getRecommendationCount())
-			.viewCount(post.getViewCount())
-			.createdAt(LocalDateTime.now())
-			.startTime(eventPost.getStartTime())
-			.endTime(eventPost.getEndTime())
 			.statusName(post.getStatus().getName())
 			.images(images)
 			.totalSize(totalSize)

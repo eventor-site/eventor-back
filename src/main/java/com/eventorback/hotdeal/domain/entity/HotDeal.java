@@ -1,19 +1,13 @@
-package com.eventorback.hotdealpost.domain.entity;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+package com.eventorback.hotdeal.domain.entity;
 
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
-import com.eventorback.post.domain.entity.Post;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,18 +16,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "hotdeal_posts")
-public class HotDealPost {
+@Table(name = "hotdeals")
+public class HotDeal {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "hotdeal_post_id")
+	@Column(name = "hotdeal_id")
 	private Long hotDealPostId;
-
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "post_id")
-	@OnDelete(action = OnDeleteAction.CASCADE) // DB 에서 자동 삭제 처리
-	private Post post;
 
 	@Column(name = "link")
 	private String link;
@@ -48,17 +37,15 @@ public class HotDealPost {
 	private Long price;
 
 	@Builder
-	public HotDealPost(Post post, String link, String shoppingMall, String productName, Long price) {
-		this.post = post;
+	public HotDeal(String link, String shoppingMall, String productName, Long price) {
 		this.link = link;
 		this.shoppingMall = shoppingMall;
 		this.productName = productName;
 		this.price = price;
 	}
 
-	public static HotDealPost toEntity(Post post, CreatePostRequest request) {
-		return HotDealPost.builder()
-			.post(post)
+	public static HotDeal toEntity(CreatePostRequest request) {
+		return HotDeal.builder()
 			.link(request.link())
 			.shoppingMall(request.shoppingMall())
 			.productName(request.productName())
