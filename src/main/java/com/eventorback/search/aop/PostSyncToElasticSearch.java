@@ -87,7 +87,7 @@ public class PostSyncToElasticSearch {
 			if (categoryName.equals("공지") || categoryName.equals("자유")
 				|| categoryName.equals("맛집")) {
 				image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
-					.orElseThrow(ImageNotFoundException::new);
+					.orElse(null);
 			} else {
 				image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
 			}
