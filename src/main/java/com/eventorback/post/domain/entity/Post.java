@@ -138,7 +138,8 @@ public class Post {
 			.build();
 	}
 
-	public void update(UpdatePostRequest request) {
+	public void update(Category category, UpdatePostRequest request) {
+		this.category = category;
 		this.title = request.title();
 		this.content = request.content();
 	}
