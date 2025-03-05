@@ -59,6 +59,9 @@ public class Post {
 	@Column(name = "writer", length = 30)
 	private String writer;
 
+	@Column(name = "writer_grade")
+	private String writerGrade;
+
 	@Column(name = "title")
 	private String title;
 
@@ -79,7 +82,8 @@ public class Post {
 	private LocalDateTime deletedAt;
 
 	@Builder
-	public Post(Category category, User user, Status status, HotDeal hotDeal, Event event, String writer, String title,
+	public Post(Category category, User user, Status status, HotDeal hotDeal, Event event, String writer,
+		String writerGrade, String title,
 		String content) {
 		this.category = category;
 		this.user = user;
@@ -87,6 +91,7 @@ public class Post {
 		this.hotDeal = hotDeal;
 		this.event = event;
 		this.writer = writer;
+		this.writerGrade = writerGrade;
 		this.title = title;
 		this.content = content;
 		this.recommendationCount = 0L;
@@ -102,6 +107,7 @@ public class Post {
 			.status(status)
 			.hotDeal(hotDeal)
 			.writer(user.getNickname())
+			.writerGrade(user.getGrade().getName())
 			.title(request.title())
 			.content(request.content())
 			.build();
@@ -114,6 +120,7 @@ public class Post {
 			.status(status)
 			.event(event)
 			.writer(user.getNickname())
+			.writerGrade(user.getGrade().getName())
 			.title(request.title())
 			.content(request.content())
 			.build();
@@ -125,6 +132,7 @@ public class Post {
 			.user(user)
 			.status(status)
 			.writer(user.getNickname())
+			.writerGrade(user.getGrade().getName())
 			.title(request.title())
 			.content(request.content())
 			.build();

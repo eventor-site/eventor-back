@@ -13,6 +13,7 @@ public record GetPostResponse(
 	Long postId,
 	String categoryName,
 	String writer,
+	String writerGrade,
 	String title,
 	String link,
 	String shoppingMall,
@@ -27,7 +28,6 @@ public record GetPostResponse(
 	String statusName,
 	List<GetImageResponse> images,
 	Double totalSize,
-	String gradeName,
 	Boolean isAuthorized,
 	Boolean isFavorite) {
 
@@ -65,7 +65,9 @@ public record GetPostResponse(
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
 			.writer(post.getWriter())
+			.writerGrade(post.getWriterGrade())
 			.title(post.getTitle())
+			.content(post.getContent())
 
 			.link(link)
 
@@ -76,14 +78,12 @@ public record GetPostResponse(
 			.startTime(startTime)
 			.endTime(endTime)
 
-			.content(post.getContent())
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(LocalDateTime.now())
 			.statusName(post.getStatus().getName())
 			.images(images)
 			.totalSize(totalSize)
-			.gradeName(post.getUser().getGrade().getName())
 			.isAuthorized(isAuthorized)
 			.isFavorite(isFavorite)
 			.build();

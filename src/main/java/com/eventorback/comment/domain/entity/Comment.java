@@ -50,6 +50,9 @@ public class Comment {
 	@Column(name = "writer", length = 30)
 	private String writer;
 
+	@Column(name = "writer_grade")
+	private String writerGrade;
+
 	@Column(name = "content", length = 1500)
 	private String content;
 
@@ -78,13 +81,14 @@ public class Comment {
 	private Long childCount;
 
 	@Builder
-	public Comment(Comment parentComment, Post post, User user, Status status, String writer, String content,
-		Long group, Long depth, Long groupOrder, Long childCount) {
+	public Comment(Comment parentComment, Post post, User user, Status status, String writer, String writerGrade,
+		String content, Long group, Long depth, Long groupOrder, Long childCount) {
 		this.parentComment = parentComment;
 		this.post = post;
 		this.user = user;
 		this.status = status;
 		this.writer = writer;
+		this.writerGrade = writerGrade;
 		this.content = content;
 		this.recommendationCount = 0L;
 		this.decommendationCount = 0L;
@@ -103,6 +107,7 @@ public class Comment {
 			.user(user)
 			.status(status)
 			.writer(user.getNickname())
+			.writerGrade(user.getGrade().getName())
 			.content(request.content())
 			.group(group)
 			.depth(depth)
@@ -119,6 +124,7 @@ public class Comment {
 			.user(user)
 			.status(status)
 			.writer(user.getNickname())
+			.writerGrade(user.getGrade().getName())
 			.content(request.content())
 			.group(group)
 			.depth(0L)

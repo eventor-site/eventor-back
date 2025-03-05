@@ -9,11 +9,11 @@ public record GetCommentResponse(
 	Long commentId,
 	Long parentCommentId,
 	String writer,
+	String writerGrade,
 	String content,
 	Long recommendationCount,
 	Long decommendationCount,
 	LocalDateTime createdAt,
-	String gradeName,
 	Boolean isAuthorized,
 	Long depth) {
 

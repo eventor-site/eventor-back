@@ -8,10 +8,10 @@ import lombok.Builder;
 public record GetPostsByCategoryNameResponse(
 	Long postId,
 	String writer,
+	String writerGrade,
 	String title,
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
-	String gradeName,
 	String imageUrl) {
 }
