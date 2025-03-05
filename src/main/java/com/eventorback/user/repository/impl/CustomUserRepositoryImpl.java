@@ -195,6 +195,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			userInfo.getOauthType(),
 			userInfo.getCreatedAt(),
 			userInfo.getUpdatedTime(),
+			userInfo.getLastNicknameChangeTime(),
 			userInfo.getLastLoginTime()
 		);
 

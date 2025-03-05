@@ -1,5 +1,7 @@
 package com.eventorback.user.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,7 @@ import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
+import com.eventorback.user.exception.NicknameChangeCooldownBadRequestException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
 import com.eventorback.user.service.UserService;
@@ -105,6 +108,25 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void updateUser(Long userId, UpdateUserRequest request) {
 		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
+
+		if (!user.getNickname().equals(request.nickname())) {
+
+			if (user.getLastNicknameChangeTime() == null) {
+				user.updateLastNicknameChangeTime();
+			} else {
+				LocalDateTime currentTime = LocalDateTime.now();
+
+				// 날짜 차이 계산
+				long monthsBetween = ChronoUnit.MONTHS.between(user.getLastNicknameChangeTime(), currentTime);
+
+				if (monthsBetween >= 1) {
+					user.updateLastNicknameChangeTime();
+				} else {
+					throw new NicknameChangeCooldownBadRequestException();
+				}
+			}
+		}
+
 		user.updateUser(request);
 	}
 
@@ -136,9 +158,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String meCheckNickname(Long userId, CheckNicknameRequest request) {
-		if (userId != null && userRepository.existsByUserIdNotAndNickname(userId, request.nickname())) {
+		String nickname = request.nickname();
+
+		if (nickname.contains("[EM]")) {
+			return "사용할 수 없는 아이디 입니다.";
+		}
+
+		if (userId != null && userRepository.existsByUserIdNotAndNickname(userId, nickname)) {
 			return "이미 존재하는 닉네임 입니다.";
 		}
+
 		return "사용 가능한 닉네임 입니다.";
 	}
 
@@ -189,9 +218,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String checkNickname(CheckNicknameRequest request) {
+		String identifier = request.nickname();
+
+		if (identifier.contains("[EM]")) {
+			return "사용할 수 없는 아이디 입니다.";
+		}
+
 		if (userRepository.existsByNickname(request.nickname())) {
 			return "이미 존재하는 닉네임 입니다.";
 		}
+
 		return "사용 가능한 닉네임 입니다.";
 	}
 

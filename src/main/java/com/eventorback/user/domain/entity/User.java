@@ -74,6 +74,9 @@ public class User {
 	@Column(name = "last_login_time")
 	private LocalDateTime lastLoginTime;
 
+	@Column(name = "last_nickname_change_time")
+	private LocalDateTime lastNicknameChangeTime;
+
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
@@ -140,6 +143,10 @@ public class User {
 
 	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
 		this.lastLoginTime = request.lastLoginTime();
+	}
+
+	public void updateLastNicknameChangeTime() {
+		this.lastNicknameChangeTime = LocalDateTime.now();
 	}
 
 	public void modifyPassword(String encryptedNewPassword) {
