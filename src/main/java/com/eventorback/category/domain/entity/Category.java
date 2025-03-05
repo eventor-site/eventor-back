@@ -29,7 +29,7 @@ public class Category {
 	@JoinColumn(name = "parent_category_id")
 	private Category parentCategory;
 
-	@Column(name = "name")
+	@Column(name = "name", length = 30)
 	private String name;
 
 	@Column(name = "group")

@@ -47,10 +47,10 @@ public class Comment {
 	@JoinColumn(name = "status_id")
 	private Status status;
 
-	@Column(name = "writer")
+	@Column(name = "writer", length = 30)
 	private String writer;
 
-	@Column(name = "content")
+	@Column(name = "content", length = 1500)
 	private String content;
 
 	@Column(name = "recommendation_count")

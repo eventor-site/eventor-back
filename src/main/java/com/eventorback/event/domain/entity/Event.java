@@ -32,7 +32,7 @@ public class Event {
 	@Column(name = "end_time")
 	private LocalDateTime endTime;
 
-	@Column(name = "link")
+	@Column(name = "link", length = 1000)
 	private String link;
 
 	@Builder
