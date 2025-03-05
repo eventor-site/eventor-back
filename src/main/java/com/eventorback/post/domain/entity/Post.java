@@ -100,38 +100,40 @@ public class Post {
 	}
 
 	public static Post toEntity(Category category, User user, Status status, HotDeal hotDeal,
-		CreatePostRequest request) {
+		CreatePostRequest request, boolean isAdmin) {
 		return Post.builder()
 			.category(category)
 			.user(user)
 			.status(status)
 			.hotDeal(hotDeal)
-			.writer(user.getNickname())
+			.writer(createAdminWriter(isAdmin, user.getNickname()))
 			.writerGrade(user.getGrade().getName())
 			.title(request.title())
 			.content(request.content())
 			.build();
 	}
 
-	public static Post toEntity(Category category, User user, Status status, Event event, CreatePostRequest request) {
+	public static Post toEntity(Category category, User user, Status status, Event event, CreatePostRequest request,
+		boolean isAdmin) {
 		return Post.builder()
 			.category(category)
 			.user(user)
 			.status(status)
 			.event(event)
-			.writer(user.getNickname())
+			.writer(createAdminWriter(isAdmin, user.getNickname()))
 			.writerGrade(user.getGrade().getName())
 			.title(request.title())
 			.content(request.content())
 			.build();
 	}
 
-	public static Post toEntity(Category category, User user, Status status, CreatePostRequest request) {
+	public static Post toEntity(Category category, User user, Status status, CreatePostRequest request,
+		boolean isAdmin) {
 		return Post.builder()
 			.category(category)
 			.user(user)
 			.status(status)
-			.writer(user.getNickname())
+			.writer(createAdminWriter(isAdmin, user.getNickname()))
 			.writerGrade(user.getGrade().getName())
 			.title(request.title())
 			.content(request.content())
@@ -162,6 +164,14 @@ public class Post {
 
 	public void disrecommendPost() {
 		this.recommendationCount--;
+	}
+
+	public static String createAdminWriter(boolean isAdmin, String writer) {
+		if (isAdmin) {
+			return "[EM] " + writer;
+		} else {
+			return writer;
+		}
 	}
 
 }

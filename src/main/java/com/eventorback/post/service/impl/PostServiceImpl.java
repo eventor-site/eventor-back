@@ -47,6 +47,7 @@ import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserForbiddenException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
+import com.eventorback.userrole.repository.UserRoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,6 +67,7 @@ public class PostServiceImpl implements PostService {
 	private final RecommendTypeService recommendTypeService;
 	private final FavoriteRepository favoriteRepository;
 	private final CommentRepository commentRepository;
+	private final UserRoleRepository userRoleRepository;
 
 	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
@@ -176,6 +178,10 @@ public class PostServiceImpl implements PostService {
 
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
+		boolean isAdmin = userRoleRepository.findAllByUserUserId(user.getUserId())
+			.stream()
+			.anyMatch(userRole -> userRole.getRole().getName().equals("admin"));
+
 		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
 			statusRepository.findOrCreateStatus("게시글", "작성중");
 
@@ -183,15 +189,15 @@ public class PostServiceImpl implements PostService {
 
 		switch (request.categoryName()) {
 			case "공지", "자유", "맛집":
-				post = postRepository.save(Post.toEntity(category, user, status, request));
+				post = postRepository.save(Post.toEntity(category, user, status, request, isAdmin));
 				break;
 			case "핫딜":
 				HotDeal hotDeal = hotDealRepository.save(HotDeal.toEntity(request));
-				post = postRepository.save(Post.toEntity(category, user, status, hotDeal, request));
+				post = postRepository.save(Post.toEntity(category, user, status, hotDeal, request, isAdmin));
 				break;
 			default:
 				Event event = eventRepository.save(Event.toEntity(request));
-				post = postRepository.save(Post.toEntity(category, user, status, event, request));
+				post = postRepository.save(Post.toEntity(category, user, status, event, request, isAdmin));
 		}
 
 		return CreatePostResponse.fromEntity(post);
