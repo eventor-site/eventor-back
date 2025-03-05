@@ -72,7 +72,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 		BooleanExpression isAdmin = Expressions.FALSE;
 		BooleanExpression isOwner = Expressions.FALSE;
 
-		// currentUser가 null이 아닐 때만 조건을 설정
+		// currentUser 가 null 이 아닐 때만 조건을 설정
 		if (currentUser != null) {
 			isAdmin = Expressions.asBoolean(currentUser.roles().contains("admin")).isTrue();
 			isOwner = comment.user.userId.eq(currentUser.userId());
@@ -84,6 +84,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.commentId,
 				comment.parentComment.commentId,
 				comment.writer,
+				comment.writerGrade,
 				new CaseBuilder()
 					.when(comment.status.name.eq("삭제됨"))
 					.then("[삭제된 댓글입니다.]")
@@ -91,7 +92,6 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.recommendationCount,
 				comment.decommendationCount,
 				comment.createdAt,
-				comment.user.grade.name,
 				new CaseBuilder()
 					.when(isOwner.or(isAdmin))
 					.then(true)
@@ -145,7 +145,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 
 	@Override
 	public GetCommentPageResponse getComment(Long postId, Long commentId) {
-		// 특정 댓글의 group과 groupOrder 조회
+		// 특정 댓글의 group 과 groupOrder 조회
 		Tuple commentTuple = queryFactory
 			.select(comment.group, comment.groupOrder)
 			.from(comment)

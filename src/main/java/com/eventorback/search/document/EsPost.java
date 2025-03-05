@@ -37,6 +37,9 @@ public class EsPost {
 	@Field(type = FieldType.Text)
 	private String writer;
 
+	@Field(type = FieldType.Text)
+	private String writerGrade;
+
 	@Field(type = FieldType.Text, analyzer = "nori")
 	private String title;
 
@@ -56,9 +59,6 @@ public class EsPost {
 	private LocalDateTime createdAt;
 
 	@Field(type = FieldType.Text)
-	private String gradeName;
-
-	@Field(type = FieldType.Text)
 	private String imageUrl;
 
 	public static EsPost fromEntity(Post post) {
@@ -67,12 +67,12 @@ public class EsPost {
 			.categoryName(post.getCategory().getName())
 			.statusName(post.getStatus().getName())
 			.writer(post.getWriter())
+			.writerGrade(post.getWriterGrade())
 			.title(post.getTitle())
 			.content(post.getContent())
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
-			.gradeName(post.getUser().getGrade().getName())
 			.build();
 	}
 
@@ -84,12 +84,12 @@ public class EsPost {
 			.categoryName(post.getCategory().getName())
 			.statusName(post.getStatus().getName())
 			.writer(post.getWriter())
+			.writerGrade(post.getWriterGrade())
 			.title(post.getTitle())
 			.content(post.getContent())
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
-			.gradeName(post.getUser().getGrade().getName())
 			.imageUrl(imageUrl)
 			.build();
 	}
@@ -102,13 +102,13 @@ public class EsPost {
 			.categoryName(post.getCategory().getName())
 			.statusName(post.getStatus().getName())
 			.writer(post.getWriter())
+			.writerGrade(post.getWriterGrade())
 			.title(post.getTitle())
 			.productName(productName)
 			.content(post.getContent())
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
-			.gradeName(post.getUser().getGrade().getName())
 			.imageUrl(imageUrl)
 			.build();
 	}

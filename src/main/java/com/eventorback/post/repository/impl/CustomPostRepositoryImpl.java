@@ -251,11 +251,11 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				GetPostsByCategoryNameResponse.class,
 				post.postId,
 				post.writer,
+				post.writerGrade,
 				post.title,
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
-				grade.name,
 				JPAExpressions
 					.select(image.url)
 					.from(image)
@@ -288,11 +288,11 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				GetPostsByCategoryNameResponse.class,
 				post.postId,
 				post.writer,
+				post.writerGrade,
 				post.title,
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
-				grade.name,
 				image.url
 			))
 			.from(post)
