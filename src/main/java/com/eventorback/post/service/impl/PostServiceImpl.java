@@ -199,6 +199,9 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public Post updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request, boolean isTemp) {
+
+		Category category = categoryRepository.findByName(request.categoryName())
+			.orElseThrow(CategoryNotFoundException::new);
 		Post post = postRepository.findById(postId)
 			.orElseThrow(PostNotFoundException::new);
 
@@ -224,7 +227,7 @@ public class PostServiceImpl implements PostService {
 				eventPost.update(request);
 		}
 
-		post.update(request);
+		post.update(category, request);
 		return post;
 	}
 
