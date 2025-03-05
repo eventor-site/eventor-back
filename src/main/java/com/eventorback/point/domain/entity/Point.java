@@ -23,7 +23,7 @@ public class Point {
 	@Column(name = "point_id")
 	private Long pointId;
 
-	@Column(name = "name")
+	@Column(name = "name", length = 30)
 	private String name;
 
 	@Column(name = "amount")

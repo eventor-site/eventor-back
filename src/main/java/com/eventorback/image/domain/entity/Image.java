@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.eventorback.post.domain.entity.Post;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,18 +31,18 @@ public class Image {
 	@Column(name = "image_id")
 	private Long imageId;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "post_id")
 	@OnDelete(action = OnDeleteAction.CASCADE) // DB 에서 자동 삭제 처리
 	private Post post;
 
-	@Column(name = "original_name")
+	@Column(name = "original_name", length = 300)
 	private String originalName;
 
-	@Column(name = "new_name")
+	@Column(name = "new_name", length = 300)
 	private String newName;
 
-	@Column(name = "url")
+	@Column(name = "url", length = 300)
 	private String url;
 
 	@Column(name = "size")

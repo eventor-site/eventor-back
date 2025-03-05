@@ -41,28 +41,28 @@ public class User {
 	@JoinColumn(name = "grade_id")
 	private Grade grade;
 
-	@Column(name = "identifier")
+	@Column(name = "identifier", length = 30)
 	private String identifier;
 
-	@Column(name = "password")
+	@Column(name = "password", length = 255)
 	private String password;
 
-	@Column(name = "name")
+	@Column(name = "name", length = 30)
 	private String name;
 
-	@Column(name = "nickname")
+	@Column(name = "nickname", length = 30)
 	private String nickname;
 
-	@Column(name = "email")
+	@Column(name = "email", length = 30)
 	private String email;
 
 	@Column(name = "birth")
 	private LocalDate birth;
 
-	@Column(name = "gender")
+	@Column(name = "gender", length = 3)
 	private String gender;
 
-	@Column(name = "phone")
+	@Column(name = "phone", length = 15)
 	private String phone;
 
 	@Column(name = "point")

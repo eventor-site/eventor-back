@@ -24,7 +24,7 @@ public class HotDeal {
 	@Column(name = "hotdeal_id")
 	private Long hotDealPostId;
 
-	@Column(name = "link")
+	@Column(name = "link", length = 1000)
 	private String link;
 
 	@Column(name = "shopping_mall")

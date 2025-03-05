@@ -56,7 +56,7 @@ public class Post {
 	@JoinColumn(name = "hotdeal_id")
 	private HotDeal hotDeal;
 
-	@Column(name = "writer")
+	@Column(name = "writer", length = 30)
 	private String writer;
 
 	@Column(name = "title")

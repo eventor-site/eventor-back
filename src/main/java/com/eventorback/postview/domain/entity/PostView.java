@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.user.domain.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,7 +36,7 @@ public class PostView {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "post_id")
 	@OnDelete(action = OnDeleteAction.CASCADE) // DB 에서 자동 삭제 처리
 	private Post post;
