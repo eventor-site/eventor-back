@@ -116,7 +116,7 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	public void checkFileExtension(String fileContentType) {
-		String[] imageExtensions = {"jpg", "jpeg", "png", "gif"};
+		String[] imageExtensions = {"jpg", "jpeg", "png", "gif", "jfif"};
 
 		for (String extension : imageExtensions) {
 			if (fileContentType.toLowerCase().endsWith(extension)) {
