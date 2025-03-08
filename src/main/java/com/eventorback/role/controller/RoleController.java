@@ -3,8 +3,6 @@ package com.eventorback.role.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.auth.annotation.AuthorizeRole;
+import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.role.domain.dto.RoleDto;
 import com.eventorback.role.service.RoleService;
 
@@ -28,33 +27,33 @@ public class RoleController {
 
 	@AuthorizeRole("admin")
 	@GetMapping("/paging")
-	public ResponseEntity<Page<RoleDto>> getRoles(@PageableDefault(page = 1, size = 10) Pageable pageable) {
-		return ResponseEntity.status(HttpStatus.OK).body(roleService.getRoles(pageable));
+	public ApiResponse<Page<RoleDto>> getRoles(@PageableDefault(page = 1, size = 10) Pageable pageable) {
+		return ApiResponse.createSuccess(roleService.getRoles(pageable));
 	}
 
 	@GetMapping("/{roleId}")
-	public ResponseEntity<RoleDto> getRole(@PathVariable Long roleId) {
-		return ResponseEntity.status(HttpStatus.OK).body(roleService.getRole(roleId));
+	public ApiResponse<RoleDto> getRole(@PathVariable Long roleId) {
+		return ApiResponse.createSuccess(roleService.getRole(roleId));
 	}
 
 	@PostMapping
-	public ResponseEntity<Void> createRole(
+	public ApiResponse<Void> createRole(
 		@RequestBody RoleDto request) {
 		roleService.createRole(request);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ApiResponse.createSuccess("권한이 생성 되었습니다.");
 	}
 
 	@PutMapping("/{roleId}")
-	public ResponseEntity<Void> updateRole(@PathVariable Long roleId,
+	public ApiResponse<Void> updateRole(@PathVariable Long roleId,
 		@RequestBody RoleDto request) {
 		roleService.updateRole(roleId, request);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ApiResponse.createSuccess("권한이 수정 되었습니다.");
 	}
 
 	@DeleteMapping("/{roleId}")
-	public ResponseEntity<Void> deleteRole(@PathVariable Long roleId) {
+	public ApiResponse<Void> deleteRole(@PathVariable Long roleId) {
 		roleService.deleteRole(roleId);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ApiResponse.createSuccess("권한이 삭제 되었습니다.");
 	}
 
 }

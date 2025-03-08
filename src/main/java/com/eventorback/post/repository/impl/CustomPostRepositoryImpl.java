@@ -159,7 +159,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				.and(post.event.endTime.after(LocalDateTime.now())) // 현재 이후의 이벤트
 				.and(post.event.endTime.before(LocalDateTime.now().plusMonths(1)))  // 한 달 이내
 			)
-			.orderBy(post.event.endTime.desc())
+			.orderBy(post.event.endTime.asc())
 			.limit(10) // 상위 10개 게시물 제한
 			.fetch();
 	}

@@ -17,8 +17,8 @@ import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
+import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
-import com.eventorback.user.domain.dto.response.UserTokenInfo;
 
 public interface UserService {
 
@@ -28,9 +28,9 @@ public interface UserService {
 
 	List<GetUserByUserId> searchUserByUserId(Long userId);
 
-	UserTokenInfo getUserTokenInfoByIdentifier(String identifier);
+	GetUserTokenInfo getUserTokenInfoByIdentifier(String identifier);
 
-	UserTokenInfo getUserInfoByOauth(OauthDto request);
+	GetUserTokenInfo getUserInfoByOauth(OauthDto request);
 
 	Boolean existsByOauth(OauthDto request);
 
@@ -57,10 +57,6 @@ public interface UserService {
 	String checkIdentifier(CheckIdentifierRequest request);
 
 	String checkNickname(CheckNicknameRequest request);
-
-	boolean existsByIdentifier(CheckIdentifierRequest request);
-
-	boolean existsByEmail(String email);
 
 	String recoverIdentifier(String email);
 

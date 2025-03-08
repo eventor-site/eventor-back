@@ -21,8 +21,8 @@ import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
+import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
-import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
 import com.querydsl.core.Tuple;
@@ -137,7 +137,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	}
 
 	@Override
-	public UserTokenInfo getUserInfoByOauth(OauthDto request) {
+	public GetUserTokenInfo getUserInfoByOauth(OauthDto request) {
 		// 사용자 역할 이름 리스트 조회
 		List<String> roles = queryFactory
 			.select(role.name)
@@ -153,7 +153,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.where(user.oauthId.eq(request.oauthId()), user.oauthType.eq(request.oauthType()))
 			.fetchOne();
 
-		return UserTokenInfo.builder()
+		return GetUserTokenInfo.builder()
 			.userId(userInfo.getUserId())
 			.roles(roles)
 			.statusName(userInfo.getStatus().getName())

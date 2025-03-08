@@ -15,5 +15,5 @@ public interface BookmarkService {
 
 	String createOrDeleteBookmark(Long userId, String categoryName);
 
-	String deleteBookmark(Long userId, Long bookmarkId);
+	void deleteBookmark(Long userId, Long bookmarkId);
 }

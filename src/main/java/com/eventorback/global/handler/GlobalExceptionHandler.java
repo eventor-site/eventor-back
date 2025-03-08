@@ -4,15 +4,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.global.exception.GlobalException;
+import com.eventorback.global.exception.payload.ErrorStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(GlobalException.class)
-	public ResponseEntity<String> handleGlobalException(GlobalException e) {
-		return ResponseEntity.status(e.getErrorStatus().getStatus()).body(e.getMessage());
+	public ResponseEntity<ApiResponse<Void>> handleGlobalException(GlobalException e) {
+		ErrorStatus errorStatus = e.getErrorStatus();
+		return ResponseEntity
+			.status(errorStatus.getStatus())
+			.body(ApiResponse.createError(errorStatus.getStatus().toString(), errorStatus.getMessage()));
 	}
+
+	// @ExceptionHandler(GlobalException.class)
+	// public ResponseEntity<String> handleGlobalException(GlobalException e) {
+	// 	return ResponseEntity.status(e.getErrorStatus().getStatus()).body(e.getMessage());
+	// }
 
 	// // 400 BAD REQUEST (잘못된 요청)
 	// @ExceptionHandler(IllegalArgumentException.class)

@@ -11,5 +11,5 @@ public interface FavoriteService {
 
 	String createOrDeleteFavorite(Long userId, Long postId);
 
-	String deleteFavorite(Long userId, Long favoriteId);
+	void deleteFavorite(Long userId, Long favoriteId);
 }

@@ -35,8 +35,8 @@ import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
+import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
-import com.eventorback.user.domain.dto.response.UserTokenInfo;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.NicknameChangeCooldownBadRequestException;
 import com.eventorback.user.exception.UserNotFoundException;
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserTokenInfo getUserTokenInfoByIdentifier(String identifier) {
+	public GetUserTokenInfo getUserTokenInfoByIdentifier(String identifier) {
 		User user = userRepository.findByIdentifier(identifier)
 			.orElse(null);
 		if (user == null) {
@@ -87,11 +87,11 @@ public class UserServiceImpl implements UserService {
 		List<String> userRoleNames = userRoleRepository.findAllByUserUserId(user.getUserId())
 			.stream().map(userRole -> userRole.getRole().getName()).toList();
 
-		return UserTokenInfo.fromEntity(user, userRoleNames);
+		return GetUserTokenInfo.fromEntity(user, userRoleNames);
 	}
 
 	@Override
-	public UserTokenInfo getUserInfoByOauth(OauthDto request) {
+	public GetUserTokenInfo getUserInfoByOauth(OauthDto request) {
 		return userRepository.getUserInfoByOauth(request);
 	}
 
@@ -232,23 +232,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean existsByIdentifier(CheckIdentifierRequest request) {
-		return userRepository.existsByIdentifier(request.identifier());
-	}
-
-	@Override
-	public boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
-	}
-
-	@Override
 	public String recoverIdentifier(String email) {
 		User user = userRepository.findByEmail(email).orElse(null);
 		if (user != null) {
-			mailService.sendMail(email, "아이디 찾기", user.getIdentifier());
-			return email + "로 아이디를 전송하였습니다.";
+			// mailService.sendMail(email, "아이디 찾기", user.getIdentifier());
+			// return email + "로 아이디를 전송하였습니다.";
+			return "가입된 아이디 입니다.";
 		}
-		return "가입된 아이디가 없습니다.";
+		return "가입된 아이디가 아닙니다.";
 	}
 
 	@Override

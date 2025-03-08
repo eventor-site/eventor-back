@@ -15,6 +15,7 @@ import com.eventorback.bookmark.service.BookmarkService;
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.category.exception.CategoryNotFoundException;
 import com.eventorback.category.repository.CategoryRepository;
+import com.eventorback.global.exception.UnauthorizedException;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
@@ -58,13 +59,11 @@ public class BookmarkServiceImpl implements BookmarkService {
 	}
 
 	@Override
-	public String deleteBookmark(Long userId, Long bookmarkId) {
+	public void deleteBookmark(Long userId, Long bookmarkId) {
 		if (userId == null) {
-			return "로그인 후 이용해 주세요.";
-		} else {
-			bookmarkRepository.deleteById(bookmarkId);
-			return "즐겨찾기가 삭제 되었습니다.";
+			throw new UnauthorizedException();
 		}
+		bookmarkRepository.deleteById(bookmarkId);
 
 	}
 }
