@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eventorback.global.exception.UnauthorizedException;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -63,12 +64,11 @@ public class PostReportServiceImpl implements PostReportService {
 	}
 
 	@Override
-	public String deletePostReport(Long userId, Long postReportId) {
+	public void deletePostReport(Long userId, Long postReportId) {
 		if (userId == null) {
-			return "로그인 후 이용해 주세요.";
-		} else {
-			postReportRepository.deleteById(postReportId);
-			return "게시물 신고가 삭제 되었습니다.";
+			throw new UnauthorizedException();
 		}
+
+		postReportRepository.deleteById(postReportId);
 	}
 }

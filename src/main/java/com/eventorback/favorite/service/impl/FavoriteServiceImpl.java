@@ -10,6 +10,7 @@ import com.eventorback.favorite.domain.dto.response.GetFavoriteResponse;
 import com.eventorback.favorite.domain.entity.Favorite;
 import com.eventorback.favorite.repository.FavoriteRepository;
 import com.eventorback.favorite.service.FavoriteService;
+import com.eventorback.global.exception.UnauthorizedException;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -51,13 +52,12 @@ public class FavoriteServiceImpl implements FavoriteService {
 	}
 
 	@Override
-	public String deleteFavorite(Long userId, Long favoriteId) {
+	public void deleteFavorite(Long userId, Long favoriteId) {
 		if (userId == null) {
-			return "로그인 후 이용해 주세요.";
-		} else {
-			favoriteRepository.deleteById(favoriteId);
-			return "하트가 삭제 되었습니다.";
+			throw new UnauthorizedException();
 		}
+
+		favoriteRepository.deleteById(favoriteId);
 
 	}
 }

@@ -13,5 +13,5 @@ public interface PostReportService {
 
 	void confirmPostReport(Long postReportId);
 
-	String deletePostReport(Long userId, Long postReportId);
+	void deletePostReport(Long userId, Long postReportId);
 }

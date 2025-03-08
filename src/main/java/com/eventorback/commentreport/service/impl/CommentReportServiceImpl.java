@@ -13,6 +13,7 @@ import com.eventorback.commentreport.domain.dto.response.GetCommentReportRespons
 import com.eventorback.commentreport.domain.entity.CommentReport;
 import com.eventorback.commentreport.repository.CommentReportRepository;
 import com.eventorback.commentreport.service.CommentReportService;
+import com.eventorback.global.exception.UnauthorizedException;
 import com.eventorback.reporttype.domain.entity.ReportType;
 import com.eventorback.reporttype.exception.ReportTypeNotFoundException;
 import com.eventorback.reporttype.repository.ReportTypeRepository;
@@ -63,12 +64,11 @@ public class CommentReportServiceImpl implements CommentReportService {
 	}
 
 	@Override
-	public String deleteCommentReport(Long userId, Long commentReportId) {
+	public void deleteCommentReport(Long userId, Long commentReportId) {
 		if (userId == null) {
-			return "로그인 후 이용해 주세요.";
-		} else {
-			commentReportRepository.deleteById(commentReportId);
-			return "댓글 신고가 삭제 되었습니다.";
+			throw new UnauthorizedException();
 		}
+
+		commentReportRepository.deleteById(commentReportId);
 	}
 }

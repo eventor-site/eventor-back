@@ -108,7 +108,9 @@ public class CategoryServiceImpl implements CategoryService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(CategoryNotFoundException::new);
 
-		category.getParentCategory().minusChildCount();
+		if (category.getParentCategory() != null) {
+			category.getParentCategory().minusChildCount();
+		}
 
 		List<Category> updateList = categoryRepository.getGreaterGroupOrder(category.getGroup(),
 			category.getGroupOrder());
