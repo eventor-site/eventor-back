@@ -14,6 +14,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
 
 	boolean existsByName(String name);
 
+	boolean existsByCategoryIdNotAndName(Long categoryId, String name);
+
 	Optional<Category> findByName(String name);
 
 	@Query(value = """

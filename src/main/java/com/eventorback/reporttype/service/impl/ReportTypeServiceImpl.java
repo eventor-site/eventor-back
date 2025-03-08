@@ -54,14 +54,13 @@ public class ReportTypeServiceImpl implements ReportTypeService {
 	}
 
 	@Override
-	public void updateReportType(Long reportId, ReportTypeDto request) {
-		ReportType reportType = reportTypeRepository.findById(reportId)
-			.orElseThrow(ReportTypeNotFoundException::new);
-
-		if (reportTypeRepository.existsByName(request.name()) && !reportType.getReportTypeId()
-			.equals(request.reportTypeId())) {
+	public void updateReportType(Long reportTypeId, ReportTypeDto request) {
+		if (reportTypeRepository.existsByReportTypeIdNotAndName(reportTypeId, request.name())) {
 			throw new ReportTypeAlreadyExistsException();
 		}
+
+		ReportType reportType = reportTypeRepository.findById(reportTypeId)
+			.orElseThrow(ReportTypeNotFoundException::new);
 
 		reportType.updateReportType(request);
 	}

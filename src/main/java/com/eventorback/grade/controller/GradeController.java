@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,37 +30,38 @@ public class GradeController {
 
 	@AuthorizeRole("admin")
 	@GetMapping
-	public ApiResponse<List<GradeDto>> getGrades() {
+	public ResponseEntity<ApiResponse<List<GradeDto>>> getGrades() {
 		return ApiResponse.createSuccess(gradeService.getGrades());
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/paging")
-	public ApiResponse<Page<GradeDto>> getGrades(@PageableDefault(page = 1, size = 10) Pageable pageable) {
+	public ResponseEntity<ApiResponse<Page<GradeDto>>> getGrades(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ApiResponse.createSuccess(gradeService.getGrades(pageable));
 	}
 
 	@GetMapping("/{gradeId}")
-	public ApiResponse<GradeDto> getGrade(@PathVariable Long gradeId) {
+	public ResponseEntity<ApiResponse<GradeDto>> getGrade(@PathVariable Long gradeId) {
 		return ApiResponse.createSuccess(gradeService.getGrade(gradeId));
 	}
 
 	@PostMapping
-	public ApiResponse<Void> createGrade(
+	public ResponseEntity<ApiResponse<Void>> createGrade(
 		@RequestBody GradeDto request) {
 		gradeService.createGrade(request);
 		return ApiResponse.createSuccess("등급이 추가 되었습니다.");
 	}
 
 	@PutMapping("/{gradeId}")
-	public ApiResponse<Void> updateGrade(@PathVariable Long gradeId,
+	public ResponseEntity<ApiResponse<Void>> updateGrade(@PathVariable Long gradeId,
 		@RequestBody GradeDto request) {
 		gradeService.updateGrade(gradeId, request);
 		return ApiResponse.createSuccess("등급이 수정 되었습니다.");
 	}
 
 	@DeleteMapping("/{gradeId}")
-	public ApiResponse<Void> deleteGrade(@PathVariable Long gradeId) {
+	public ResponseEntity<ApiResponse<Void>> deleteGrade(@PathVariable Long gradeId) {
 		gradeService.deleteGrade(gradeId);
 		return ApiResponse.createSuccess("등급이 삭제 되었습니다.");
 	}

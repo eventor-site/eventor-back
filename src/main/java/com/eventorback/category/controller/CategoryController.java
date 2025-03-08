@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,42 +35,42 @@ public class CategoryController {
 	private final CategoryServiceImpl categoryService;
 
 	@GetMapping("/search")
-	public ApiResponse<List<GetCategoryNameResponse>> searchCategories(@RequestParam String keyword) {
+	public ResponseEntity<ApiResponse<List<GetCategoryNameResponse>>> searchCategories(@RequestParam String keyword) {
 		return ApiResponse.createSuccess(categoryService.searchCategories(keyword));
 	}
 
 	@GetMapping
-	public ApiResponse<List<String>> getCategories(@RequestParam String categoryName) {
+	public ResponseEntity<ApiResponse<List<String>>> getCategories(@RequestParam String categoryName) {
 		return ApiResponse.createSuccess(categoryService.getCategories(categoryName));
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/paging")
-	public ApiResponse<Page<GetCategoryListResponse>> getCategories(
+	public ResponseEntity<ApiResponse<Page<GetCategoryListResponse>>> getCategories(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ApiResponse.createSuccess(categoryService.getCategories(pageable));
 	}
 
 	@GetMapping("/{categoryId}")
-	public ApiResponse<GetCategoryResponse> getCategory(@PathVariable Long categoryId) {
+	public ResponseEntity<ApiResponse<GetCategoryResponse>> getCategory(@PathVariable Long categoryId) {
 		return ApiResponse.createSuccess(categoryService.getCategory(categoryId));
 	}
 
 	@PostMapping
-	public ApiResponse<Void> createCategory(@Valid @RequestBody CreateCategoryRequest request) {
+	public ResponseEntity<ApiResponse<Void>> createCategory(@Valid @RequestBody CreateCategoryRequest request) {
 		categoryService.createCategory(request);
 		return ApiResponse.createSuccess("카테고리가 추가되었습니다.");
 	}
 
 	@PutMapping("/{categoryId}")
-	public ApiResponse<Void> updateCategory(@PathVariable Long categoryId,
+	public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long categoryId,
 		@Valid @RequestBody UpdateCategoryRequest request) {
 		categoryService.updateCategory(categoryId, request);
 		return ApiResponse.createSuccess("카테고리가 수정되었습니다.");
 	}
 
 	@DeleteMapping("/{categoryId}")
-	public ApiResponse<Void> deleteCategory(@PathVariable Long categoryId) {
+	public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);
 		return ApiResponse.createSuccess("카테고리가 삭제 되었습니다.");
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,43 +31,43 @@ public class StatusTypeController {
 
 	@AuthorizeRole("admin")
 	@GetMapping("/search")
-	public ApiResponse<List<StatusTypeDto>> searchStatusTypes(@RequestParam String keyword) {
+	public ResponseEntity<ApiResponse<List<StatusTypeDto>>> searchStatusTypes(@RequestParam String keyword) {
 		return ApiResponse.createSuccess(statusTypeService.searchStatusTypes(keyword));
 	}
 
 	@GetMapping
-	public ApiResponse<List<StatusTypeDto>> getStatusTypes() {
+	public ResponseEntity<ApiResponse<List<StatusTypeDto>>> getStatusTypes() {
 		return ApiResponse.createSuccess(statusTypeService.getStatusTypes());
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/paging")
-	public ApiResponse<Page<StatusTypeDto>> getStatusTypes(
+	public ResponseEntity<ApiResponse<Page<StatusTypeDto>>> getStatusTypes(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ApiResponse.createSuccess(statusTypeService.getStatusTypes(pageable));
 	}
 
 	@GetMapping("/{statusTypeId}")
-	public ApiResponse<StatusTypeDto> getStatusType(@PathVariable Long statusTypeId) {
+	public ResponseEntity<ApiResponse<StatusTypeDto>> getStatusType(@PathVariable Long statusTypeId) {
 		return ApiResponse.createSuccess(statusTypeService.getStatusType(statusTypeId));
 	}
 
 	@PostMapping
-	public ApiResponse<Void> createStatusType(
+	public ResponseEntity<ApiResponse<Void>> createStatusType(
 		@RequestBody StatusTypeDto request) {
 		statusTypeService.createStatusType(request);
 		return ApiResponse.createSuccess("상태 유형이 생성 되었습니다.");
 	}
 
 	@PutMapping("/{statusTypeId}")
-	public ApiResponse<Void> updateStatusType(@PathVariable Long statusTypeId,
+	public ResponseEntity<ApiResponse<Void>> updateStatusType(@PathVariable Long statusTypeId,
 		@RequestBody StatusTypeDto request) {
 		statusTypeService.updateStatusType(statusTypeId, request);
 		return ApiResponse.createSuccess("상태 유형이 수정 되었습니다.");
 	}
 
 	@DeleteMapping("/{statusTypeId}")
-	public ApiResponse<Void> deleteStatusType(@PathVariable Long statusTypeId) {
+	public ResponseEntity<ApiResponse<Void>> deleteStatusType(@PathVariable Long statusTypeId) {
 		statusTypeService.deleteStatusType(statusTypeId);
 		return ApiResponse.createSuccess("상태 유형이 제거 되었습니다.");
 	}

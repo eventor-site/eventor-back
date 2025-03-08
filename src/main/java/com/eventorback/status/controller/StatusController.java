@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,39 +32,39 @@ public class StatusController {
 
 	@AuthorizeRole("admin")
 	@GetMapping
-	public ApiResponse<List<GetStatusResponse>> getStatuses(
+	public ResponseEntity<ApiResponse<List<GetStatusResponse>>> getStatuses(
 		@RequestParam String statusTypeName) {
 		return ApiResponse.createSuccess(statusService.getStatuses(statusTypeName));
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/paging")
-	public ApiResponse<Page<GetStatusResponse>> getStatuses(
+	public ResponseEntity<ApiResponse<Page<GetStatusResponse>>> getStatuses(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ApiResponse.createSuccess(statusService.getStatuses(pageable));
 	}
 
 	@GetMapping("/{statusId}")
-	public ApiResponse<GetStatusResponse> getStatus(@PathVariable Long statusId) {
+	public ResponseEntity<ApiResponse<GetStatusResponse>> getStatus(@PathVariable Long statusId) {
 		return ApiResponse.createSuccess(statusService.getStatus(statusId));
 	}
 
 	@PostMapping
-	public ApiResponse<Void> createStatus(
+	public ResponseEntity<ApiResponse<Void>> createStatus(
 		@RequestBody StatusRequest request) {
 		statusService.createStatus(request);
 		return ApiResponse.createSuccess("상태가 생성 되었습니다.");
 	}
 
 	@PutMapping("/{statusId}")
-	public ApiResponse<Void> updateStatus(@PathVariable Long statusId,
+	public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable Long statusId,
 		@RequestBody StatusRequest request) {
 		statusService.updateStatus(statusId, request);
 		return ApiResponse.createSuccess("상태가 수정 되었습니다.");
 	}
 
 	@DeleteMapping("/{statusId}")
-	public ApiResponse<Void> deleteStatus(@PathVariable Long statusId) {
+	public ResponseEntity<ApiResponse<Void>> deleteStatus(@PathVariable Long statusId) {
 		statusService.deleteStatus(statusId);
 		return ApiResponse.createSuccess("상태가 삭제 되었습니다.");
 	}

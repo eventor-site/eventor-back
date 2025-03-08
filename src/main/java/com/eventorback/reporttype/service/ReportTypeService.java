@@ -17,7 +17,7 @@ public interface ReportTypeService {
 
 	void createReportType(ReportTypeDto request);
 
-	void updateReportType(Long reportId, ReportTypeDto request);
+	void updateReportType(Long reportTypeId, ReportTypeDto request);
 
 	void deleteReportType(Long reportId);
 }

@@ -90,7 +90,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public void updateCategory(Long categoryId, UpdateCategoryRequest request) {
-		if (categoryRepository.existsByName(request.name())) {
+		if (categoryRepository.existsByCategoryIdNotAndName(categoryId, request.name())) {
 			throw new CategoryAlreadyExistsException();
 		}
 		Category category = categoryRepository.findById(categoryId)
