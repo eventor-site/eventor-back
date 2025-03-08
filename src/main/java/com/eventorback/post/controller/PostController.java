@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,117 +44,118 @@ public class PostController {
 	private final ElasticSearchService elasticSearchService;
 
 	@GetMapping("/search")
-	public ApiResponse<Page<SearchPostsResponse>> searchBooks(
+	public ResponseEntity<ApiResponse<Page<SearchPostsResponse>>> searchBooks(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @RequestParam String keyword) {
 		return ApiResponse.createSuccess(elasticSearchService.searchPosts(pageable, keyword));
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/all/paging")
-	public ApiResponse<Page<GetPostSimpleResponse>> getPosts(
+	public ResponseEntity<ApiResponse<Page<GetPostSimpleResponse>>> getPosts(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ApiResponse.createSuccess(postService.getPosts(pageable));
 	}
 
 	@GetMapping("/event/hot")
-	public ApiResponse<List<GetMainPostResponse>> getHotEventPosts() {
+	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotEventPosts() {
 		return ApiResponse.createSuccess(postService.getHotEventPosts());
 	}
 
 	@GetMapping("/event/latest")
-	public ApiResponse<List<GetMainPostResponse>> getLatestEventPosts() {
+	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getLatestEventPosts() {
 		return ApiResponse.createSuccess(postService.getLatestEventPosts());
 	}
 
 	@GetMapping("/event/deadline")
-	public ApiResponse<List<GetMainPostResponse>> getDeadlineEventPosts() {
+	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getDeadlineEventPosts() {
 		return ApiResponse.createSuccess(postService.getDeadlineEventPosts());
 	}
 
 	@GetMapping("/event/recommendation")
-	public ApiResponse<List<GetRecommendPostResponse>> getRecommendationEventPosts() {
+	public ResponseEntity<ApiResponse<List<GetRecommendPostResponse>>> getRecommendationEventPosts() {
 		return ApiResponse.createSuccess(postService.getRecommendationEventPosts());
 	}
 
 	@GetMapping("/event/trending")
-	ApiResponse<List<GetRecommendPostResponse>> getTrendingEventPosts() {
+	ResponseEntity<ApiResponse<List<GetRecommendPostResponse>>> getTrendingEventPosts() {
 		return ApiResponse.createSuccess(postService.getTrendingEventPosts());
 	}
 
 	@GetMapping("/hot")
-	public ApiResponse<List<GetMainPostResponse>> getHotPostsByCategoryName(
+	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotPostsByCategoryName(
 		@CurrentUser CurrentUserDto currentUser,
 		@RequestParam String categoryName) {
 		return ApiResponse.createSuccess(postService.getHotPostsByCategoryName(currentUser, categoryName));
 	}
 
 	@GetMapping
-	public ApiResponse<Page<GetPostsByCategoryNameResponse>> getPostsByCategoryName(
+	public ResponseEntity<ApiResponse<Page<GetPostsByCategoryNameResponse>>> getPostsByCategoryName(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @RequestParam String categoryName) {
 		return ApiResponse.createSuccess(postService.getPostsByCategoryName(pageable, categoryName));
 	}
 
 	@AuthorizeRole("member")
 	@GetMapping("/me/paging")
-	public ApiResponse<Page<GetPostSimpleResponse>> getPostsByUserId(
+	public ResponseEntity<ApiResponse<Page<GetPostSimpleResponse>>> getPostsByUserId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
 		return ApiResponse.createSuccess(postService.getPostsByUserId(pageable, userId));
 	}
 
 	@GetMapping("/{postId}")
-	public ApiResponse<GetPostResponse> getPost(@CurrentUser CurrentUserDto currentUser,
+	public ResponseEntity<ApiResponse<GetPostResponse>> getPost(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId) {
 		return ApiResponse.createSuccess(postService.getPost(currentUser, postId));
 	}
 
 	@AuthorizeRole("member")
 	@GetMapping("/temp")
-	ApiResponse<GetTempPostResponse> getTempPost(@CurrentUserId Long userId) {
+	ResponseEntity<ApiResponse<GetTempPostResponse>> getTempPost(@CurrentUserId Long userId) {
 		return ApiResponse.createSuccess(postService.getTempPost(userId));
 	}
 
 	@AuthorizeRole("member")
 	@PostMapping
-	public ApiResponse<CreatePostResponse> createPost(@CurrentUserId Long userId,
+	public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(@CurrentUserId Long userId,
 		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
 		return ApiResponse.createSuccess(postService.createPost(userId, request, isTemp), "게시물을 등록 하였습니다.");
 	}
 
 	@AuthorizeRole("member")
 	@PutMapping("/{postId}")
-	public ApiResponse<Void> updatePost(@CurrentUser CurrentUserDto currentUser, @PathVariable Long postId,
+	public ResponseEntity<ApiResponse<Void>> updatePost(@CurrentUser CurrentUserDto currentUser,
+		@PathVariable Long postId,
 		@RequestBody UpdatePostRequest request, @RequestParam boolean isTemp) {
 		postService.updatePost(currentUser, postId, request, isTemp);
 		return ApiResponse.createSuccess("게시물을 수정 하였습니다.");
 	}
 
 	@PutMapping("/{postId}/recommend")
-	public ApiResponse<Void> recommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
+	public ResponseEntity<ApiResponse<Void>> recommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
 		return ApiResponse.createSuccess(postService.recommendPost(userId, postId));
 	}
 
 	@PutMapping("/{postId}/disrecommend")
-	public ApiResponse<Void> disrecommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
+	public ResponseEntity<ApiResponse<Void>> disrecommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
 		return ApiResponse.createSuccess(postService.disrecommendPost(userId, postId));
 	}
 
 	@AuthorizeRole("member")
 	@DeleteMapping("/{postId}")
-	public ApiResponse<Void> deletePost(@PathVariable Long postId) {
+	public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId) {
 		postService.deletePost(postId);
 		return ApiResponse.createSuccess("게시물을 삭제 하였습니다.");
 	}
 
 	@AuthorizeRole("member")
 	@GetMapping("/{postId}/isAuthorized")
-	public ApiResponse<Boolean> isAuthorizedToEdit(@CurrentUser CurrentUserDto currentUser,
+	public ResponseEntity<ApiResponse<Boolean>> isAuthorizedToEdit(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId) {
 		return ApiResponse.createSuccess(postService.isAuthorizedToEdit(currentUser, postId));
 	}
 
 	@AuthorizeRole("member")
 	@DeleteMapping("/temp")
-	ApiResponse<Void> deleteTempPost(@CurrentUserId Long userId) {
+	ResponseEntity<ApiResponse<Void>> deleteTempPost(@CurrentUserId Long userId) {
 		postService.deleteTempPost(userId);
 		return ApiResponse.createSuccess();
 	}

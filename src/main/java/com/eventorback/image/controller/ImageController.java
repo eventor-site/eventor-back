@@ -2,6 +2,7 @@ package com.eventorback.image.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,19 +26,19 @@ public class ImageController {
 	private final ImageService imageService;
 
 	@PostMapping(value = "/upload", consumes = "multipart/form-data")
-	public ApiResponse<List<GetImageResponse>> uploadImage(@RequestParam("file") MultipartFile file,
+	public ResponseEntity<ApiResponse<List<GetImageResponse>>> uploadImage(@RequestParam("file") MultipartFile file,
 		@RequestParam String folderName, @RequestParam Long postId,
 		@RequestParam boolean isThumbnail, @RequestParam boolean isPasted) {
 		return ApiResponse.createSuccess(imageService.upload(file, folderName, postId, isThumbnail, isPasted));
 	}
 
 	@DeleteMapping
-	public ApiResponse<List<GetImageResponse>> deleteImage(@RequestBody DeleteImageRequest request) {
+	public ResponseEntity<ApiResponse<List<GetImageResponse>>> deleteImage(@RequestBody DeleteImageRequest request) {
 		return ApiResponse.createSuccess(imageService.deleteImage(request));
 	}
 
 	@DeleteMapping("/temp")
-	public ApiResponse<Void> deleteTempImage(@CurrentUserId Long userId) {
+	public ResponseEntity<ApiResponse<Void>> deleteTempImage(@CurrentUserId Long userId) {
 		imageService.deleteTempImage(userId);
 		return ApiResponse.createSuccess();
 	}

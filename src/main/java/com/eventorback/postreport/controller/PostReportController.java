@@ -3,6 +3,7 @@ package com.eventorback.postreport.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,26 +28,27 @@ public class PostReportController {
 
 	@AuthorizeRole("admin")
 	@GetMapping("/postReports/paging")
-	public ApiResponse<Page<GetPostReportResponse>> getPostReports(
+	public ResponseEntity<ApiResponse<Page<GetPostReportResponse>>> getPostReports(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ApiResponse.createSuccess(postReportService.getPostReports(pageable));
 	}
 
 	@PostMapping("/posts/{postId}/postReports")
-	public ApiResponse<Void> createPostReport(@CurrentUserId Long userId, @PathVariable Long postId,
+	public ResponseEntity<ApiResponse<Void>> createPostReport(@CurrentUserId Long userId, @PathVariable Long postId,
 		@RequestParam String reportTypeName) {
 		return ApiResponse.createSuccess(postReportService.createPostReport(userId, postId, reportTypeName));
 	}
 
 	@GetMapping("/posts/{postId}/postReports/{postReportId}/confirm")
-	ApiResponse<Void> confirmPostReport(@PathVariable Long postId, @PathVariable Long postReportId) {
+	ResponseEntity<ApiResponse<Void>> confirmPostReport(@PathVariable Long postId, @PathVariable Long postReportId) {
 		postReportService.confirmPostReport(postReportId);
 		return ApiResponse.createSuccess("신고 게시물을 확인 하였습니다.");
 	}
 
 	@AuthorizeRole("admin")
 	@DeleteMapping("/postReports/{postReportId}")
-	public ApiResponse<Void> deletePostReport(@CurrentUserId Long userId, @PathVariable Long postReportId) {
+	public ResponseEntity<ApiResponse<Void>> deletePostReport(@CurrentUserId Long userId,
+		@PathVariable Long postReportId) {
 		postReportService.deletePostReport(userId, postReportId);
 		return ApiResponse.createSuccess("게시물 신고가 삭제 되었습니다.");
 	}

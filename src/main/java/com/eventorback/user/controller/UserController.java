@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,19 +53,20 @@ public class UserController {
 
 	@AuthorizeRole("admin")
 	@GetMapping
-	public ApiResponse<Page<GetUserListResponse>> getUsers(@PageableDefault(page = 1, size = 10) Pageable pageable) {
+	public ResponseEntity<ApiResponse<Page<GetUserListResponse>>> getUsers(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
 		return ApiResponse.createSuccess(userService.getUsers(pageable));
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/search")
-	public ApiResponse<List<GetUserByIdentifier>> searchUserByIdentifier(@RequestParam String keyword) {
+	public ResponseEntity<ApiResponse<List<GetUserByIdentifier>>> searchUserByIdentifier(@RequestParam String keyword) {
 		return ApiResponse.createSuccess(userService.searchUserByIdentifier(keyword));
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/search/userId")
-	public ApiResponse<List<GetUserByUserId>> searchUserByUserId(@RequestParam Long userId) {
+	public ResponseEntity<ApiResponse<List<GetUserByUserId>>> searchUserByUserId(@RequestParam Long userId) {
 		return ApiResponse.createSuccess(userService.searchUserByUserId(userId));
 	}
 
@@ -72,111 +74,114 @@ public class UserController {
 	 * 아이디를 통해 사용자의 토큰 정보를 조회합니다.
 	 */
 	@GetMapping("/info")
-	public ApiResponse<GetUserTokenInfo> getUserInfoByIdentifier(@RequestParam String identifier) {
+	public ResponseEntity<ApiResponse<GetUserTokenInfo>> getUserInfoByIdentifier(@RequestParam String identifier) {
 		return ApiResponse.createSuccess(userService.getUserTokenInfoByIdentifier(identifier));
 	}
 
 	@PostMapping("/oauth2/info")
-	public ApiResponse<GetUserTokenInfo> getUserInfoByOauth(@RequestBody OauthDto request) {
+	public ResponseEntity<ApiResponse<GetUserTokenInfo>> getUserInfoByOauth(@RequestBody OauthDto request) {
 		return ApiResponse.createSuccess(userService.getUserInfoByOauth(request));
 	}
 
 	@AuthorizeRole("admin")
 	@GetMapping("/{userId}")
-	public ApiResponse<GetUserResponse> getUser(@PathVariable Long userId) {
+	public ResponseEntity<ApiResponse<GetUserResponse>> getUser(@PathVariable Long userId) {
 		return ApiResponse.createSuccess(userService.getUserInfo(userId));
 	}
 
 	@AuthorizeRole("admin")
 	@PutMapping("/{userId}")
-	public ApiResponse<Void> updateUserByAdmin(@PathVariable Long userId, @RequestBody UpdateUserRequest request) {
+	public ResponseEntity<ApiResponse<Void>> updateUserByAdmin(@PathVariable Long userId,
+		@RequestBody UpdateUserRequest request) {
 		userService.updateUser(userId, request);
-		return ApiResponse.createSuccess();
+		return ApiResponse.createSuccess("회원 정보가 수정 되었습니다.");
 	}
 
 	@AuthorizeRole("admin")
 	@PutMapping("/{userId}/attribute")
-	public ApiResponse<Void> updateUserAttributeByAdmin(@PathVariable Long userId,
+	public ResponseEntity<ApiResponse<Void>> updateUserAttributeByAdmin(@PathVariable Long userId,
 		@RequestBody UpdateUserAttributeRequest request) {
 		userService.updateUserAttributeByAdmin(userId, request);
-		return ApiResponse.createSuccess();
+		return ApiResponse.createSuccess("회원 특성이 수정 되었습니다.");
 	}
 
 	@AuthorizeRole("member")
 	@GetMapping("/me")
-	public ApiResponse<GetUserResponse> getUserInfo(@CurrentUserId Long userId) {
+	public ResponseEntity<ApiResponse<GetUserResponse>> getUserInfo(@CurrentUserId Long userId) {
 		return ApiResponse.createSuccess(userService.getUserInfo(userId));
 	}
 
 	@PutMapping("/me")
-	public ApiResponse<Void> updateUser(@CurrentUserId Long userId, @RequestBody UpdateUserRequest request) {
+	public ResponseEntity<ApiResponse<Void>> updateUser(@CurrentUserId Long userId,
+		@RequestBody UpdateUserRequest request) {
 		userService.updateUser(userId, request);
 		return ApiResponse.createSuccess("회원 정보가 수정 되었습니다.");
 	}
 
 	@DeleteMapping("/me")
-	ApiResponse<Void> withdrawUser(@CurrentUserId Long userId) {
+	ResponseEntity<ApiResponse<Void>> withdrawUser(@CurrentUserId Long userId) {
 		userService.withdrawUser(userId);
 		return ApiResponse.createSuccess("회원 탈퇴 되었습니다.");
 	}
 
 	@GetMapping("/me/checkRoles")
-	public ApiResponse<Boolean> meCheckRoles(@CurrentUser CurrentUserDto currentUser,
+	public ResponseEntity<ApiResponse<Boolean>> meCheckRoles(@CurrentUser CurrentUserDto currentUser,
 		@RequestParam String roleName) {
 		return ApiResponse.createSuccess(userService.meCheckRoles(currentUser, roleName));
 	}
 
 	@GetMapping("/me/Roles")
-	public ApiResponse<List<String>> meRoles(@CurrentUser CurrentUserDto currentUser) {
+	public ResponseEntity<ApiResponse<List<String>>> meRoles(@CurrentUser CurrentUserDto currentUser) {
 		return ApiResponse.createSuccess(userService.meRoles(currentUser));
 	}
 
 	@PostMapping("/me/checkNickname")
-	public ApiResponse<Void> meCheckNickname(@CurrentUserId Long userId,
+	public ResponseEntity<ApiResponse<Void>> meCheckNickname(@CurrentUserId Long userId,
 		@RequestBody CheckNicknameRequest request) {
 		return ApiResponse.createSuccess(userService.meCheckNickname(userId, request));
 	}
 
 	@PutMapping("/me/lastLoginTime")
-	public ApiResponse<Void> updateLastLoginTime(@RequestBody UpdateLastLoginTimeRequest request) {
+	public ResponseEntity<ApiResponse<Void>> updateLastLoginTime(@RequestBody UpdateLastLoginTimeRequest request) {
 		userService.updateLastLoginTime(request);
 		return ApiResponse.createSuccess();
 	}
 
 	@PutMapping("/me/password")
-	ApiResponse<Void> modifyPassword(@CurrentUserId Long userId, @RequestBody ModifyPasswordRequest request) {
+	ResponseEntity<ApiResponse<Void>> modifyPassword(@CurrentUserId Long userId,
+		@RequestBody ModifyPasswordRequest request) {
 		return ApiResponse.createSuccess(userService.modifyPassword(userId, request));
 	}
 
 	@PostMapping("/signup")
-	public ApiResponse<Void> signup(@RequestBody SignUpRequest request) {
+	public ResponseEntity<ApiResponse<Void>> signup(@RequestBody SignUpRequest request) {
 		userService.signup(request);
 		return ApiResponse.createSuccess("회원 가입 되었습니다.");
 	}
 
 	@PostMapping("/signup/oauth2/exists")
-	ApiResponse<Boolean> existsByOauth(@RequestBody OauthDto request) {
+	ResponseEntity<ApiResponse<Boolean>> existsByOauth(@RequestBody OauthDto request) {
 		return ApiResponse.createSuccess(userService.existsByOauth(request));
 	}
 
 	@PostMapping("/signup/checkIdentifier")
-	ApiResponse<Void> checkIdentifier(@RequestBody CheckIdentifierRequest request) {
+	ResponseEntity<ApiResponse<Void>> checkIdentifier(@RequestBody CheckIdentifierRequest request) {
 		return ApiResponse.createSuccess(userService.checkIdentifier(request));
 	}
 
 	@PostMapping("/signup/checkNickname")
-	ApiResponse<Void> checkNickname(@RequestBody CheckNicknameRequest request) {
+	ResponseEntity<ApiResponse<Void>> checkNickname(@RequestBody CheckNicknameRequest request) {
 		return ApiResponse.createSuccess(userService.checkNickname(request));
 	}
 
 	@PostMapping("/signup/sendEmail")
-	public ApiResponse<Void> sendEmail(@RequestBody SendCodeRequest request) {
+	public ResponseEntity<ApiResponse<Void>> sendEmail(@RequestBody SendCodeRequest request) {
 		mailService.sendMail(request.email(), "회원가입", NumberUtil.createRandom(6));
 		return ApiResponse.createSuccess(request.email() + "로 인증 번호를 전송했습니다.");
 	}
 
 	@GetMapping("/signup/checkEmail")
-	public ApiResponse<Void> checkEmail(@RequestParam String email, @RequestParam String certifyCode) {
+	public ResponseEntity<ApiResponse<Void>> checkEmail(@RequestParam String email, @RequestParam String certifyCode) {
 		String subject = "회원가입";
 		boolean codeMatch = mailService.checkEmail(email, certifyCode, subject);
 		if (codeMatch) {
@@ -186,12 +191,12 @@ public class UserController {
 	}
 
 	@PostMapping("/recover/identifier")
-	ApiResponse<Void> recoverIdentifier(@RequestParam String email) {
+	ResponseEntity<ApiResponse<Void>> recoverIdentifier(@RequestParam String email) {
 		return ApiResponse.createSuccess(userService.recoverIdentifier(email));
 	}
 
 	@PostMapping("/recover/password")
-	ApiResponse<Void> recoverPassword(@RequestParam String identifier) {
+	ResponseEntity<ApiResponse<Void>> recoverPassword(@RequestParam String identifier) {
 		return ApiResponse.createSuccess(userService.recoverPassword(identifier));
 	}
 

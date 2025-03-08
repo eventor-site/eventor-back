@@ -10,5 +10,7 @@ public interface ReportTypeRepository extends JpaRepository<ReportType, Long>, C
 
 	boolean existsByName(String name);
 
+	boolean existsByReportTypeIdNotAndName(Long reportTypeId, String name);
+
 	Optional<ReportType> findByName(String name);
 }

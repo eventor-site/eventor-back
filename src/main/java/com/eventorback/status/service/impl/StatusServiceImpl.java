@@ -49,7 +49,7 @@ public class StatusServiceImpl implements StatusService {
 
 	@Override
 	public void createStatus(StatusRequest request) {
-		if (statusRepository.existsByName(request.name())) {
+		if (statusRepository.existsByStatusTypeStatusTypeIdAndName(request.statusTypeId(), request.name())) {
 			throw new StatusAlreadyExistsException();
 		}
 
@@ -61,7 +61,8 @@ public class StatusServiceImpl implements StatusService {
 
 	@Override
 	public void updateStatus(Long statusId, StatusRequest request) {
-		if (statusRepository.existsByName(request.name())) {
+		if (statusRepository.existsByStatusIdNotAndNameAndStatusType_StatusTypeId(statusId, request.name(),
+			request.statusTypeId())) {
 			throw new StatusAlreadyExistsException();
 		}
 

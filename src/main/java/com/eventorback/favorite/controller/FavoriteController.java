@@ -3,6 +3,7 @@ package com.eventorback.favorite.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,18 +27,20 @@ public class FavoriteController {
 
 	@AuthorizeRole("member")
 	@GetMapping("/users/me/favorites/paging")
-	public ApiResponse<Page<GetFavoriteResponse>> getFavoritesByUserId(
+	public ResponseEntity<ApiResponse<Page<GetFavoriteResponse>>> getFavoritesByUserId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
 		return ApiResponse.createSuccess(favoriteService.getFavoritesByUserId(pageable, userId));
 	}
 
 	@PostMapping("/post/{postId}/favorites")
-	public ApiResponse<Void> createOrDeleteFavorite(@CurrentUserId Long userId, @PathVariable Long postId) {
+	public ResponseEntity<ApiResponse<Void>> createOrDeleteFavorite(@CurrentUserId Long userId,
+		@PathVariable Long postId) {
 		return ApiResponse.createSuccess(favoriteService.createOrDeleteFavorite(userId, postId));
 	}
 
 	@DeleteMapping("/{favoriteId}")
-	public ApiResponse<String> deleteFavorite(@CurrentUserId Long userId, @PathVariable Long favoriteId) {
+	public ResponseEntity<ApiResponse<String>> deleteFavorite(@CurrentUserId Long userId,
+		@PathVariable Long favoriteId) {
 		favoriteService.deleteFavorite(userId, favoriteId);
 		return ApiResponse.createSuccess("하트가 삭제되었습니다.");
 	}
