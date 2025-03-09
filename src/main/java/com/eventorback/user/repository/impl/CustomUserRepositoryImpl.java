@@ -7,7 +7,6 @@ import static com.eventorback.user.domain.entity.QUser.*;
 import static com.eventorback.userrole.domain.entity.QUserRole.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,11 +73,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			if (roleName != null) {
 				userResponse.roles().add(roleName);
 			}
-		}
-
-		// 각 사용자의 역할 목록을 오름차순으로 정렬
-		for (GetUserListResponse userResponse : userMap.values()) {
-			Collections.sort(userResponse.roles());  // 역할 목록 오름차순 정렬
 		}
 
 		// Map 에서 List 로 변환
