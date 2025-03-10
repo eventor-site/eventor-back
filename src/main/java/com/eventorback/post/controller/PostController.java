@@ -126,7 +126,8 @@ public class PostController {
 	public ResponseEntity<ApiResponse<Void>> updatePost(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId, @RequestBody UpdatePostRequest request, @RequestParam boolean isTemp) {
 		postService.updatePost(currentUser, postId, request, isTemp);
-		return ApiResponse.createSuccess("게시물이 저장 되었습니다.");
+		String message = isTemp ? "게시물이 임시 저장 되었습니다." : "게시물이 저장 되었습니다.";
+		return ApiResponse.createSuccess(message);
 	}
 
 	@PutMapping("/{postId}/recommend")
@@ -143,7 +144,7 @@ public class PostController {
 	@DeleteMapping("/{postId}")
 	public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId) {
 		postService.deletePost(postId);
-		return ApiResponse.createSuccess("게시물을 삭제 하였습니다.");
+		return ApiResponse.createSuccess("게시물이 삭제 되었습니다.");
 	}
 
 	@AuthorizeRole("member")
