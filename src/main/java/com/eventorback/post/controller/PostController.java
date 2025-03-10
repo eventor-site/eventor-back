@@ -117,16 +117,16 @@ public class PostController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(@CurrentUserId Long userId,
 		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
-		return ApiResponse.createSuccess(postService.createPost(userId, request, isTemp), "게시물을 등록 하였습니다.");
+		String message = isTemp ? "게시물이 임시 저장 되었습니다." : "게시물을 등록 하였습니다.";
+		return ApiResponse.createSuccess(postService.createPost(userId, request, isTemp), message);
 	}
 
 	@AuthorizeRole("member")
 	@PutMapping("/{postId}")
 	public ResponseEntity<ApiResponse<Void>> updatePost(@CurrentUser CurrentUserDto currentUser,
-		@PathVariable Long postId,
-		@RequestBody UpdatePostRequest request, @RequestParam boolean isTemp) {
+		@PathVariable Long postId, @RequestBody UpdatePostRequest request, @RequestParam boolean isTemp) {
 		postService.updatePost(currentUser, postId, request, isTemp);
-		return ApiResponse.createSuccess("게시물을 수정 하였습니다.");
+		return ApiResponse.createSuccess("게시물이 저장 되었습니다.");
 	}
 
 	@PutMapping("/{postId}/recommend")
