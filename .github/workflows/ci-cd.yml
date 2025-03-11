@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      MYSQL_URL: ${{ secrets.MYSQL_URL }}
+      PROD_MYSQL_URL: ${{ secrets.PROD_MYSQL_URL }}
       MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       GOOGLE_EMAIL_USERNAME: ${{ secrets.GOOGLE_EMAIL_USERNAME }}
@@ -37,7 +37,7 @@ jobs:
       #        with:
       #          files: ./src/main/resources/application-prod.yml
       #        env:
-      #          spring.datasource.url: ${{ secrets.MYSQL_URL }}
+      #          spring.datasource.url: ${{ secrets.PROD_MYSQL_URL }}
       #          spring.datasource.username: ${{ secrets.MYSQL_USERNAME }}
       #          spring.datasource.password: ${{ secrets.MYSQL_PASSWORD }}
       #          spring.mail.username: ${{ secrets.GOOGLE_EMAIL_USERNAME }}
@@ -66,7 +66,7 @@ jobs:
       # DockerHub Push
       - name: Build and Push Docker image
         run: |
-          docker build --build-arg MYSQL_URL="${{env.MYSQL_URL}}" \
+          docker build --build-arg PROD_MYSQL_URL="${{env.PROD_MYSQL_URL}}" \
           --build-arg MYSQL_USERNAME="${{env.MYSQL_USERNAME}}" \
           --build-arg MYSQL_PASSWORD="${{env.MYSQL_PASSWORD}}" \
           --build-arg GOOGLE_EMAIL_USERNAME="${{env.GOOGLE_EMAIL_USERNAME}}" \
