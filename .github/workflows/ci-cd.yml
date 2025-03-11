@@ -7,6 +7,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+
+    env:
+      MYSQL_URL: ${{ secrets.MYSQL_URL }}
+      MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      GOOGLE_EMAIL_USERNAME: ${{ secrets.GOOGLE_EMAIL_USERNAME }}
+      GOOGLE_EMAIL_PASSWORD: ${{ secrets.GOOGLE_EMAIL_PASSWORD }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -58,12 +66,12 @@ jobs:
       # DockerHub Push
       - name: Build and Push Docker image
         run: |
-          docker buildx build --build-arg SPRING_DATASOURCE_URL=${{ secrets.MYSQL_URL }} \
-                               --build-arg SPRING_DATASOURCE_USERNAME=${{ secrets.MYSQL_USERNAME }} \
-                               --build-arg SPRING_DATASOURCE_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-                               --build-arg SPRING_MAIL_USERNAME=${{ secrets.GOOGLE_EMAIL_USERNAME }} \
-                               --build-arg SPRING_MAIL_PASSWORD=${{ secrets.GOOGLE_EMAIL_PASSWORD }} \
-                               -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .  # 원하는 이름으로 로컬에서 태깅
+          docker build --build-arg MYSQL_URL="${{env.MYSQL_URL}}" \
+          --build-arg MYSQL_USERNAME="${{env.MYSQL_USERNAME}}" \
+          --build-arg MYSQL_PASSWORD="${{env.MYSQL_PASSWORD}}" \
+          --build-arg GOOGLE_EMAIL_USERNAME="${{env.GOOGLE_EMAIL_USERNAME}}" \
+          --build-arg GOOGLE_EMAIL_PASSWORD="${{env.GOOGLE_EMAIL_PASSWORD}}" \
+          -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .  # 원하는 이름으로 로컬에서 태깅
           docker push ${{ secrets.DOCKER_USERNAME }}/eventor-back
 
   server:
