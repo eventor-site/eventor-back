@@ -19,12 +19,15 @@ public class RedisConfig {
 	@Value("${spring.data.redis.host}")
 	private String hostname;
 
+	@Value("${spring.data.redis.password}")
+	private String password;
+
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setHostName(hostname);
 		redisStandaloneConfiguration.setPort(6379);
-		redisStandaloneConfiguration.setPassword("1q2w3e4r!");
+		redisStandaloneConfiguration.setHostName(hostname);
+		redisStandaloneConfiguration.setPassword(password);
 		redisStandaloneConfiguration.setDatabase(2);
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
@@ -40,3 +43,4 @@ public class RedisConfig {
 		return sessionRedisTemplate;
 	}
 }
+

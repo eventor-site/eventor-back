@@ -11,6 +11,12 @@ public class DataSourceConfig {
 	@Value("${spring.datasource.url}")
 	private String url;
 
+	@Value("${spring.datasource.dbcp2.username}")
+	private String username;
+
+	@Value("${spring.datasource.dbcp2.password}")
+	private String password;
+
 	/**
 	 * PoolSize = Tn × ( Cm - 1 ) + ( Tn / 2 )
 	 *
@@ -22,8 +28,8 @@ public class DataSourceConfig {
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setUrl(url);
-		dataSource.setUsername("root");
-		dataSource.setPassword("1q2w3e4r!");
+		dataSource.setUsername(username);
+		dataSource.setPassword(password);
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
 		// 최적화 파라미터 설정

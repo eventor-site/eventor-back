@@ -17,6 +17,15 @@ spring:
   profiles:
     active: dev
 
+  datasource:
+    dbcp2:
+      username: ${MYSQL_USERNAME}
+      password: ${MYSQL_PASSWORD}
+
+  data:
+    redis:
+      password: ${REDIS_PASSWORD}
+
   servlet:
     multipart:
       max-file-size: 10MB # 파일 하나의 최대 크기
