@@ -64,10 +64,22 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
       # DockerHub Push
-      - name: Build and Push Docker image
+      - name: Build Docker image
         run: |
-          docker build --env-file .env -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .  # 원하는 이름으로 로컬에서 태깅
-          docker push ${{ secrets.DOCKER_USERNAME }}/eventor-back
+          # .env 파일에서 환경 변수 읽어오기
+          set -a
+          source .env
+          set +a
+
+          # buildx로 빌드하고 태깅하기
+          docker buildx build \
+            --build-arg SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
+            --build-arg SPRING_DATASOURCE_USERNAME=$SPRING_DATASOURCE_USERNAME \
+            --build-arg SPRING_DATASOURCE_PASSWORD=$SPRING_DATASOURCE_PASSWORD \
+            --build-arg SPRING_MAIL_USERNAME=$SPRING_MAIL_USERNAME \
+            --build-arg SPRING_MAIL_PASSWORD=$SPRING_MAIL_PASSWORD \
+            -t ${{ secrets.DOCKER_USERNAME }}/eventor-back \
+            --push .
 
   server:
     runs-on: ubuntu-22.04
