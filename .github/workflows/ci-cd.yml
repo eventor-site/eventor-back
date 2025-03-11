@@ -48,6 +48,14 @@ jobs:
       - name: Install with Maven
         run: mvn install
 
+      - name: Create env file
+        run: |
+          echo "SPRING_DATASOURCE_URL=${{ secrets.MYSQL_URL }}" >> .env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.MYSQL_USERNAME }}" >> .env
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+          echo "SPRING_MAIL_USERNAME=${{ secrets.GOOGLE_EMAIL_USERNAME }}" >> .env
+          echo "SPRING_MAIL_PASSWORD=${{ secrets.GOOGLE_EMAIL_PASSWORD }}" >> .env
+
       # DockerHub 로그인
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -58,15 +66,8 @@ jobs:
       # DockerHub Push
       - name: Build and Push Docker image
         run: |
-          docker build --build-arg SPRING_DATASOURCE_URL=${{ secrets.MYSQL_URL }} \
-                       --build-arg SPRING_DATASOURCE_USERNAME=${{ secrets.MYSQL_USERNAME }} \
-                       --build-arg SPRING_DATASOURCE_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-                       --build-arg SPRING_MAIL_USERNAME=${{ secrets.GOOGLE_EMAIL_USERNAME }} \
-                       --build-arg SPRING_MAIL_PASSWORD=${{ secrets.GOOGLE_EMAIL_PASSWORD }} \
-                       -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .
-          
+          docker build --env-file .env -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .  # 원하는 이름으로 로컬에서 태깅
           docker push ${{ secrets.DOCKER_USERNAME }}/eventor-back
-
 
   server:
     runs-on: ubuntu-22.04
