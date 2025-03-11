@@ -58,8 +58,15 @@ jobs:
       # DockerHub Push
       - name: Build and Push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .  # 원하는 이름으로 로컬에서 태깅
+          docker build --build-arg SPRING_DATASOURCE_URL=${{ secrets.MYSQL_URL }} \
+                       --build-arg SPRING_DATASOURCE_USERNAME=${{ secrets.MYSQL_USERNAME }} \
+                       --build-arg SPRING_DATASOURCE_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+                       --build-arg SPRING_MAIL_USERNAME=${{ secrets.GOOGLE_EMAIL_USERNAME }} \
+                       --build-arg SPRING_MAIL_PASSWORD=${{ secrets.GOOGLE_EMAIL_PASSWORD }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .
+          
           docker push ${{ secrets.DOCKER_USERNAME }}/eventor-back
+
 
   server:
     runs-on: ubuntu-22.04
