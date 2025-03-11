@@ -13,11 +13,11 @@ jobs:
         with:
           files: src/main/resources/application-prod.yaml
         env:
-          spring.datasource.url: ${{ MYSQL_URL }}
-          spring.datasource.username: ${{ MYSQL_USERNAME }}
-          spring.datasource.password: ${{ MYSQL_PASSWORD }}
-          spring.mail.username: ${{ GOOGLE_EMAIL_USERNAME }}
-          spring.mail.password: ${{ GOOGLE_EMAIL_PASSWORD }}
+          spring.datasource.url: ${{ secrets.MYSQL_URL }}
+          spring.datasource.username: ${{ secrets.MYSQL_USERNAME }}
+          spring.datasource.password: ${{ secrets.MYSQL_PASSWORD }}
+          spring.mail.username: ${{ secrets.GOOGLE_EMAIL_USERNAME }}
+          spring.mail.password: ${{ secrets.GOOGLE_EMAIL_PASSWORD }}
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -39,8 +39,8 @@ jobs:
         uses: samin/mysql-action@v1
         with:
           mysql database: eventor
-          mysql user: ${{ MYSQL_USERNAME }}
-          mysql password: ${{ MYSQL_PASSWORD }}
+          mysql user: ${{ secrets.MYSQL_USERNAME }}
+          mysql password: ${{ secrets.MYSQL_PASSWORD }}
 
       - name: Clean with Maven
         run: mvn clean
@@ -70,11 +70,11 @@ jobs:
         with:
           files: src/main/resources/application-prod.yaml
         env:
-          spring.datasource.url: ${{ MYSQL_URL }}
-          spring.datasource.username: ${{ MYSQL_USERNAME }}
-          spring.datasource.password: ${{ MYSQL_PASSWORD }}
-          spring.mail.username: ${{ GOOGLE_EMAIL_USERNAME }}
-          spring.mail.password: ${{ GOOGLE_EMAIL_PASSWORD }}
+          spring.datasource.url: ${{ secrets.MYSQL_URL }}
+          spring.datasource.username: ${{ secrets.MYSQL_USERNAME }}
+          spring.datasource.password: ${{ secrets.MYSQL_PASSWORD }}
+          spring.mail.username: ${{ secrets.GOOGLE_EMAIL_USERNAME }}
+          spring.mail.password: ${{ secrets.GOOGLE_EMAIL_PASSWORD }}
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
