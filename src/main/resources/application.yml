@@ -31,8 +31,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: eventor2025@gmail.com
-    password: qgyh xuuj wvmm uezw
+    username: ${GOOGLE_EMAIL_USERNAME}
+    password: ${GOOGLE_EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
