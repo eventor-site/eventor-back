@@ -47,7 +47,7 @@ jobs:
       # DockerHub Push
       - name: Build and Push Docker image
         run: |
-          docker build 
+          docker build \
           --build-arg EUREKA_USERNAME="${{secrets.EUREKA_USERNAME}}" \
           --build-arg EUREKA_PASSWORD="${{secrets.EUREKA_PASSWORD}}" \
           --build-arg PROD_MYSQL_URL="${{secrets.PROD_MYSQL_URL}}" \
