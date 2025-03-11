@@ -8,6 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+      - name: Set yml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: src/main/resources/application-prod.yaml
+        env:
+          spring.datasource.url: ${{ MYSQL_URL }}
+          spring.datasource.username: ${{ MYSQL_USERNAME }}
+          spring.datasource.password: ${{ MYSQL_PASSWORD }}
+          spring.mail.username: ${{ GOOGLE_EMAIL_USERNAME }}
+          spring.mail.password: ${{ GOOGLE_EMAIL_PASSWORD }}
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -28,8 +39,8 @@ jobs:
         uses: samin/mysql-action@v1
         with:
           mysql database: eventor
-          mysql user: root
-          mysql password: '1q2w3e4r!'
+          mysql user: ${{ MYSQL_USERNAME }}
+          mysql password: ${{ MYSQL_PASSWORD }}
 
       - name: Clean with Maven
         run: mvn clean
