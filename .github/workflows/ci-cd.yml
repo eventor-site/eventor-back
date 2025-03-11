@@ -59,7 +59,7 @@ jobs:
       - name: Build and Push Docker image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/eventor-back .  # 원하는 이름으로 로컬에서 태깅
-          docker push ${{ secrets.DOCKER_USERNAME }}/eventor-back 
+          docker push ${{ secrets.DOCKER_USERNAME }}/eventor-back
 
   server:
     runs-on: ubuntu-22.04
