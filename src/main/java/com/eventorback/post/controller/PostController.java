@@ -35,9 +35,7 @@ import com.eventorback.search.service.ElasticSearchService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/back/posts")
@@ -60,25 +58,21 @@ public class PostController {
 
 	@GetMapping("/event/hot")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotEventPosts() {
-		log.info("Get hotEventPosts");
 		return ApiResponse.createSuccess(postService.getHotEventPosts());
 	}
 
 	@GetMapping("/event/latest")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getLatestEventPosts() {
-		log.info("Get lastestPosts");
 		return ApiResponse.createSuccess(postService.getLatestEventPosts());
 	}
 
 	@GetMapping("/event/deadline")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getDeadlineEventPosts() {
-		log.info("Get deallineEventPosts");
 		return ApiResponse.createSuccess(postService.getDeadlineEventPosts());
 	}
 
 	@GetMapping("/event/recommendation")
 	public ResponseEntity<ApiResponse<List<GetRecommendPostResponse>>> getRecommendationEventPosts() {
-		log.info("Get RecommendationEventPosts");
 		return ApiResponse.createSuccess(postService.getRecommendationEventPosts());
 	}
 
