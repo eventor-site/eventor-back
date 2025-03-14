@@ -70,6 +70,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            echo "Notifying Eureka to set instance status to DOWN..."
+            curl -X POST http://eventor-back/back/actuator/status
+            echo "Eureka notified."
+            
             cd eventor-back
             sudo docker-compose stop eventor-back
             sudo docker-compose rm -f
