@@ -1,0 +1,14 @@
+services:
+  was-blue:
+    image: dlrudgjs104/eventor-back:blue-1
+    container_name: "eventor-back-blue-1"
+    build:
+      context: ../../
+      dockerfile: .github/docker/Dockerfile
+
+  signal-blue:
+    image: dlrudgjs104/eventor-back:blue-2
+    container_name: "eventor-back-blue-2"
+    build:
+      context: ../../
+      dockerfile: .github/docker/Dockerfile
