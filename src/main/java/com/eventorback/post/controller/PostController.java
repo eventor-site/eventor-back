@@ -66,16 +66,19 @@ public class PostController {
 
 	@GetMapping("/event/latest")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getLatestEventPosts() {
+		log.info("Get lastestPosts");
 		return ApiResponse.createSuccess(postService.getLatestEventPosts());
 	}
 
 	@GetMapping("/event/deadline")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getDeadlineEventPosts() {
+		log.info("Get deallineEventPosts");
 		return ApiResponse.createSuccess(postService.getDeadlineEventPosts());
 	}
 
 	@GetMapping("/event/recommendation")
 	public ResponseEntity<ApiResponse<List<GetRecommendPostResponse>>> getRecommendationEventPosts() {
+		log.info("Get RecommendationEventPosts");
 		return ApiResponse.createSuccess(postService.getRecommendationEventPosts());
 	}
 
