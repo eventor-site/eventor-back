@@ -1,4 +1,4 @@
-package com.eventorback.global.controller;
+package com.eventorback.monitor.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/checks")
+@RequestMapping("/back/monitors")
 public class HealthController {
 
 	@Value("${server.port}")
@@ -31,7 +31,6 @@ public class HealthController {
 		} else {
 			version = "green";
 		}
-
 		return ApiResponse.createSuccess(version, null);
 	}
 
