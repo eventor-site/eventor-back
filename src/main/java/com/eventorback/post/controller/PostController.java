@@ -35,7 +35,9 @@ import com.eventorback.search.service.ElasticSearchService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/back/posts")
@@ -58,6 +60,7 @@ public class PostController {
 
 	@GetMapping("/event/hot")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotEventPosts() {
+		log.info("Get hotEventPosts");
 		return ApiResponse.createSuccess(postService.getHotEventPosts());
 	}
 
