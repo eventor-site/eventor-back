@@ -44,6 +44,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            cd eventor-back
             EXIST_BLUE=$(docker-compose -p eventor-back-blue -f docker-compose.blue.yml ps | grep Up)
             echo "EXIST_BLUE=$EXIST_BLUE" >> $GITHUB_ENV
             echo "exist_blue=$EXIST_BLUE" >> $GITHUB_OUTPUT
