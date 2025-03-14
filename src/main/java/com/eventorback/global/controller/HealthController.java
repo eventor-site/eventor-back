@@ -32,7 +32,7 @@ public class HealthController {
 			version = "green";
 		}
 
-		return ApiResponse.createSuccess(version);
+		return ApiResponse.createSuccess(version, null);
 	}
 
 }
