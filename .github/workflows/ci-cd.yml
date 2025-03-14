@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      EXIST_BLUE: ""  # 초기값 설정
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -46,8 +48,6 @@ jobs:
           script: |
             cd eventor-back
             EXIST_BLUE=$(docker-compose -p eventor-back-blue -f docker-compose.blue.yml ps | grep Up)
-            echo "EXIST_BLUE=$EXIST_BLUE" >> $GITHUB_ENV
-            echo "exist_blue=$EXIST_BLUE" >> $GITHUB_OUTPUT
 
       # DockerHub 로그인
       - name: Login to DockerHub
@@ -59,7 +59,7 @@ jobs:
       - name: Build and Push Docker image
         run: |
           cd .github/docker        
-          if [ -z "${{ steps.check_version.outputs.exist_blue }}" ]; then
+          if [ -z "$EXIST_BLUE" ]; then
             echo "Blue version is running, building Green";
             docker-compose -f compose.green-build.yml build
             docker-compose -f compose.green-build.yml push
