@@ -64,21 +64,13 @@ public class CategoryServiceImpl implements CategoryService {
 			parentCategory = categoryRepository.findByName(request.parentCategoryName())
 				.orElseThrow(CategoryNotFoundException::new);
 
-			parentCategory.addChildCount();
+			increaseCategory(parentCategory);
 
 			if (parentCategory.getParentCategory() == null) {
 				categoryRepository.save(new Category(parentCategory, request.name(), parentCategory.getGroup(),
 					parentCategory.getDepth() + 1, categoryRepository.getTotalChildCount(parentCategory.getGroup()),
 					0L));
-
 			} else {
-				List<Category> updateList = categoryRepository.getGreaterGroupOrder(parentCategory.getGroup(),
-					parentCategory.getGroupOrder() + parentCategory.getChildCount());
-
-				for (Category category : updateList) {
-					category.addGroupOrder();
-				}
-
 				categoryRepository.save(new Category(parentCategory, request.name(), parentCategory.getGroup(),
 					parentCategory.getDepth() + 1, parentCategory.getGroupOrder() + parentCategory.getChildCount(),
 					0L));
@@ -96,11 +88,28 @@ public class CategoryServiceImpl implements CategoryService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(CategoryNotFoundException::new);
 
-		Category parentCategory = null;
-		if (request.parentCategoryId() != null) {
-			parentCategory = categoryRepository.findById(request.parentCategoryId()).orElse(null);
+		Category updateParentCategory = null;
+		if (request.parentCategoryName() != null) {
+			updateParentCategory = categoryRepository.findByName(request.parentCategoryName())
+				.orElse(null);
 		}
-		category.updateCategory(request.name(), parentCategory);
+
+		if (category.getParentCategory() == null && updateParentCategory == null) {
+			category.update(request.name());
+		} else if (category.getParentCategory() == null) {
+			increaseCategory(updateParentCategory);
+			updateCategoryInfo(category, updateParentCategory, request);
+		} else if (updateParentCategory == null) {
+			decreaseCategory(category);
+			updateCategoryInfo(category, updateParentCategory, request);
+		} else if (category.getParentCategory().getName().equals(request.parentCategoryName())) {
+			category.update(request.name());
+		} else {
+			decreaseCategory(category);
+			increaseCategory(updateParentCategory);
+			updateCategoryInfo(category, updateParentCategory, request);
+		}
+
 	}
 
 	@Override
@@ -108,6 +117,27 @@ public class CategoryServiceImpl implements CategoryService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(CategoryNotFoundException::new);
 
+		decreaseCategory(category);
+
+		categoryRepository.deleteById(categoryId);
+	}
+
+	@Override
+	public void increaseCategory(Category parentCategory) {
+		parentCategory.addChildCount();
+
+		if (parentCategory.getParentCategory() != null) {
+			List<Category> updateList = categoryRepository.getGreaterGroupOrder(parentCategory.getGroup(),
+				parentCategory.getGroupOrder() + parentCategory.getChildCount());
+
+			for (Category category : updateList) {
+				category.addGroupOrder();
+			}
+		}
+	}
+
+	@Override
+	public void decreaseCategory(Category category) {
 		if (category.getParentCategory() != null) {
 			category.getParentCategory().minusChildCount();
 		}
@@ -118,7 +148,25 @@ public class CategoryServiceImpl implements CategoryService {
 		for (Category updateCategory : updateList) {
 			updateCategory.minusGroupOrder();
 		}
-		categoryRepository.deleteById(categoryId);
+	}
+
+	@Override
+	public void updateCategoryInfo(Category category, Category updateParentCategory, UpdateCategoryRequest request) {
+		if (updateParentCategory == null) {
+			category.update(null, request.name(), categoryRepository.getMaxGroup() + 1);
+		} else {
+			if (updateParentCategory.getParentCategory() == null) {
+				category.update(updateParentCategory, request.name(), updateParentCategory.getGroup(),
+					updateParentCategory.getDepth() + 1,
+					categoryRepository.getTotalChildCount(updateParentCategory.getGroup()),
+					0L);
+			} else {
+				category.update(updateParentCategory, request.name(), updateParentCategory.getGroup(),
+					updateParentCategory.getDepth() + 1,
+					updateParentCategory.getGroupOrder() + updateParentCategory.getChildCount(),
+					0L);
+			}
+		}
 	}
 
 }

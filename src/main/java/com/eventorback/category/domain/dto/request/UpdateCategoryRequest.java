@@ -5,5 +5,5 @@ import lombok.Builder;
 @Builder
 public record UpdateCategoryRequest(
 	String name,
-	Long parentCategoryId) {
+	String parentCategoryName) {
 }

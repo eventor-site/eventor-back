@@ -10,6 +10,7 @@ import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
 import com.eventorback.category.domain.dto.response.GetCategoryListResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryResponse;
+import com.eventorback.category.domain.entity.Category;
 
 public interface CategoryService {
 
@@ -26,5 +27,11 @@ public interface CategoryService {
 	void updateCategory(Long categoryId, UpdateCategoryRequest request);
 
 	void deleteCategory(Long categoryId);
+
+	void increaseCategory(Category parentCategory);
+
+	void decreaseCategory(Category category);
+
+	void updateCategoryInfo(Category category, Category updateParentCategory, UpdateCategoryRequest request);
 
 }

@@ -71,9 +71,32 @@ public class Category {
 			.build();
 	}
 
-	public void updateCategory(String name, Category parentCategory) {
+	public void update(String name) {
+		this.name = name;
+	}
+
+	public void update(String name, Category parentCategory) {
 		this.name = name;
 		this.parentCategory = parentCategory;
+	}
+
+	public void update(Category parentCategory, String name, Long group, Long depth, Long groupOrder,
+		Long childCount) {
+		this.parentCategory = parentCategory;
+		this.name = name;
+		this.group = group;
+		this.depth = depth;
+		this.groupOrder = groupOrder;
+		this.childCount = childCount;
+	}
+
+	public void update(Category parentCategory, String name, Long group) {
+		this.parentCategory = parentCategory;
+		this.name = name;
+		this.group = group;
+		this.depth = 0L;
+		this.groupOrder = 0L;
+		this.childCount = 0L;
 	}
 
 	public void addChildCount() {
