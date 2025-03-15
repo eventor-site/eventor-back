@@ -109,7 +109,13 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
 		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
-		return postRepository.getHotPostsByCategoryName(categoryIds);
+		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
+
+		if (eventCategoryNames.contains(categoryName)) {
+			return postRepository.getHotEventPostsByCategoryName(categoryIds);
+		} else {
+			return postRepository.getHotPostsByCategoryName(categoryIds);
+		}
 	}
 
 	@Override
@@ -117,9 +123,9 @@ public class PostServiceImpl implements PostService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
+		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
 
-		if (!categoryName.equals("공지") && !categoryName.equals("핫딜") && !categoryName.equals("자유")
-			&& !categoryName.equals("맛집")) {
+		if (eventCategoryNames.contains(categoryName)) {
 			return postRepository.getPostsByEventCategory(PageRequest.of(page, pageSize), categoryIds);
 		} else {
 			return postRepository.getPostsByCategoryName(PageRequest.of(page, pageSize), categoryIds);
