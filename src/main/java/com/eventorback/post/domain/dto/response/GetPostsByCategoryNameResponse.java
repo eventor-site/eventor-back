@@ -14,5 +14,8 @@ public record GetPostsByCategoryNameResponse(
 	Long viewCount,
 	LocalDateTime createdAt,
 	String eventStatusName,
+	Integer remainingDay,
+	LocalDateTime startTime,
+	LocalDateTime endTime,
 	String imageUrl) {
 }
