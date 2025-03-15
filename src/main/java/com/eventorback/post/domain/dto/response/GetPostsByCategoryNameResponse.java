@@ -13,5 +13,6 @@ public record GetPostsByCategoryNameResponse(
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
+	String eventStatusName,
 	String imageUrl) {
 }

@@ -1,6 +1,7 @@
 package com.eventorback.post.repository.impl;
 
 import static com.eventorback.category.domain.entity.QCategory.*;
+import static com.eventorback.event.domain.entity.QEvent.*;
 import static com.eventorback.grade.domain.entity.QGrade.*;
 import static com.eventorback.image.domain.entity.QImage.*;
 import static com.eventorback.post.domain.entity.QPost.*;
@@ -24,6 +25,8 @@ import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.CustomPostRepository;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -219,6 +222,27 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
+	public List<GetMainPostResponse> getHotEventPostsByCategoryName(List<Long> categoryIds) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetMainPostResponse.class,
+				post.postId,
+				post.title,
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
+			))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
+			.limit(10) // 상위 10개 게시물만 반환
+			.fetch();
+	}
+
+	@Override
 	public List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds) {
 		return queryFactory
 			.select(Projections.constructor(
@@ -246,6 +270,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 	@Override
 	public Page<GetPostsByCategoryNameResponse> getPostsByEventCategory(Pageable pageable, List<Long> categoryIds) {
+		LocalDateTime now = LocalDateTime.now();
+
 		List<GetPostsByCategoryNameResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetPostsByCategoryNameResponse.class,
@@ -256,6 +282,14 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
+				new CaseBuilder()
+					.when(event.startTime.gt(now)) // 이벤트 시작 시간보다 현재 시간이 이전이면
+					.then("예정")
+					.when(event.endTime.isNull().or(event.endTime.goe(now))) // 종료 시간이 없거나 현재 시간 이후면
+					.then("진행중")
+					.when(event.endTime.lt(now)) // 종료 시간이 현재 시간보다 이전이면
+					.then("마감")
+					.otherwise("미정"),
 				JPAExpressions
 					.select(image.url)
 					.from(image)
@@ -293,6 +327,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
+				Expressions.constant("없음"),
 				image.url
 			))
 			.from(post)
