@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.eventorback.global.util.SortUtil;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
@@ -304,7 +305,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.user, user)
 			.join(user.grade, grade)
 			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
-			.orderBy(post.createdAt.desc())
+			.orderBy(SortUtil.getSort(pageable, post))
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
@@ -350,7 +351,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.where(image.post.postId.eq(post.postId))
 			))
 			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
-			.orderBy(post.createdAt.desc())
+			.orderBy(SortUtil.getSort(pageable, post))
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
