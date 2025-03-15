@@ -290,6 +290,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.when(event.endTime.lt(now)) // 종료 시간이 현재 시간보다 이전이면
 					.then("마감")
 					.otherwise("미정"),
+				Expressions.numberTemplate(Integer.class, "DATEDIFF({0}, {1})", event.startTime, now),
+				event.startTime,
+				event.endTime,
 				JPAExpressions
 					.select(image.url)
 					.from(image)
@@ -327,7 +330,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
-				Expressions.constant("없음"),
+				Expressions.nullExpression(String.class),
+				Expressions.nullExpression(Integer.class),
+				Expressions.nullExpression(LocalDateTime.class),
+				Expressions.nullExpression(LocalDateTime.class),
 				image.url
 			))
 			.from(post)
