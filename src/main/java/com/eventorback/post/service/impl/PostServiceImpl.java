@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,13 +123,15 @@ public class PostServiceImpl implements PostService {
 	public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, String categoryName) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
+		Sort sort = pageable.getSort();
+
 		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
 		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
 
 		if (eventCategoryNames.contains(categoryName)) {
-			return postRepository.getPostsByEventCategory(PageRequest.of(page, pageSize), categoryIds);
+			return postRepository.getPostsByEventCategory(PageRequest.of(page, pageSize, sort), categoryIds);
 		} else {
-			return postRepository.getPostsByCategoryName(PageRequest.of(page, pageSize), categoryIds);
+			return postRepository.getPostsByCategoryName(PageRequest.of(page, pageSize, sort), categoryIds);
 		}
 
 	}

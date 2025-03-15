@@ -90,7 +90,8 @@ public class PostController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<Page<GetPostsByCategoryNameResponse>>> getPostsByCategoryName(
-		@PageableDefault(page = 1, size = 10) Pageable pageable, @RequestParam String categoryName) {
+		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
+		@RequestParam String categoryName) {
 		return ApiResponse.createSuccess(postService.getPostsByCategoryName(pageable, categoryName));
 	}
 
