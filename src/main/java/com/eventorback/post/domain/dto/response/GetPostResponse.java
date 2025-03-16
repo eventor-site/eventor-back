@@ -80,7 +80,7 @@ public record GetPostResponse(
 
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
-			.createdAt(LocalDateTime.now())
+			.createdAt(post.getCreatedAt())
 			.statusName(post.getStatus().getName())
 			.images(images)
 			.totalSize(totalSize)
