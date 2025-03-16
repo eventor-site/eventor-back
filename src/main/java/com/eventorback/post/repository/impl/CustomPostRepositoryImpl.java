@@ -300,12 +300,13 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
+			.join(post.event, event)
 			.join(post.category, category)
 			.join(post.status, status)
 			.join(post.user, user)
 			.join(user.grade, grade)
 			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
-			.orderBy(SortUtil.getSort(pageable, post))
+			.orderBy(SortUtil.getSort(pageable, List.of(post, event)))
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();

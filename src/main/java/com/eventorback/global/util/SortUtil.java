@@ -1,12 +1,18 @@
 package com.eventorback.global.util;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.PathBuilder;
 
 /**
  * @author 이경헌
@@ -30,4 +36,33 @@ public class SortUtil {
 				)).toList()
 			.toArray(new OrderSpecifier[0]);
 	}
+
+	public static OrderSpecifier<?>[] getSort(Pageable pageable, List<EntityPathBase<?>> entityPaths) {
+		return pageable.getSort().stream().map(order -> {
+			String property = order.getProperty();
+			Order direction = Order.valueOf(order.getDirection().name());
+
+			// 속성을 가진 엔티티 찾기
+			EntityPathBase<?> targetEntity = entityPaths.stream()
+				.filter(entity -> hasProperty(entity, property))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("정렬할 수 없는 필드: " + property));
+
+			// QueryDSL PathBuilder 를 활용하여 동적으로 정렬 컬럼 생성
+			PathBuilder<?> entityPath = new PathBuilder<>(targetEntity.getType(), targetEntity.getMetadata());
+			ComparableExpressionBase<?> expression = entityPath.getComparable(property, Comparable.class);
+
+			return new OrderSpecifier<>(direction, expression);
+		}).toArray(OrderSpecifier[]::new);
+	}
+
+	/**
+	 * 엔티티가 해당 필드를 포함하는지 확인하는 메서드
+	 */
+	private static boolean hasProperty(EntityPathBase<?> entity, String property) {
+		return Arrays.stream(entity.getType().getDeclaredFields())
+			.map(Field::getName)
+			.anyMatch(fieldName -> fieldName.equals(property));
+	}
+
 }
