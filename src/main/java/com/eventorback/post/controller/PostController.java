@@ -1,5 +1,6 @@
 package com.eventorback.post.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
+import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
@@ -160,5 +162,12 @@ public class PostController {
 	ResponseEntity<ApiResponse<Void>> deleteTempPost(@CurrentUserId Long userId) {
 		postService.deleteTempPost(userId);
 		return ApiResponse.createSuccess();
+	}
+
+	@AuthorizeRole("admin")
+	@GetMapping("/statistic/users/admin")
+	ResponseEntity<ApiResponse<List<GetEventPostCountByAdminResponse>>> getEventPostCountByAdmin(
+		@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime) {
+		return ApiResponse.createSuccess(postService.getEventPostCountByAdmin(startTime, endTime));
 	}
 }
