@@ -27,12 +27,14 @@ public record GetPostResponse(
 	LocalDateTime endTime,
 	String statusName,
 	List<GetImageResponse> images,
+	Integer attachmentImageCount,
 	Double totalSize,
 	Boolean isAuthorized,
 	Boolean isFavorite) {
 
 	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images, Boolean isAuthorized,
 		Boolean isFavorite) {
+		Integer attachmentImageCount = images.stream().filter(image -> !image.isThumbnail()).toList().size();
 		double totalSize = 0;
 
 		if (images != null) {
@@ -83,6 +85,7 @@ public record GetPostResponse(
 			.createdAt(post.getCreatedAt())
 			.statusName(post.getStatus().getName())
 			.images(images)
+			.attachmentImageCount(attachmentImageCount)
 			.totalSize(totalSize)
 			.isAuthorized(isAuthorized)
 			.isFavorite(isFavorite)
