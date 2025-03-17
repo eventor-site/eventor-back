@@ -13,8 +13,6 @@ public interface ImageRepository extends JpaRepository<Image, Long>, CustomImage
 
 	Optional<Image> findTopByPostPostIdOrderByImageIdAsc(Long postId);
 
-	List<Image> findAllByPostPostId(Long postId);
-
 	List<Image> findByPostUserUserIdAndPostStatusName(Long userId, String statusName);
 
 	void deleteByPostPostIdAndIsThumbnail(Long postId, Boolean isThumbnail);

@@ -19,7 +19,9 @@ import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.domain.entity.Image;
 import com.eventorback.image.exception.CreateFolderException;
 import com.eventorback.image.exception.FileExtensionException;
+import com.eventorback.image.exception.FileExtentionNotFoundException;
 import com.eventorback.image.exception.FileSaveException;
+import com.eventorback.image.exception.ImageCapacityExceededException;
 import com.eventorback.image.exception.ImageNotFoundException;
 import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.image.service.ImageService;
@@ -37,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 	private final PostRepository postRepository;
+	private final Long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
 
 	@Value("${upload.domainUrl}")
 	private String domainUrl;
@@ -61,6 +64,12 @@ public class ImageServiceImpl implements ImageService {
 
 		// 3. 파일 확장자 검사
 		checkFileExtension(fileExtension);
+
+		// 파일 용량 검사
+		Long totalFileSize = imageRepository.sumSizeByPostPostId(postId);
+		if (file.getSize() > MAX_IMAGE_SIZE || file.getSize() + totalFileSize > MAX_IMAGE_SIZE) {
+			throw new ImageCapacityExceededException();
+		}
 
 		// 4. 파일 저장
 		saveFile(folderPath, newFileName, file);
@@ -111,12 +120,12 @@ public class ImageServiceImpl implements ImageService {
 		if (fileName != null && fileName.contains(".")) {
 			return fileName.substring(fileName.lastIndexOf("."));
 		}
-		return "";
+		throw new FileExtentionNotFoundException();
 	}
 
 	@Override
 	public void checkFileExtension(String fileContentType) {
-		String[] imageExtensions = {"jpg", "jpeg", "png", "gif", "jfif"};
+		String[] imageExtensions = {"jpg", "jpeg", "png", "gif", "webp", "jfif"};
 
 		for (String extension : imageExtensions) {
 			if (fileContentType.toLowerCase().endsWith(extension)) {
