@@ -1,11 +1,13 @@
 package com.eventorback.post.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
@@ -40,4 +42,7 @@ public interface CustomPostRepository {
 	Optional<Post> getPost(Long postId);
 
 	Optional<GetTempPostResponse> getTempPost(Long userId);
+
+	List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime, LocalDateTime endTime,
+		List<Long> categoryIds);
 }

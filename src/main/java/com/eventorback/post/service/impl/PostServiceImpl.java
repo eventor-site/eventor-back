@@ -1,5 +1,6 @@
 package com.eventorback.post.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +26,7 @@ import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
+import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
@@ -314,5 +316,12 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public void deleteTempPost(Long userId) {
 		postRepository.deleteAllByUserUserIdAndStatusName(userId, "작성중");
+	}
+
+	@Override
+	public List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime,
+		LocalDateTime endTime) {
+		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
+		return postRepository.getEventPostCountByAdmin(startTime, endTime, categoryIds);
 	}
 }

@@ -1,5 +1,6 @@
 package com.eventorback.post.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
+import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
@@ -54,4 +56,6 @@ public interface PostService {
 	Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId);
 
 	void deleteTempPost(Long userId);
+
+	List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime, LocalDateTime endTime);
 }

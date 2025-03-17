@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.global.util.SortUtil;
+import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
@@ -391,6 +392,26 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.fetch();
 
 		return posts.isEmpty() ? Optional.empty() : Optional.of(posts.getLast());
+	}
+
+	@Override
+	public List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime,
+		LocalDateTime endTime,
+		List<Long> categoryIds) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetEventPostCountByAdminResponse.class,
+				user.nickname,
+				post.postId.count()
+			))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨")
+				.and(post.category.categoryId.in(categoryIds))
+				.and(post.createdAt.between(startTime, endTime)))
+			.groupBy(user.nickname)
+			.fetch();
 	}
 
 }
