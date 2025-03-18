@@ -80,33 +80,36 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public Page<GetPostSimpleResponse> monitorPosts(Pageable pageable) {
+		int page = Math.max(pageable.getPageNumber() - 1, 0);
+		int pageSize = pageable.getPageSize();
+
+		return postRepository.monitorPosts(PageRequest.of(page, pageSize));
+	}
+
+	@Override
 	public List<GetMainPostResponse> getHotEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getHotEventPosts(categoryIds);
+		return postRepository.getHotEventPosts();
 	}
 
 	@Override
 	public List<GetMainPostResponse> getLatestEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getLatestEventPosts(categoryIds);
+		return postRepository.getLatestEventPosts();
 	}
 
 	@Override
 	public List<GetMainPostResponse> getDeadlineEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getDeadlineEventPosts(categoryIds);
+		return postRepository.getDeadlineEventPosts();
 	}
 
 	@Override
 	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getRecommendationEventPosts(categoryIds);
+		return postRepository.getRecommendationEventPosts();
 	}
 
 	@Override
 	public List<GetRecommendPostResponse> getTrendingEventPosts() {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getTrendingEventPosts(categoryIds);
+		return postRepository.getTrendingEventPosts();
 	}
 
 	@Override
@@ -318,7 +321,6 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime,
 		LocalDateTime endTime) {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName("이벤트");
-		return postRepository.getEventPostCountByAdmin(startTime, endTime, categoryIds);
+		return postRepository.getEventPostCountByAdmin(startTime, endTime);
 	}
 }
