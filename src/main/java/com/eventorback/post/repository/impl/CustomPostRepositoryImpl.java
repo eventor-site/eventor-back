@@ -26,9 +26,11 @@ import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.CustomPostRepository;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -310,8 +312,24 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public Page<GetPostsByCategoryNameResponse> getPostsByEventCategory(Pageable pageable, List<Long> categoryIds) {
+	public Page<GetPostsByCategoryNameResponse> getPostsByEventCategory(Pageable pageable, List<Long> categoryIds,
+		String eventStatusName) {
 		LocalDateTime now = LocalDateTime.now();
+
+		StringExpression eventStatus = new CaseBuilder()
+			.when(event.startTime.gt(now)).then("예정")
+			.when(event.endTime.isNull().or(event.startTime.loe(now).and(event.endTime.goe(now)))).then("진행중")
+			.when(event.endTime.lt(now)).then("마감")
+			.otherwise("미정");
+		
+		BooleanBuilder eventStatusCondition = new BooleanBuilder();
+		if ("예정".equals(eventStatusName)) {
+			eventStatusCondition.and(event.startTime.gt(now));
+		} else if ("진행중".equals(eventStatusName)) {
+			eventStatusCondition.and(event.endTime.isNull().or(event.startTime.loe(now).and(event.endTime.goe(now))));
+		} else if ("마감".equals(eventStatusName)) {
+			eventStatusCondition.and(event.endTime.lt(now));
+		}
 
 		List<GetPostsByCategoryNameResponse> result = queryFactory
 			.select(Projections.constructor(
@@ -323,14 +341,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
-				new CaseBuilder()
-					.when(event.startTime.gt(now)) // 이벤트 시작 시간보다 현재 시간이 이전이면
-					.then("예정")
-					.when(event.endTime.isNull().or(event.endTime.goe(now))) // 종료 시간이 없거나 현재 시간 이후면
-					.then("진행중")
-					.when(event.endTime.lt(now)) // 종료 시간이 현재 시간보다 이전이면
-					.then("마감")
-					.otherwise("미정"),
+				eventStatus,
 				Expressions.numberTemplate(Integer.class, "DATEDIFF({0}, {1})", event.startTime, now),
 				event.startTime,
 				event.endTime,
@@ -345,7 +356,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.join(post.user, user)
 			.join(user.grade, grade)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.where(status.name.eq("작성됨")
+				.and(post.category.categoryId.in(categoryIds))
+				.and(eventStatusCondition))
 			.orderBy(SortUtil.getSort(pageable, List.of(post, event)))
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
@@ -354,7 +367,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 		Long total = Optional.ofNullable(queryFactory
 			.select(post.count())
 			.from(post)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.where(status.name.eq("작성됨")
+				.and(post.category.categoryId.in(categoryIds))
+				.and(eventStatusCondition))
 			.fetchOne()).orElse(0L);
 
 		return new PageImpl<>(result, pageable, total);

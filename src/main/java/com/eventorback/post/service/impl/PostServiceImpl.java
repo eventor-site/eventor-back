@@ -125,7 +125,8 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, String categoryName) {
+	public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, String categoryName,
+		String eventStatusName) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		Sort sort = pageable.getSort();
@@ -134,7 +135,8 @@ public class PostServiceImpl implements PostService {
 		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
 
 		if (eventCategoryNames.contains(categoryName)) {
-			return postRepository.getPostsByEventCategory(PageRequest.of(page, pageSize, sort), categoryIds);
+			return postRepository.getPostsByEventCategory(PageRequest.of(page, pageSize, sort), categoryIds,
+				eventStatusName);
 		} else {
 			return postRepository.getPostsByCategoryName(PageRequest.of(page, pageSize, sort), categoryIds);
 		}

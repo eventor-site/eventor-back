@@ -103,8 +103,9 @@ public class PostController {
 	@GetMapping
 	public ResponseEntity<ApiResponse<Page<GetPostsByCategoryNameResponse>>> getPostsByCategoryName(
 		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
-		@RequestParam String categoryName) {
-		return ApiResponse.createSuccess(postService.getPostsByCategoryName(pageable, categoryName));
+		@RequestParam String categoryName,
+		@RequestParam(required = false) String eventStatusName) {
+		return ApiResponse.createSuccess(postService.getPostsByCategoryName(pageable, categoryName, eventStatusName));
 	}
 
 	@AuthorizeRole("member")
