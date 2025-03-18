@@ -48,8 +48,10 @@ public class PostController {
 
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<Page<SearchPostsResponse>>> searchBooks(
-		@PageableDefault(page = 1, size = 10) Pageable pageable, @RequestParam String keyword) {
-		return ApiResponse.createSuccess(elasticSearchService.searchPosts(pageable, keyword));
+		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
+		@RequestParam(required = false) String categoryName,
+		@RequestParam(defaultValue = "") String keyword) {
+		return ApiResponse.createSuccess(elasticSearchService.searchPosts(pageable, categoryName, keyword));
 	}
 
 	@AuthorizeRole("admin")

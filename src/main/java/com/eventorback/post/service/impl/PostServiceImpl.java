@@ -196,19 +196,18 @@ public class PostServiceImpl implements PostService {
 		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
 			statusRepository.findOrCreateStatus("게시글", "작성중");
 
+		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
+
 		Post post;
 
-		switch (request.categoryName()) {
-			case "공지", "자유", "맛집":
-				post = postRepository.save(Post.toEntity(category, user, status, request, isAdmin));
-				break;
-			case "핫딜":
-				HotDeal hotDeal = hotDealRepository.save(HotDeal.toEntity(request));
-				post = postRepository.save(Post.toEntity(category, user, status, hotDeal, request, isAdmin));
-				break;
-			default:
-				Event event = eventRepository.save(Event.toEntity(request));
-				post = postRepository.save(Post.toEntity(category, user, status, event, request, isAdmin));
+		if (eventCategoryNames.contains(request.categoryName())) {
+			Event event = eventRepository.save(Event.toEntity(request));
+			post = postRepository.save(Post.toEntity(category, user, status, event, request, isAdmin));
+		} else if (request.categoryName().equals("핫딜")) {
+			HotDeal hotDeal = hotDealRepository.save(HotDeal.toEntity(request));
+			post = postRepository.save(Post.toEntity(category, user, status, hotDeal, request, isAdmin));
+		} else {
+			post = postRepository.save(Post.toEntity(category, user, status, request, isAdmin));
 		}
 
 		return CreatePostResponse.fromEntity(post);
@@ -232,16 +231,14 @@ public class PostServiceImpl implements PostService {
 			post.updatePostStatus(status);
 		}
 
-		switch (request.categoryName()) {
-			case "공지", "자유", "맛집":
-				break;
-			case "핫딜":
-				HotDeal hotDeal = post.getHotDeal();
-				hotDeal.update(request);
-				break;
-			default:
-				Event eventPost = post.getEvent();
-				eventPost.update(request);
+		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
+
+		if (eventCategoryNames.contains(request.categoryName())) {
+			Event eventPost = post.getEvent();
+			eventPost.update(request);
+		} else if (request.categoryName().equals("핫딜")) {
+			HotDeal hotDeal = post.getHotDeal();
+			hotDeal.update(request);
 		}
 
 		post.update(category, request);
