@@ -72,6 +72,42 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
+	public Page<GetPostSimpleResponse> monitorPosts(Pageable pageable) {
+		List<GetPostSimpleResponse> result = queryFactory
+			.select(Projections.constructor(
+				GetPostSimpleResponse.class,
+				post.postId,
+				post.writer,
+				post.title,
+				post.recommendationCount,
+				post.viewCount,
+				post.createdAt,
+				grade.name))
+			.from(post)
+			.join(post.status, status)
+			.join(post.user, user)
+			.join(user.grade, grade)
+			.join(post.event, event)
+			.where(status.name.eq("작성됨")
+				.and(post.event.isNotNull())
+				.and(event.endTime.isNull()))
+			.orderBy(post.createdAt.desc())
+			.offset(pageable.getOffset()) // 페이지 시작점
+			.limit(pageable.getPageSize()) // 페이지 크기
+			.fetch();
+
+		Long total = Optional.ofNullable(queryFactory
+			.select(post.count())
+			.from(post)
+			.where(status.name.eq("작성됨")
+				.and(post.event.isNotNull())
+				.and(event.endTime.isNull()))
+			.fetchOne()).orElse(0L);
+
+		return new PageImpl<>(result, pageable, total);
+	}
+
+	@Override
 	public Page<GetPostSimpleResponse> getPostsByUserId(Pageable pageable, Long userId) {
 		List<GetPostSimpleResponse> result = queryFactory
 			.select(Projections.constructor(
@@ -103,49 +139,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetMainPostResponse> getHotEventPosts(List<Long> categoryIds) {
-		return queryFactory
-			.select(Projections.constructor(
-				GetMainPostResponse.class,
-				post.postId,
-				post.title,
-				JPAExpressions
-					.select(image.url)
-					.from(image)
-					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
-			))
-			.from(post)
-			.join(post.category, category)
-			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
-			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
-			.limit(10) // 상위 10개 게시물만 반환
-			.fetch();
-	}
-
-	@Override
-	public List<GetMainPostResponse> getLatestEventPosts(List<Long> categoryIds) {
-		return queryFactory
-			.select(Projections.constructor(
-				GetMainPostResponse.class,
-				post.postId,
-				post.title,
-				JPAExpressions
-					.select(image.url)
-					.from(image)
-					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
-			))
-			.from(post)
-			.join(post.category, category)
-			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
-			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
-			.limit(10) // 상위 10개 게시물 제한
-			.fetch();
-	}
-
-	@Override
-	public List<GetMainPostResponse> getDeadlineEventPosts(List<Long> categoryIds) {
+	public List<GetMainPostResponse> getHotEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
 				GetMainPostResponse.class,
@@ -160,7 +154,51 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.category, category)
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
-				.and(post.category.categoryId.in(categoryIds))
+				.and(post.event.isNotNull()))
+			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
+			.limit(10) // 상위 10개 게시물만 반환
+			.fetch();
+	}
+
+	@Override
+	public List<GetMainPostResponse> getLatestEventPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetMainPostResponse.class,
+				post.postId,
+				post.title,
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
+			))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨")
+				.and(post.event.isNotNull()))
+			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
+			.limit(10) // 상위 10개 게시물 제한
+			.fetch();
+	}
+
+	@Override
+	public List<GetMainPostResponse> getDeadlineEventPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetMainPostResponse.class,
+				post.postId,
+				post.title,
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
+			))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨")
+				.and(post.event.isNotNull())
 				.and(post.event.endTime.after(LocalDateTime.now())) // 현재 이후의 이벤트
 				.and(post.event.endTime.before(LocalDateTime.now().plusMonths(1)))  // 한 달 이내
 			)
@@ -170,7 +208,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetRecommendPostResponse> getRecommendationEventPosts(List<Long> categoryIds) {
+	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
 				GetRecommendPostResponse.class,
@@ -188,14 +226,15 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.where(status.name.eq("작성됨")
+				.and(post.event.isNotNull()))
 			.orderBy(post.recommendationCount.desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();
 	}
 
 	@Override
-	public List<GetRecommendPostResponse> getTrendingEventPosts(List<Long> categoryIds) {
+	public List<GetRecommendPostResponse> getTrendingEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
 				GetRecommendPostResponse.class,
@@ -215,8 +254,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.category, category)
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
-				.and(postView.createdAt.gt(LocalDateTime.now().minusDays(7)))
-				.and(post.category.categoryId.in(categoryIds)))
+				.and(post.event.isNotNull())
+				.and(postView.createdAt.gt(LocalDateTime.now().minusDays(7))))
 			.groupBy(postView.post.postId)
 			.orderBy(postView.count().desc())
 			.limit(10)  // 상위 10권으로 결과 제한
@@ -396,8 +435,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 	@Override
 	public List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime,
-		LocalDateTime endTime,
-		List<Long> categoryIds) {
+		LocalDateTime endTime) {
 		return queryFactory
 			.select(Projections.constructor(
 				GetEventPostCountByAdminResponse.class,
@@ -408,7 +446,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.category, category)
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
-				.and(post.category.categoryId.in(categoryIds))
+				.and(post.event.isNotNull())
 				.and(post.createdAt.between(startTime, endTime)))
 			.groupBy(user.nickname)
 			.fetch();

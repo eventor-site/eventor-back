@@ -61,6 +61,13 @@ public class PostController {
 		return ApiResponse.createSuccess(postService.getPosts(pageable));
 	}
 
+	@AuthorizeRole("admin")
+	@GetMapping("/monitor/paging")
+	public ResponseEntity<ApiResponse<Page<GetPostSimpleResponse>>> monitorPosts(
+		@PageableDefault(page = 1, size = 10) Pageable pageable) {
+		return ApiResponse.createSuccess(postService.monitorPosts(pageable));
+	}
+
 	@GetMapping("/event/hot")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotEventPosts() {
 		return ApiResponse.createSuccess(postService.getHotEventPosts());

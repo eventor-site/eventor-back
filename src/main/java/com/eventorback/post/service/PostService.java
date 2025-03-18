@@ -23,6 +23,8 @@ public interface PostService {
 
 	Page<GetPostSimpleResponse> getPosts(Pageable pageable);
 
+	Page<GetPostSimpleResponse> monitorPosts(Pageable pageable);
+
 	List<GetMainPostResponse> getHotEventPosts();
 
 	List<GetMainPostResponse> getLatestEventPosts();
