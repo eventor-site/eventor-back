@@ -37,7 +37,8 @@ public interface CustomPostRepository {
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
 
-	Page<GetPostsByCategoryNameResponse> getPostsByEventCategory(Pageable pageable, List<Long> categoryIds);
+	Page<GetPostsByCategoryNameResponse> getPostsByEventCategory(Pageable pageable, List<Long> categoryIds,
+		String eventStatusName);
 
 	Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, List<Long> categoryIds);
 
