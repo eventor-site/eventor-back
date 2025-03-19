@@ -1,6 +1,8 @@
 package com.eventorback.search.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.elasticsearch.ElasticsearchException;
@@ -21,6 +23,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.json.JsonData;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,7 +32,8 @@ public class ElasticSearchService {
 	private final ElasticsearchClient elasticsearchClient;
 	private final CategoryRepository categoryRepository;
 
-	public Page<SearchPostsResponse> searchPosts(Pageable pageable, String categoryName, String keyword) {
+	public Page<SearchPostsResponse> searchPosts(Pageable pageable, String keyword, String categoryName,
+		String eventStatusName) {
 		try {
 			int page = Math.max(pageable.getPageNumber() - 1, 0);
 			int pageSize = pageable.getPageSize();
@@ -93,6 +97,66 @@ public class ElasticSearchService {
 							);
 						}
 
+						// ✅ 이벤트 상태 필터 적용 (Filter Context)
+						if (eventStatusName != null) {
+							LocalDateTime now = LocalDateTime.now();
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+
+							switch (eventStatusName) {
+								case "전체" -> {
+									// "전체"는 모든 데이터를 포함하므로 필터 적용 X
+								}
+
+								case "예정" -> boolQuery.filter(f -> f
+									.range(r -> r
+										.field("startTime")
+										.gt(JsonData.of(now.format(formatter))) // 현재 시간보다 이후
+									)
+								);
+
+								case "진행중" -> boolQuery.filter(f -> f
+									.bool(b -> b
+										.should(s -> s
+											.bool(innerB -> innerB
+												.mustNot(m -> m.exists(e -> e.field("endTime"))) // endTime이 null인 경우
+											)
+										)
+										.should(s -> s
+											.bool(innerB -> innerB
+												.must(s1 -> s1
+													.range(r -> r
+															.field("startTime")
+															.lte(JsonData.of(now.format(formatter)))
+														// 시작 시간이 현재 시간보다 이전 or 같음
+													)
+												)
+												.must(s2 -> s2
+													.range(r -> r
+														.field("endTime")
+														.gt(JsonData.of(now.format(formatter))) // 종료 시간이 현재 시간보다 이후
+													)
+												)
+											)
+										)
+										.minimumShouldMatch("1") // 둘 중 하나라도 만족하면 검색
+									)
+								);
+
+								case "마감" -> boolQuery.filter(f -> f
+									.range(r -> r
+										.field("endTime")
+										.lt(JsonData.of(now.format(formatter))) // 종료 시간이 현재 시간보다 이전
+									)
+								);
+
+								default -> {
+									// 잘못된 값이 들어왔을 경우 필터 적용 X
+								}
+
+							}
+
+						}
+
 						return boolQuery;
 					})
 				)
@@ -114,6 +178,9 @@ public class ElasticSearchService {
 			List<SearchPostsResponse> results = searchResponse.hits().hits().stream()
 				.map(Hit::source)
 				.toList();
+
+			// 정보 추가
+			results = results.stream().map(SearchPostsResponse::addInfo).toList();
 
 			long totalHits = searchResponse.hits().total() != null ? searchResponse.hits().total().value() : 0;
 

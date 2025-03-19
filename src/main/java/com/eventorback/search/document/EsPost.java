@@ -9,7 +9,6 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
 
 import com.eventorback.image.domain.entity.Image;
-import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.entity.Post;
 
 import lombok.AllArgsConstructor;
@@ -44,9 +43,6 @@ public class EsPost {
 	private String title;
 
 	@Field(type = FieldType.Text, analyzer = "nori")
-	private String productName;
-
-	@Field(type = FieldType.Text, analyzer = "nori")
 	private String content;
 
 	@Field(type = FieldType.Integer)
@@ -58,28 +54,36 @@ public class EsPost {
 	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS||epoch_millis")
 	private LocalDateTime createdAt;
 
+	@Field(type = FieldType.Text, analyzer = "nori")
+	private String productName;
+
+	@Field(type = FieldType.Text)
+	private String shoppingMall;
+
+	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS||epoch_millis")
+	private LocalDateTime startTime;
+
+	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS||epoch_millis")
+	private LocalDateTime endTime;
+
 	@Field(type = FieldType.Text)
 	private String imageUrl;
-
-	public static EsPost fromEntity(Post post) {
-		return EsPost.builder()
-			.postId(post.getPostId())
-			.categoryName(post.getCategory().getName())
-			.statusName(post.getStatus().getName())
-			.writer(post.getWriter())
-			.writerGrade(post.getWriterGrade())
-			.title(post.getTitle())
-			.content(post.getContent())
-			.recommendationCount(post.getRecommendationCount())
-			.viewCount(post.getViewCount())
-			.createdAt(post.getCreatedAt())
-			.build();
-	}
 
 	public static EsPost fromEntity(Post post, Image image) {
 		String imageUrl = image != null ? image.getUrl() : null;
 
-		return EsPost.builder()
+		EsPostBuilder esPostBuilder = EsPost.builder();
+		if (post.getEvent() != null) {
+			esPostBuilder.startTime(post.getEvent().getStartTime());
+			esPostBuilder.endTime(post.getEvent().getEndTime());
+		}
+
+		if (post.getHotDeal() != null) {
+			esPostBuilder.productName(post.getHotDeal().getProductName());
+			esPostBuilder.shoppingMall(post.getHotDeal().getShoppingMall());
+		}
+
+		return esPostBuilder
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
 			.statusName(post.getStatus().getName())
@@ -92,34 +96,6 @@ public class EsPost {
 			.createdAt(post.getCreatedAt())
 			.imageUrl(imageUrl)
 			.build();
-	}
-
-	public static EsPost fromEntity(Post post, Image image, String productName) {
-		String imageUrl = image != null ? image.getUrl() : null;
-
-		return EsPost.builder()
-			.postId(post.getPostId())
-			.categoryName(post.getCategory().getName())
-			.statusName(post.getStatus().getName())
-			.writer(post.getWriter())
-			.writerGrade(post.getWriterGrade())
-			.title(post.getTitle())
-			.productName(productName)
-			.content(post.getContent())
-			.recommendationCount(post.getRecommendationCount())
-			.viewCount(post.getViewCount())
-			.createdAt(post.getCreatedAt())
-			.imageUrl(imageUrl)
-			.build();
-	}
-
-	public void update(UpdatePostRequest request) {
-		this.title = request.title();
-		this.content = request.content();
-	}
-
-	public void updateProductName(String productName) {
-		this.productName = productName;
 	}
 
 	public void increaseViewCount() {
@@ -138,8 +114,8 @@ public class EsPost {
 		this.recommendationCount--;
 	}
 
-	public void updateImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void updateImageUrl(Image image) {
+		this.imageUrl = image != null ? image.getUrl() : null;
 	}
 
 }

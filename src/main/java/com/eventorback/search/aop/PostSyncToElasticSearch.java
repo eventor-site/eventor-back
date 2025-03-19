@@ -1,20 +1,14 @@
 package com.eventorback.search.aop;
 
-import java.util.List;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import com.eventorback.category.repository.CategoryRepository;
-import com.eventorback.event.repository.EventRepository;
 import com.eventorback.image.domain.dto.request.DeleteImageRequest;
 import com.eventorback.image.domain.entity.Image;
 import com.eventorback.image.exception.ImageNotFoundException;
 import com.eventorback.image.repository.ImageRepository;
-import com.eventorback.post.domain.dto.request.CreatePostRequest;
-import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
@@ -35,8 +29,6 @@ public class PostSyncToElasticSearch {
 	private final ElasticSearchRepository elasticsearchRepository;
 	private final ImageRepository imageRepository;
 	private final PostRepository postRepository;
-	private final CategoryRepository categoryRepository;
-	private final EventRepository eventRepository;
 
 	/**
 	 * 엘라스틱서치 게시물 조회수 증가
@@ -65,23 +57,11 @@ public class PostSyncToElasticSearch {
 	public void syncPostToElasticsearchAfterReturningCreatePost(JoinPoint joinPoint, Object result) {
 		Object[] args = joinPoint.getArgs();
 
-		if (args.length > 0 && !(boolean)args[2] && args[1] instanceof CreatePostRequest request
-			&& result instanceof CreatePostResponse response) {
-			Post post = postRepository.findById(response.postId())
+		if (args.length > 0 && !(boolean)args[2] && result instanceof CreatePostResponse(Long postId)) {
+			Post post = postRepository.findById(postId)
 				.orElseThrow(PostNotFoundException::new);
 
-			if (post.getEvent() != null) {
-
-			}
-
-			if (post.getHotDeal() != null) {
-
-			}
-
-			EsPost esPost = EsPost.fromEntity(post);
-			if (post.getCategory().getName().equals("핫딜")) {
-				esPost.updateProductName(request.productName());
-			}
+			EsPost esPost = EsPost.fromEntity(post, null);
 			elasticsearchRepository.save(esPost);
 		}
 	}
@@ -92,27 +72,19 @@ public class PostSyncToElasticSearch {
 	@AfterReturning(value = "execution(* com.eventorback.post.service.impl.PostServiceImpl.updatePost(..))", returning = "result")
 	public void syncPostToElasticsearchAfterReturningUpdatePost(JoinPoint joinPoint, Object result) {
 		Object[] args = joinPoint.getArgs();
-		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
 
-		if (args.length > 0 && !(boolean)args[3] && args[2] instanceof UpdatePostRequest request
-			&& result instanceof Post post) {
+		if (args.length > 0 && !(boolean)args[3] && result instanceof Post post) {
 			Long postId = post.getPostId();
-			String categoryName = post.getCategory().getName();
 			Image image;
 
 			// 이벤트 게시물인 경우
-			if (eventCategoryNames.contains(categoryName)) {
+			if (post.getEvent() != null) {
 				image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
 			} else {
-				image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
-					.orElse(null);
+				image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
 			}
+
 			EsPost esPost = EsPost.fromEntity(post, image);
-
-			if (categoryName.equals("핫딜")) {
-				esPost.updateProductName(request.productName());
-			}
-
 			elasticsearchRepository.save(esPost);
 		}
 	}
@@ -162,34 +134,25 @@ public class PostSyncToElasticSearch {
 	}
 
 	/**
-	 * 공지, 핫딜, 자유, 맛집 게시물 이미지 업로드 시 썸네일 엘라스틱서치 업데이트
+	 * 게시물 이미지 업로드 시 썸네일 엘라스틱서치 업데이트
 	 */
 	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.upload(..))")
 	public void syncPostToElasticsearchAfterReturningSaveImage(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
-		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
 
 		if (args.length > 0 && args[2] instanceof Long postId) {
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
 
+			Image image = null;
 			if (esPost != null) {
-				String categoryName = esPost.getCategoryName();
-
-				// 이벤트 게시물인 경우
-				if (eventCategoryNames.contains(categoryName)) {
-					Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
-
-					if (image != null) {
-						esPost.updateImageUrl(image.getUrl());
-					} else {
-						esPost.updateImageUrl(null);
-					}
-				} else {
-					Image image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
+				if (esPost.getStartTime() != null) {
+					image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true)
+						.orElse(null);
+				} else if (esPost.getProductName() != null) {
+					image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
 						.orElseThrow(ImageNotFoundException::new);
-					esPost.updateImageUrl(image.getUrl());
 				}
-
+				esPost.updateImageUrl(image);
 				elasticsearchRepository.save(esPost);
 
 			}
@@ -198,35 +161,27 @@ public class PostSyncToElasticSearch {
 	}
 
 	/**
-	 * 공지, 핫딜, 자유, 맛집 게시물 이미지 삭제 시 엘라스틱서치 썸네일 업데이트
+	 * 이미지 삭제 시 엘라스틱서치 썸네일 업데이트
 	 */
 	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.deleteImage(..))")
 	public void syncPostToElasticsearchAfterReturningDeleteImage(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
-		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
 
 		if (args.length > 0 && args[0] instanceof DeleteImageRequest request) {
 			Long postId = request.postId();
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
 
 			if (esPost != null) {
-				String categoryName = esPost.getCategoryName();
 
 				// 이벤트 게시물인 경우
 				Image image;
-				if (eventCategoryNames.contains(categoryName)) {
+				if (esPost.getStartTime() != null) {
 					image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
-
 				} else {
 					image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
 				}
 
-				if (image != null) {
-					esPost.updateImageUrl(image.getUrl());
-				} else {
-					esPost.updateImageUrl(null);
-				}
-
+				esPost.updateImageUrl(image);
 				elasticsearchRepository.save(esPost);
 			}
 		}
