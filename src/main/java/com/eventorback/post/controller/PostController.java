@@ -51,7 +51,7 @@ public class PostController {
 		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
 		@RequestParam(defaultValue = "") String keyword,
 		@RequestParam(required = false) String categoryName,
-		@RequestParam(required = false) String eventStatusName) {
+		@RequestParam(defaultValue = "전체") String eventStatusName) {
 		return ApiResponse.createSuccess(
 			elasticSearchService.searchPosts(pageable, keyword, categoryName, eventStatusName));
 	}
@@ -106,7 +106,7 @@ public class PostController {
 	public ResponseEntity<ApiResponse<Page<GetPostsByCategoryNameResponse>>> getPostsByCategoryName(
 		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
 		@RequestParam String categoryName,
-		@RequestParam(required = false) String eventStatusName) {
+		@RequestParam(defaultValue = "전체") String eventStatusName) {
 		return ApiResponse.createSuccess(postService.getPostsByCategoryName(pageable, categoryName, eventStatusName));
 	}
 
