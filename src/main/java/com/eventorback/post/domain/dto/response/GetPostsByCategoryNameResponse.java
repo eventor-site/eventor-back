@@ -13,6 +13,7 @@ public record GetPostsByCategoryNameResponse(
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
+	String categoryName,
 	String eventStatusName,
 	Integer remainingDay,
 	LocalDateTime startTime,
