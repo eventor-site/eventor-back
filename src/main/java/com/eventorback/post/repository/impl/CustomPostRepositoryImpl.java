@@ -321,7 +321,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.when(event.endTime.isNull().or(event.startTime.loe(now).and(event.endTime.goe(now)))).then("진행중")
 			.when(event.endTime.lt(now)).then("마감")
 			.otherwise("미정");
-		
+
 		BooleanBuilder eventStatusCondition = new BooleanBuilder();
 		if ("예정".equals(eventStatusName)) {
 			eventStatusCondition.and(event.startTime.gt(now));
@@ -341,6 +341,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
+				post.category.name,
 				eventStatus,
 				Expressions.numberTemplate(Integer.class, "DATEDIFF({0}, {1})", event.startTime, now),
 				event.startTime,
@@ -387,6 +388,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.recommendationCount,
 				post.viewCount,
 				post.createdAt,
+				post.category.name,
 				Expressions.nullExpression(String.class),
 				Expressions.nullExpression(Integer.class),
 				Expressions.nullExpression(LocalDateTime.class),
