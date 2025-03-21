@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record SendCodeRequest(
-	String email
+	String email,
+	String type
 ) {
 }

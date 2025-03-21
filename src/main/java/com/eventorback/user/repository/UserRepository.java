@@ -1,5 +1,6 @@
 package com.eventorback.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,5 +23,5 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
 	boolean existsByOauthIdAndOauthType(String oauthId, String oauthType);
 
-	Optional<User> findByEmail(String email);
+	Optional<List<User>> findByEmail(String email);
 }
