@@ -58,7 +58,7 @@ public interface UserService {
 
 	String checkNickname(CheckNicknameRequest request);
 
-	String recoverIdentifier(String email);
+	String recoverIdentifier(String identifier);
 
 	String recoverPassword(String identifier);
 

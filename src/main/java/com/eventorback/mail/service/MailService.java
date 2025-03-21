@@ -1,19 +1,21 @@
 package com.eventorback.mail.service;
 
+import com.eventorback.user.domain.dto.request.CertifyEmailRequest;
+
 import jakarta.mail.internet.MimeMessage;
 
 public interface MailService {
 
-	MimeMessage createMail(String receiverEmail, String subject, String text);
+	MimeMessage createMail(String receiverEmail, String type, String text);
 
-	MimeMessage recoverIdentifierMail(String receiverEmail, String subject, String identifier);
+	// MimeMessage recoverIdentifierMail(String receiverEmail, String type, String identifier);
 
-	MimeMessage recoverPasswordMail(String receiverEmail, String subject, String password);
+	MimeMessage recoverPasswordMail(String receiverEmail, String type, String password);
 
-	void sendMail(String email, String subject, String text);
+	boolean sendMail(String email, String type, String text);
 
-	boolean checkEmail(String email, String certifyCode, String subject);
+	boolean certifyEmail(CertifyEmailRequest request);
 
-	String getSubjectKey(String subject);
+	String getSubjectKey(String type);
 
 }

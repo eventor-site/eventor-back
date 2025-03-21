@@ -23,6 +23,7 @@ import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.global.util.NumberUtil;
 import com.eventorback.mail.service.impl.MailServiceImpl;
 import com.eventorback.user.domain.dto.CurrentUserDto;
+import com.eventorback.user.domain.dto.request.CertifyEmailRequest;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
@@ -175,24 +176,22 @@ public class UserController {
 	}
 
 	@PostMapping("/signup/sendEmail")
-	public ResponseEntity<ApiResponse<Void>> sendEmail(@RequestBody SendCodeRequest request) {
-		mailService.sendMail(request.email(), "회원가입", NumberUtil.createRandom(6));
-		return ApiResponse.createSuccess(request.email() + "로 인증 번호를 전송했습니다.");
+	public ResponseEntity<ApiResponse<Boolean>> sendEmail(@RequestBody SendCodeRequest request) {
+		boolean isSuccess = mailService.sendMail(request.email(), request.type(), NumberUtil.createRandom(6));
+		String message = isSuccess ? request.email() + "로 인증 번호를 전송했습니다." : "이미 인증번호를 전송하였습니다.";
+		return ApiResponse.createSuccess(isSuccess, message);
 	}
 
-	@GetMapping("/signup/checkEmail")
-	public ResponseEntity<ApiResponse<Void>> checkEmail(@RequestParam String email, @RequestParam String certifyCode) {
-		String subject = "회원가입";
-		boolean codeMatch = mailService.checkEmail(email, certifyCode, subject);
-		if (codeMatch) {
-			return ApiResponse.createSuccess("인증되었습니다.");
-		}
-		return ApiResponse.createSuccess("인증번호가 일치하지 않습니다.");
+	@PostMapping("/signup/certifyEmail")
+	public ResponseEntity<ApiResponse<Boolean>> certifyEmail(@RequestBody CertifyEmailRequest request) {
+		boolean codeMatch = mailService.certifyEmail(request);
+		String message = codeMatch ? "인증되었습니다." : "인증번호가 일치하지 않습니다.";
+		return ApiResponse.createSuccess(codeMatch, message);
 	}
 
 	@PostMapping("/recover/identifier")
-	ResponseEntity<ApiResponse<Void>> recoverIdentifier(@RequestParam String email) {
-		return ApiResponse.createSuccess(userService.recoverIdentifier(email));
+	ResponseEntity<ApiResponse<Void>> recoverIdentifier(@RequestParam String identifier) {
+		return ApiResponse.createSuccess(userService.recoverIdentifier(identifier));
 	}
 
 	@PostMapping("/recover/password")

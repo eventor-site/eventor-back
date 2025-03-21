@@ -3,8 +3,9 @@ package com.eventorback.user.domain.dto.request;
 import lombok.Builder;
 
 @Builder
-public record SendCodeRequest(
+public record CertifyEmailRequest(
 	String email,
-	String type
+	String type,
+	String certifyCode
 ) {
 }

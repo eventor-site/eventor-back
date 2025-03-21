@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.eventorback.global.util.NumberUtil;
+import com.eventorback.global.util.PasswordUtil;
 import com.eventorback.grade.domain.entity.Grade;
 import com.eventorback.grade.exception.GradeNotFoundException;
 import com.eventorback.grade.repository.GradeRepository;
@@ -40,6 +40,7 @@ import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.NicknameChangeCooldownBadRequestException;
 import com.eventorback.user.exception.UserNotFoundException;
+import com.eventorback.user.exception.UserPasswordFormatBadRequestException;
 import com.eventorback.user.repository.UserRepository;
 import com.eventorback.user.service.UserService;
 import com.eventorback.userrole.domain.entity.UserRole;
@@ -186,13 +187,17 @@ public class UserServiceImpl implements UserService {
 			return "현재 비밀번호가 일치하지 않습니다.";
 		}
 
+		if (PasswordUtil.isValidPassword(request.password())) {
+			throw new UserPasswordFormatBadRequestException();
+		}
+
 		// 새로운 비밀번호 암호화
-		String encryptedNewPassword = passwordEncoder.encode(request.newPassword());
+		String encryptedNewPassword = passwordEncoder.encode(request.password());
 
 		// 비밀번호 업데이트
 		user.modifyPassword(encryptedNewPassword);
 
-		return "비밀번호가 성공적으로 변경되었습니다.";
+		return "비밀번호가 변경되었습니다.";
 	}
 
 	@Override
@@ -200,7 +205,14 @@ public class UserServiceImpl implements UserService {
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
 		Grade grade = gradeRepository.findByName("1").orElseThrow(StatusNotFoundException::new);
 
-		String encodedPassword = request.password() != null ? passwordEncoder.encode(request.password()) : null;
+		String encodedPassword = null;
+		if (request.password() != null) {
+			if (PasswordUtil.isValidPassword(request.password())) {
+				throw new UserPasswordFormatBadRequestException();
+			}
+			encodedPassword = passwordEncoder.encode(request.password());
+		}
+
 		User user = userRepository.save(User.toEntity(status, grade, request, encodedPassword));
 
 		// 회원 가입시 기본 권한 데이터 설정
@@ -232,9 +244,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String recoverIdentifier(String email) {
-		User user = userRepository.findByEmail(email).orElse(null);
-		if (user != null) {
+	public String recoverIdentifier(String identifier) {
+		if (userRepository.existsByIdentifier(identifier)) {
 			// mailService.sendMail(email, "아이디 찾기", user.getIdentifier());
 			// return email + "로 아이디를 전송하였습니다.";
 			return "가입된 아이디 입니다.";
@@ -247,13 +258,13 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findByIdentifier(identifier).orElse(null);
 		if (user != null) {
 			// 새로운 비밀번호
-			String newPassword = NumberUtil.createRandom(8);
+			String newPassword = PasswordUtil.generateSecurePassword(8);
 			String encryptedNewPassword = passwordEncoder.encode(newPassword);
 
 			// 비밀번호 업데이트
 			user.modifyPassword(encryptedNewPassword);
 
-			mailService.sendMail(user.getEmail(), "비밀번호 찾기", newPassword);
+			mailService.sendMail(user.getEmail(), "비밀번호 초기화", newPassword);
 			return user.getEmail() + "로 새로운 비밀번호가 전송되었습니다.";
 		}
 		return "가입된 아이디가 아닙니다.";

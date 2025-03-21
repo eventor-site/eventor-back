@@ -92,6 +92,11 @@ public class ElasticSearchService {
 										.query(keyword)
 										.operator(Operator.Or)
 									))
+									.should(s -> s.match(m -> m
+										.field("shoppingMall")
+										.query(keyword)
+										.operator(Operator.Or)
+									))
 									.minimumShouldMatch("1") // 최소 하나라도 일치해야 함
 								)
 							);
