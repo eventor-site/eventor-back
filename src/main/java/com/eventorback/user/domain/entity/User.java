@@ -3,20 +3,24 @@ package com.eventorback.user.domain.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import com.eventorback.grade.domain.entity.Grade;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
+import com.eventorback.userrole.domain.entity.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -85,6 +89,9 @@ public class User {
 
 	@Column(name = "oauth_type")
 	private String oauthType;
+
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	private List<UserRole> userRoles;
 
 	@Builder
 	public User(Status status, Grade grade, String identifier, String password, String name, String nickname,
@@ -167,6 +174,10 @@ public class User {
 
 	public void updateAttribute(Status status, Grade grade) {
 		this.status = status;
+		this.grade = grade;
+	}
+
+	public void updateGrade(Grade grade) {
 		this.grade = grade;
 	}
 }

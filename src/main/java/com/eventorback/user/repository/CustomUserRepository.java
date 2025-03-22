@@ -30,4 +30,10 @@ public interface CustomUserRepository {
 
 	Optional<GetUserResponse> getUserInfo(Long userId);
 
+	List<Long> getDormantUsers();
+
+	List<Long> getStopUsers();
+
+	List<Long> getNotAdminUsers();
+
 }

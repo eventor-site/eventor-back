@@ -1,17 +1,17 @@
 package com.eventorback.user.scheduler;
 
-import java.time.LocalDateTime;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.eventorback.grade.repository.GradeRepository;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.repository.StatusRepository;
-import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.UserRepository;
-import com.eventorback.userstop.domain.entity.UserStop;
-import com.eventorback.userstop.repository.UserStopRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,34 +25,35 @@ import lombok.extern.slf4j.Slf4j;
 public class UserScheduler {
 	private final UserRepository userRepository;
 	private final StatusRepository statusRepository;
-	private final UserStopRepository userStopRepository;
+	private final GradeRepository gradeRepository;
+
+	@Value("${server.port}")
+	private String port;
 
 	/**
-	 * 매일 자정에 실행되어 90일 이상 로그인하지 않은 사용자들의 상태를 'DORMANT'로 업데이트합니다.
-	 * <p>
-	 * 이 메서드는 다음과 같은 절차를 따릅니다:
-	 * <ul>
-	 *     <li>모든 사용자를 조회합니다.</li>
-	 *     <li>'휴면' 상태가 존재하지 않으면 새로 생성합니다.</li>
-	 *     <li>마지막 로그인 시점이 현재 시점에서 90일을 초과하고 현재 상태가 '활성'인 사용자를 '휴면' 상태로 변경합니다.</li>
-	 *     <li>상태가 변경된 사용자 정보를 저장합니다.</li>
-	 * </ul>
+	 * 매일 자정에 실행되어 90일 이상 로그인하지 않은 사용자들의 상태를 '휴면'으로 업데이트합니다.
 	 */
 	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
 	public void dormantScheduler() {
-		List<User> users = userRepository.findAll();
-		// UserStatus dormantUserStatus = userStatusRepository.findByUserStatusName("DORMANT")
-		// 	.orElseGet(() -> userStatusRepository.save(UserStatus.builder().userStatusName("DORMANT").build()));
-		Status status = statusRepository.findOrCreateStatus("회원", "휴면");
 
-		for (User user : users) {
-			if (user.getLastLoginTime() == null && user.getCreatedAt().isBefore(LocalDateTime.now().minusDays(90))
-				|| user.getLastLoginTime() != null && user.getLastLoginTime()
-				.isBefore(LocalDateTime.now().minusDays(90))
-				&& user.getStatus().getName().equals("활성")) {
-				user.updateStatus(status);
-			}
+		// 특정 포트(8101, 8103)에서만 실행
+		if (!port.equals("8101") && !port.equals("8103")) {
+			return;
 		}
+
+		Instant start = Instant.now();  // 시작 시간 기록
+
+		Status dormantStatus = statusRepository.findOrCreateStatus("회원", "휴면");
+		List<Long> userIds = userRepository.getDormantUsers();
+
+		if (!userIds.isEmpty()) {
+			userRepository.updateUserStatusToDormant(userIds, dormantStatus);
+		}
+
+		Instant end = Instant.now();  // 종료 시간 기록
+		long durationSeconds = Duration.between(start, end).toSeconds();  // 걸린 시간 계산 (초 단위)
+
+		log.info("휴면 계정 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
 	}
 
 	/**
@@ -60,15 +61,59 @@ public class UserScheduler {
 	 */
 	@Scheduled(cron = "0 0 0 * * *")
 	public void activeScheduler() {
-		List<UserStop> userStops = userStopRepository.findAll();
 
-		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-
-		for (UserStop userStop : userStops) {
-			if (userStop.getEndTime().isBefore(LocalDateTime.now()) && userStop.getUser()
-				.getStatus().getName().equals("정지")) {
-				userStop.getUser().updateStatus(status);
-			}
+		// 특정 포트(8101, 8103)에서만 실행
+		if (!port.equals("8101") && !port.equals("8103")) {
+			return;
 		}
+
+		Instant start = Instant.now();  // 시작 시간 기록
+
+		List<Long> userIds = userRepository.getStopUsers();
+		Status activeStatus = statusRepository.findOrCreateStatus("회원", "활성");
+
+		if (!userIds.isEmpty()) {
+			userRepository.updateUserStatusToActive(userIds, activeStatus);
+		}
+
+		Instant end = Instant.now();  // 종료 시간 기록
+		long durationSeconds = Duration.between(start, end).toSeconds();  // 걸린 시간 계산 (초 단위)
+
+		log.info("정지 계정 정상화 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
 	}
+
+	// /**
+	//  * 매일 자정을 기준으로 포인트에 따라 회원 등급을 업데이트 합니다.
+	//  */
+	// @Scheduled(cron = "0 0 0 * * *")
+	// public void upgradeScheduler() {
+	//
+	// 	// 특정 포트(8101, 8103)에서만 실행
+	// 	if (!port.equals("8101") && !port.equals("8103")) {
+	// 		return;
+	// 	}
+	//
+	// 	Instant start = Instant.now();  // 시작 시간 기록
+	//
+	// 	List<Long> userIds = userRepository.getNotAdminUsers();
+	// 	List<Grade> grades = gradeRepository.findAll();
+	//
+	// 	Instant end = Instant.now();  // 종료 시간 기록
+	// 	long durationSeconds = Duration.between(start, end).toSeconds();  // 걸린 시간 계산 (초 단위)
+	//
+	// 	log.info("등급 업그레이드 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
+	// }
+	//
+	// /**
+	//  * 포인트에 따라 적절한 등급을 결정하는 메서드
+	//  */
+	// private Grade determineGrade(Long point, List<Grade> grades) {
+	// 	for (Grade grade : grades) {
+	// 		if (point >= grade.getMinAmount() && (grade.getMaxAmount() == null || point <= grade.getMaxAmount())) {
+	// 			return grade;
+	// 		}
+	// 	}
+	// 	return grades.get(0); // 기본 등급 (첫 번째 등급)
+	// }
+
 }

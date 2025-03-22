@@ -1,4 +1,6 @@
-package com.eventorback.point.aop;
+package com.eventorback.grade.aop;
+
+import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -8,85 +10,97 @@ import org.springframework.stereotype.Component;
 
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.commentrecommend.domain.entity.CommentRecommend;
-import com.eventorback.point.repository.PointRepository;
+import com.eventorback.grade.domain.entity.Grade;
+import com.eventorback.grade.service.GradeService;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.postrecommend.domain.entity.PostRecommend;
+import com.eventorback.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
 @Aspect
 @Component
-@Order(2)
+@Order(1)
 @RequiredArgsConstructor
-public class PointCalculator {
-	private final PointRepository pointRepository;
+public class GradeMonitor {
+	private final GradeService gradeService;
 
 	/**
-	 * 글쓰기 포인트 계산
+	 * 글쓰기 등급 계산
 	 */
 	@AfterReturning("execution(* com.eventorback.post.repository.PostRepository.save(..))")
 	public void pointCalculatorAfterReturningSavePost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof Post post) {
-			post.getUser().updatePoint(pointRepository.findOrCreatePoint("글쓰기").getAmount());
+			updateUserGrade(post.getUser());
 		}
 	}
 
 	/**
-	 * 댓글쓰기 포인트 계산
+	 * 댓글쓰기 등급 계산
 	 */
 	@AfterReturning("execution(* com.eventorback.comment.repository.CommentRepository.save(..))")
 	public void pointCalculatorAfterReturningSaveComment(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof Comment comment) {
-			comment.getUser().updatePoint(pointRepository.findOrCreatePoint("댓글쓰기").getAmount());
+			updateUserGrade(comment.getUser());
 		}
 	}
 
 	/**
-	 * 게시글 추천, 게시글 추천 받기 포인트 계산
+	 * 게시글 추천, 게시글 추천 받기 등급 계산
 	 */
 	@AfterReturning("execution(* com.eventorback.postrecommend.repository.PostRecommendRepository.save(..))")
 	public void pointCalculatorAfterReturningPostRecommend(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof PostRecommend postRecommend) {
-			if (postRecommend.getRecommendType().getName().equals("추천")) {
-				postRecommend.getUser().updatePoint(pointRepository.findOrCreatePoint("게시글 추천").getAmount());
-				postRecommend.getPost().getUser()
-					.updatePoint(pointRepository.findOrCreatePoint("게시글 추천받기").getAmount());
-			} else {
-				postRecommend.getPost()
-					.getUser().updatePoint(pointRepository.findOrCreatePoint("게시글 비추천받기").getAmount());
-			}
+			updateUserGrade(postRecommend.getUser());
 
 		}
 	}
 
 	/**
-	 * 댓글 추천, 댓글 추천 받기 포인트 계산
+	 * 댓글 추천, 댓글 추천 받기 등급 계산
 	 */
 	@AfterReturning("execution(* com.eventorback.commentrecommend.repository.CommentRecommendRepository.save(..))")
 	public void pointCalculatorAfterReturningCommentRecommend(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		if (args.length > 0 && args[0] instanceof CommentRecommend commentRecommend) {
-			if (commentRecommend.getRecommendType().getName().equals("추천")) {
-				commentRecommend.getUser().updatePoint(pointRepository.findOrCreatePoint("댓글 추천").getAmount());
-				commentRecommend.getComment().getUser()
-					.updatePoint(pointRepository.findOrCreatePoint("댓글 추천받기").getAmount());
-			} else {
-				commentRecommend.getComment()
-					.getUser().updatePoint(pointRepository.findOrCreatePoint("댓글 비추천받기").getAmount());
-			}
+			updateUserGrade(commentRecommend.getUser());
 		}
 	}
 
 	/**
-	 * 댓글 삭제 시 포인트 계산
+	 * 댓글 삭제 시 등급 계산
 	 */
 	@AfterReturning(value = "execution(* com.eventorback.comment.service.impl.CommentServiceImpl.deleteComment(..))", returning = "result")
 	public void pointCalculatorAfterReturningDeleteComment(Object result) {
 		if (result instanceof Comment comment) {
-			comment.getUser().updatePoint(-pointRepository.findOrCreatePoint("댓글쓰기").getAmount());
+			updateUserGrade(comment.getUser());
 		}
 	}
+
+	/**
+	 * 등급을 결정하는 메서드
+	 */
+	public void updateUserGrade(User user) {
+		List<Grade> grades = gradeService.findAllByOrderByMinAmountAsc();
+
+		boolean isAdmin = user.getUserRoles().stream()
+			.anyMatch(userRole -> "admin".equals(userRole.getRole().getName()));
+
+		if (isAdmin) {
+			return; // 관리자는 등급 업데이트를 하지 않음
+		}
+
+		for (Grade grade : grades) {
+			if (grade.getMinAmount() <= user.getPoint() && user.getPoint() <= grade.getMaxAmount()) {
+				if (!user.getGrade().getName().equals(grade.getName())) {
+					user.updateGrade(grade);
+				}
+				break;
+			}
+		}
+	}
+
 }

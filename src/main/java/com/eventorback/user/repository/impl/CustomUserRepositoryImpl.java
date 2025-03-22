@@ -3,9 +3,12 @@ package com.eventorback.user.repository.impl;
 import static com.eventorback.grade.domain.entity.QGrade.*;
 import static com.eventorback.role.domain.entity.QRole.*;
 import static com.eventorback.status.domain.entity.QStatus.*;
+import static com.eventorback.statustype.domain.entity.QStatusType.*;
 import static com.eventorback.user.domain.entity.QUser.*;
 import static com.eventorback.userrole.domain.entity.QUserRole.*;
+import static com.eventorback.userstop.domain.entity.QUserStop.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -200,6 +203,53 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 		);
 
 		return Optional.of(response);
+	}
+
+	@Override
+	public List<Long> getDormantUsers() {
+		LocalDateTime now = LocalDateTime.now();
+		return queryFactory
+			.select(user.userId)
+			.from(user)
+			.join(user.status, status)
+			.join(status.statusType, statusType)
+			.where(
+				status.name.eq("활성")
+					// 조건 1: 마지막 로그인 시간이 null 이고, 생성일이 90일 이전인 경우
+					.and(user.lastLoginTime.isNull().and(user.createdAt.loe(now.minusDays(90)))
+						// 조건 2: 마지막 로그인 시간이 90일 이전이고, 상태가 "활성"인 경우
+						.or(user.lastLoginTime.isNotNull().and(user.lastLoginTime.loe(now.minusDays(90))))
+					)
+
+			)
+			.fetch();
+	}
+
+	@Override
+	public List<Long> getStopUsers() {
+		LocalDateTime now = LocalDateTime.now();
+
+		return queryFactory
+			.select(user.userId)
+			.from(userStop)
+			.join(userStop.user, user)
+			.join(user.status, status)
+			.join(status.statusType, statusType)
+			.where(status.name.eq("정지")
+				.and(userStop.endTime.loe(now))
+			)
+			.fetch();
+	}
+
+	@Override
+	public List<Long> getNotAdminUsers() {
+		return queryFactory
+			.select(user.userId)
+			.from(userRole)
+			.join(userRole.user, user)
+			.join(userRole.role, role)
+			.where(role.name.ne("admin"))
+			.fetch();
 	}
 
 }

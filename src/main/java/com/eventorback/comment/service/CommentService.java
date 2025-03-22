@@ -8,6 +8,7 @@ import com.eventorback.comment.domain.dto.request.UpdateCommentRequest;
 import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentPageResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
+import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface CommentService {
@@ -28,6 +29,6 @@ public interface CommentService {
 
 	String disrecommendComment(Long userId, Long commentId);
 
-	void deleteComment(Long commentId);
+	Comment deleteComment(Long commentId);
 
 }
