@@ -50,7 +50,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 				userRole.role.name
 			)
 			.from(userRole)
-			.leftJoin(userRole).on(userRole.user.userId.eq(user.userId)) // user 와 userRole 조인
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
