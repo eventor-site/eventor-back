@@ -10,7 +10,6 @@ import static com.eventorback.userstop.domain.entity.QUserStop.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,18 +69,15 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			if (userResponse == null) {
 				// 새로운 사용자 정보 생성
 				userResponse = new GetUserListResponse(userId, nickname, statusName, gradeName, new ArrayList<>());
-				userMap.put(userId, userResponse);
 			}
 
 			// 역할 목록에 역할 추가
 			if (roleName != null) {
 				userResponse.roles().add(roleName);
+				userResponse.roles().sort(String::compareTo);
 			}
-		}
 
-		// 각 사용자의 역할 목록을 오름차순으로 정렬
-		for (GetUserListResponse userResponse : userMap.values()) {
-			Collections.sort(userResponse.roles());  // 역할 목록 오름차순 정렬
+			userMap.put(userId, userResponse);
 		}
 
 		// Map 에서 List 로 변환
