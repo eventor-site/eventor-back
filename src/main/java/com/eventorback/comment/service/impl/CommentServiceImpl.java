@@ -180,15 +180,15 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public void deleteComment(Long commentId) {
+	public Comment deleteComment(Long commentId) {
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(CommentNotFoundException::new);
-
 		Status status = statusRepository.findOrCreateStatus("댓글", "삭제됨");
 
 		comment.setDeletedAt();
 		comment.updateStatus(status);
-		comment.getUser().updatePoint(-pointRepository.findOrCreatePoint("댓글쓰기").getAmount());
+
+		return comment;
 	}
 
 }

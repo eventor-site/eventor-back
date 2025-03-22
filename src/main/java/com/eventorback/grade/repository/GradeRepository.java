@@ -1,5 +1,6 @@
 package com.eventorback.grade.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ public interface GradeRepository extends JpaRepository<Grade, Long>, CustomGrade
 	boolean existsByName(String name);
 
 	Optional<Grade> findByName(String name);
+
+	List<Grade> findAllByOrderByMinAmountAsc();
 }

@@ -6,8 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.grade.domain.dto.GradeDto;
+import com.eventorback.grade.domain.entity.Grade;
 
 public interface GradeService {
+
+	List<Grade> findAllByOrderByMinAmountAsc();
 
 	List<GradeDto> getGrades();
 

@@ -3,6 +3,7 @@ package com.eventorback.point.aop;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.eventorback.comment.domain.entity.Comment;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @Aspect
 @Component
+@Order(2)
 @RequiredArgsConstructor
 public class PointCalculator {
 	private final PointRepository pointRepository;
@@ -50,8 +52,7 @@ public class PointCalculator {
 		if (args.length > 0 && args[0] instanceof PostRecommend postRecommend) {
 			if (postRecommend.getRecommendType().getName().equals("추천")) {
 				postRecommend.getUser().updatePoint(pointRepository.findOrCreatePoint("게시글 추천").getAmount());
-				postRecommend.getPost()
-					.getUser()
+				postRecommend.getPost().getUser()
 					.updatePoint(pointRepository.findOrCreatePoint("게시글 추천받기").getAmount());
 			} else {
 				postRecommend.getPost()
@@ -70,16 +71,22 @@ public class PointCalculator {
 		if (args.length > 0 && args[0] instanceof CommentRecommend commentRecommend) {
 			if (commentRecommend.getRecommendType().getName().equals("추천")) {
 				commentRecommend.getUser().updatePoint(pointRepository.findOrCreatePoint("댓글 추천").getAmount());
-				commentRecommend.getComment()
-					.getUser()
+				commentRecommend.getComment().getUser()
 					.updatePoint(pointRepository.findOrCreatePoint("댓글 추천받기").getAmount());
 			} else {
 				commentRecommend.getComment()
 					.getUser().updatePoint(pointRepository.findOrCreatePoint("댓글 비추천받기").getAmount());
 			}
-
 		}
 	}
 
-	// 댓글 삭제 시 포인트 계산은 댓글 삭제 비즈니스 로직에 추가
+	/**
+	 * 댓글 삭제 시 포인트 계산
+	 */
+	@AfterReturning(value = "execution(* com.eventorback.comment.service.impl.CommentServiceImpl.deleteComment(..))", returning = "result")
+	public void pointCalculatorAfterReturningDeleteComment(Object result) {
+		if (result instanceof Comment comment) {
+			comment.getUser().updatePoint(-pointRepository.findOrCreatePoint("댓글쓰기").getAmount());
+		}
+	}
 }
