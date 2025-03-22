@@ -9,10 +9,7 @@ import static com.eventorback.userrole.domain.entity.QUserRole.*;
 import static com.eventorback.userstop.domain.entity.QUserStop.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -27,7 +24,6 @@ import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -39,50 +35,20 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
 	@Override
 	public Page<GetUserListResponse> getUsers(Pageable pageable) {
-
-		// 사용자 정보와 역할 목록을 함께 가져오는 쿼리
-		List<Tuple> userTuples = queryFactory
-			.select(
-				userRole.user.userId,
-				userRole.user.nickname,
-				userRole.user.status.name,
-				userRole.user.grade.name,
-				userRole.role.name
-			)
-			.from(userRole)
+		List<User> users = queryFactory
+			.selectFrom(user)
+			.leftJoin(user.status, status).fetchJoin()
+			.leftJoin(status.statusType, statusType).fetchJoin()
+			.leftJoin(user.grade, grade).fetchJoin()
+			.leftJoin(user.userRoles, userRole).fetchJoin()        // fetch join 을 사용하여 N+1 문제 방지
+			.leftJoin(userRole.role, role)
+			.fetchJoin()
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
 			.fetch();
 
-		// Tuple 을 GetUserListResponse 로 변환
-		Map<Long, GetUserListResponse> userMap = new HashMap<>();
-		for (Tuple tuple : userTuples) {
-			Long userId = tuple.get(userRole.user.userId);
-			String nickname = tuple.get(userRole.user.nickname);
-			String statusName = tuple.get(userRole.user.status.name);
-			String gradeName = tuple.get(userRole.user.grade.name);
-			String roleName = tuple.get(userRole.role.name);
+		List<GetUserListResponse> result = users.stream().map(GetUserListResponse::fromEntity).toList();
 
-			// 사용자 정보가 이미 Map에 있는지 확인
-			GetUserListResponse userResponse = userMap.get(userId);
-			if (userResponse == null) {
-				// 새로운 사용자 정보 생성
-				userResponse = new GetUserListResponse(userId, nickname, statusName, gradeName, new ArrayList<>());
-			}
-
-			// 역할 목록에 역할 추가
-			if (roleName != null) {
-				userResponse.roles().add(roleName);
-				userResponse.roles().sort(String::compareTo);
-			}
-
-			userMap.put(userId, userResponse);
-		}
-
-		// Map 에서 List 로 변환
-		List<GetUserListResponse> result = new ArrayList<>(userMap.values());
-
-		// 전체 사용자 수를 가져오는 쿼리
 		Long total = Optional.ofNullable(queryFactory
 			.select(user.count())
 			.from(user)

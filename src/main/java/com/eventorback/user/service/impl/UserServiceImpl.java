@@ -187,7 +187,7 @@ public class UserServiceImpl implements UserService {
 			return "현재 비밀번호가 일치하지 않습니다.";
 		}
 
-		if (PasswordUtil.isValidPassword(request.password())) {
+		if (!PasswordUtil.isValidPassword(request.password())) {
 			throw new UserPasswordFormatBadRequestException();
 		}
 
@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
 
 		String encodedPassword = null;
 		if (request.password() != null) {
-			if (PasswordUtil.isValidPassword(request.password())) {
+			if (!PasswordUtil.isValidPassword(request.password())) {
 				throw new UserPasswordFormatBadRequestException();
 			}
 			encodedPassword = passwordEncoder.encode(request.password());
