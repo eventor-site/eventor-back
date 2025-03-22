@@ -94,7 +94,7 @@ public class UserController {
 	@PutMapping("/{userId}")
 	public ResponseEntity<ApiResponse<Void>> updateUserByAdmin(@PathVariable Long userId,
 		@RequestBody UpdateUserRequest request) {
-		userService.updateUser(userId, request);
+		userService.updateUserByAdmin(userId, request);
 		return ApiResponse.createSuccess("회원 정보가 수정 되었습니다.");
 	}
 

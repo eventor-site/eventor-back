@@ -132,6 +132,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void updateUserByAdmin(Long userId, UpdateUserRequest request) {
+		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
+		user.updateUser(request);
+	}
+
+	@Override
 	public void updateUserAttributeByAdmin(Long userId, UpdateUserAttributeRequest request) {
 		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
 		Status status = statusRepository.getStatus(request.statusId()).orElseThrow(StatusNotFoundException::new);

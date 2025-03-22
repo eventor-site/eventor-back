@@ -38,6 +38,8 @@ public interface UserService {
 
 	void updateUser(Long userId, UpdateUserRequest request);
 
+	void updateUserByAdmin(Long userId, UpdateUserRequest request);
+
 	void updateUserAttributeByAdmin(Long userId, UpdateUserAttributeRequest request);
 
 	void withdrawUser(Long userId);
