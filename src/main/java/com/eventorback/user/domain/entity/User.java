@@ -90,7 +90,7 @@ public class User {
 	@Column(name = "oauth_type")
 	private String oauthType;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<UserRole> userRoles;
 
 	@Builder
