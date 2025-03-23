@@ -27,15 +27,17 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
+import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
+import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
+import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.NicknameChangeCooldownBadRequestException;
@@ -78,22 +80,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public GetUserTokenInfo getUserTokenInfoByIdentifier(String identifier) {
-		User user = userRepository.findByIdentifier(identifier)
-			.orElse(null);
+	public GetUserAuth getAuthByIdentifier(String identifier) {
+		User user = userRepository.findByIdentifier(identifier).orElse(null);
+
 		if (user == null) {
 			return null;
 		}
 
-		List<String> userRoleNames = userRoleRepository.findAllByUserUserId(user.getUserId())
-			.stream().map(userRole -> userRole.getRole().getName()).toList();
-
-		return GetUserTokenInfo.fromEntity(user, userRoleNames);
+		return GetUserAuth.fromEntity(user);
 	}
 
 	@Override
-	public GetUserTokenInfo getUserInfoByOauth(OauthDto request) {
-		return userRepository.getUserInfoByOauth(request);
+	public GetUserOauth getAuthInfoByOauth(OauthDto request) {
+		return userRepository.getAuthInfoByOauth(request);
 	}
 
 	@Override
@@ -281,6 +280,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String recover(String identifier) {
 		User user = userRepository.findByIdentifier(identifier).orElseThrow(UserNotFoundException::new);
+		Status status = statusRepository.findOrCreateStatus("회원", "활성");
+		user.updateStatus(status);
+
+		return "계정이 복구 되었습니다.";
+	}
+
+	@Override
+	public String recoverOauth(RecoverOauthRequest request) {
+		User user = userRepository.findByOauthIdAndEmail(request.oauthId(), request.email())
+			.orElseThrow(UserNotFoundException::new);
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
 		user.updateStatus(status);
 

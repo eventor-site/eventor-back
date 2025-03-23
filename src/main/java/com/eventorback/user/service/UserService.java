@@ -9,15 +9,17 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
+import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
+import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
+import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
 
 public interface UserService {
@@ -28,9 +30,9 @@ public interface UserService {
 
 	List<GetUserByUserId> searchUserByUserId(Long userId);
 
-	GetUserTokenInfo getUserTokenInfoByIdentifier(String identifier);
+	GetUserAuth getAuthByIdentifier(String identifier);
 
-	GetUserTokenInfo getUserInfoByOauth(OauthDto request);
+	GetUserOauth getAuthInfoByOauth(OauthDto request);
 
 	Boolean existsByOauth(OauthDto request);
 
@@ -65,5 +67,7 @@ public interface UserService {
 	String recoverPassword(String identifier);
 
 	String recover(String identifier);
+
+	String recoverOauth(RecoverOauthRequest request);
 
 }

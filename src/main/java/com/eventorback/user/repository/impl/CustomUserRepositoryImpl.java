@@ -19,8 +19,8 @@ import org.springframework.data.domain.Pageable;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
+import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
@@ -45,6 +45,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.fetchJoin()
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
+			.orderBy(user.createdAt.desc())
 			.fetch();
 
 		List<GetUserListResponse> result = users.stream().map(GetUserListResponse::fromEntity).toList();
@@ -101,7 +102,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	}
 
 	@Override
-	public GetUserTokenInfo getUserInfoByOauth(OauthDto request) {
+	public GetUserOauth getAuthInfoByOauth(OauthDto request) {
 		// 사용자 역할 이름 리스트 조회
 		List<String> roles = queryFactory
 			.select(role.name)
@@ -117,7 +118,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.where(user.oauthId.eq(request.oauthId()), user.oauthType.eq(request.oauthType()))
 			.fetchOne();
 
-		return GetUserTokenInfo.builder()
+		return GetUserOauth.builder()
 			.userId(userInfo.getUserId())
 			.roles(roles)
 			.statusName(userInfo.getStatus().getName())
