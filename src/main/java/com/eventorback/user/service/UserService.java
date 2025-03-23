@@ -64,4 +64,6 @@ public interface UserService {
 
 	String recoverPassword(String identifier);
 
+	String recover(String identifier);
+
 }

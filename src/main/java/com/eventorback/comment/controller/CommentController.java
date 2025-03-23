@@ -79,21 +79,20 @@ public class CommentController {
 		return ApiResponse.createSuccess("댓글이 수정 되었습니다.");
 	}
 
-	@PutMapping("/posts/{postId}/comments/{commentId}/recommend")
-	public ResponseEntity<ApiResponse<Void>> recommendComment(@CurrentUserId Long userId, @PathVariable Long commentId,
-		@PathVariable Long postId) {
+	@PutMapping("/comments/{commentId}/recommend")
+	public ResponseEntity<ApiResponse<Void>> recommendComment(@CurrentUserId Long userId,
+		@PathVariable Long commentId) {
 		return ApiResponse.createSuccess(commentService.recommendComment(userId, commentId));
 	}
 
-	@PutMapping("/posts/{postId}/comments/{commentId}/disrecommend")
+	@PutMapping("/comments/{commentId}/disrecommend")
 	public ResponseEntity<ApiResponse<Void>> disrecommendComment(@CurrentUserId Long userId,
-		@PathVariable Long commentId,
-		@PathVariable Long postId) {
+		@PathVariable Long commentId) {
 		return ApiResponse.createSuccess(commentService.disrecommendComment(userId, commentId));
 	}
 
-	@DeleteMapping("/posts/{postId}/comments/{commentId}")
-	public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long commentId, @PathVariable Long postId) {
+	@DeleteMapping("/comments/{commentId}")
+	public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long commentId) {
 		commentService.deleteComment(commentId);
 		return ApiResponse.createSuccess("댓글을 삭제 하였습니다.");
 	}
