@@ -41,7 +41,7 @@ public class PasswordUtil {
 	}
 
 	public static boolean isValidPassword(String password) {
-		String passwordRegex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{8,}$";
+		String passwordRegex = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).{8,}$";
 		return password.matches(passwordRegex);
 	}
 }

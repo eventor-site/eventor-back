@@ -71,10 +71,9 @@ public class CommentController {
 	}
 
 	@AuthorizeRole("member")
-	@PutMapping("/posts/{postId}/comments/{commentId}")
+	@PutMapping("/comments/{commentId}")
 	public ResponseEntity<ApiResponse<Void>> updateComment(@CurrentUser CurrentUserDto currentUser,
-		@PathVariable Long commentId,
-		@Valid @RequestBody UpdateCommentRequest request, @PathVariable Long postId) {
+		@PathVariable Long commentId, @Valid @RequestBody UpdateCommentRequest request) {
 		commentService.updateComment(currentUser, commentId, request);
 		return ApiResponse.createSuccess("댓글이 수정 되었습니다.");
 	}
