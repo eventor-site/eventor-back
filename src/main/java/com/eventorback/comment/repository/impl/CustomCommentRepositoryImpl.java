@@ -42,7 +42,8 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.content,
 				comment.recommendationCount,
 				comment.decommendationCount,
-				comment.createdAt))
+				comment.createdAt,
+				comment.user.grade.name))
 			.from(comment)
 			.where(comment.status.name.eq("작성됨"))
 			.orderBy(comment.createdAt.desc())
@@ -126,7 +127,8 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.content,
 				comment.recommendationCount,
 				comment.decommendationCount,
-				comment.createdAt))
+				comment.createdAt,
+				comment.user.grade.name))
 			.from(comment)
 			.where(user.userId.eq(userId).and(comment.status.name.eq("작성됨")))
 			.orderBy(comment.createdAt.desc())
