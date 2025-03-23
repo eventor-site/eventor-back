@@ -82,8 +82,8 @@ public class UserController {
 	}
 
 	@PostMapping("/oauth2/info")
-	public ResponseEntity<ApiResponse<GetUserOauth>> getAuthInfoByOauth(@RequestBody OauthDto request) {
-		return ApiResponse.createSuccess(userService.getAuthInfoByOauth(request));
+	public ResponseEntity<ApiResponse<GetUserOauth>> getOAuthInfoByOauth(@RequestBody OauthDto request) {
+		return ApiResponse.createSuccess(userService.getOAuthInfoByOauth(request));
 	}
 
 	@AuthorizeRole("admin")

@@ -81,18 +81,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public GetUserAuth getAuthByIdentifier(String identifier) {
-		User user = userRepository.findByIdentifier(identifier).orElse(null);
+		return userRepository.getAuthByIdentifier(identifier);
 
-		if (user == null) {
-			return null;
-		}
-
-		return GetUserAuth.fromEntity(user);
 	}
 
 	@Override
-	public GetUserOauth getAuthInfoByOauth(OauthDto request) {
-		return userRepository.getAuthInfoByOauth(request);
+	public GetUserOauth getOAuthInfoByOauth(OauthDto request) {
+		return userRepository.getOAuthInfoByOauth(request);
 	}
 
 	@Override
