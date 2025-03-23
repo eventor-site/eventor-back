@@ -111,7 +111,7 @@ public class MailServiceImpl implements MailService {
 	@Override
 	public boolean certifyEmail(CertifyEmailRequest request) {
 		String key = getSubjectKey(request.type()) + request.email();
-		String savedCode = (String)redisTemplate.opsForValue().get(key);
+		String savedCode = (String)redisTemplate.opsForValue().getAndDelete(key);
 
 		return savedCode != null && savedCode.equals(request.certifyCode().trim());
 	}
@@ -129,6 +129,8 @@ public class MailServiceImpl implements MailService {
 			typeKey = "FindIdentifier:";
 		} else if ("비밀번호 찾기".equals(type)) {
 			typeKey = "FindPassword:";
+		} else if ("비밀번호 초기화".equals(type)) {
+			typeKey = "ResetPassword:";
 		}
 		return typeKey;
 	}

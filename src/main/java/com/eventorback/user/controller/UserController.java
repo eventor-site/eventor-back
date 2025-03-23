@@ -189,14 +189,19 @@ public class UserController {
 		return ApiResponse.createSuccess(codeMatch, message);
 	}
 
-	@PostMapping("/recover/identifier")
+	@PostMapping("/me/recover/identifier")
 	ResponseEntity<ApiResponse<Void>> recoverIdentifier(@RequestParam String identifier) {
 		return ApiResponse.createSuccess(userService.recoverIdentifier(identifier));
 	}
 
-	@PostMapping("/recover/password")
+	@PostMapping("/me/recover/password")
 	ResponseEntity<ApiResponse<Void>> recoverPassword(@RequestParam String identifier) {
 		return ApiResponse.createSuccess(userService.recoverPassword(identifier));
+	}
+
+	@PostMapping("/me/recover")
+	ResponseEntity<ApiResponse<Void>> recover(@RequestParam String identifier) {
+		return ApiResponse.createSuccess(userService.recover(identifier));
 	}
 
 }

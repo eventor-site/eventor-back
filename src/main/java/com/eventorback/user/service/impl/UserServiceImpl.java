@@ -275,4 +275,13 @@ public class UserServiceImpl implements UserService {
 		}
 		return "가입된 아이디가 아닙니다.";
 	}
+
+	@Override
+	public String recover(String identifier) {
+		User user = userRepository.findByIdentifier(identifier).orElseThrow(UserNotFoundException::new);
+		Status status = statusRepository.findOrCreateStatus("회원", "활성");
+		user.updateStatus(status);
+
+		return "계정이 복구 되었습니다.";
+	}
 }
