@@ -27,16 +27,18 @@ import com.eventorback.user.domain.dto.request.CertifyEmailRequest;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
+import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SendCodeRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
+import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
+import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.GetUserTokenInfo;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.service.UserService;
 
@@ -74,14 +76,14 @@ public class UserController {
 	/**
 	 * 아이디를 통해 사용자의 토큰 정보를 조회합니다.
 	 */
-	@GetMapping("/info")
-	public ResponseEntity<ApiResponse<GetUserTokenInfo>> getUserInfoByIdentifier(@RequestParam String identifier) {
-		return ApiResponse.createSuccess(userService.getUserTokenInfoByIdentifier(identifier));
+	@GetMapping("/auth/info")
+	public ResponseEntity<ApiResponse<GetUserAuth>> getAuthInfoByIdentifier(@RequestParam String identifier) {
+		return ApiResponse.createSuccess(userService.getAuthByIdentifier(identifier));
 	}
 
 	@PostMapping("/oauth2/info")
-	public ResponseEntity<ApiResponse<GetUserTokenInfo>> getUserInfoByOauth(@RequestBody OauthDto request) {
-		return ApiResponse.createSuccess(userService.getUserInfoByOauth(request));
+	public ResponseEntity<ApiResponse<GetUserOauth>> getAuthInfoByOauth(@RequestBody OauthDto request) {
+		return ApiResponse.createSuccess(userService.getAuthInfoByOauth(request));
 	}
 
 	@AuthorizeRole("admin")
@@ -202,6 +204,11 @@ public class UserController {
 	@PostMapping("/me/recover")
 	ResponseEntity<ApiResponse<Void>> recover(@RequestParam String identifier) {
 		return ApiResponse.createSuccess(userService.recover(identifier));
+	}
+
+	@PostMapping("/me/recover/oauth")
+	ResponseEntity<ApiResponse<Void>> recoverOauth(@RequestBody RecoverOauthRequest request) {
+		return ApiResponse.createSuccess(userService.recoverOauth(request));
 	}
 
 }

@@ -7,19 +7,21 @@ import com.eventorback.user.domain.entity.User;
 import lombok.Builder;
 
 @Builder
-public record GetUserTokenInfo(
+public record GetUserAuth(
 	Long userId,
 	String identifier,
 	String password,
 	List<String> roles,
 	String statusName
 ) {
-	public static GetUserTokenInfo fromEntity(User user, List<String> roleNames) {
-		return GetUserTokenInfo.builder()
+	public static GetUserAuth fromEntity(User user) {
+		List<String> roles = user.getUserRoles().stream().map(userRole -> userRole.getRole().getName()).toList();
+
+		return GetUserAuth.builder()
 			.userId(user.getUserId())
 			.identifier(user.getIdentifier())
 			.password(user.getPassword())
-			.roles(roleNames)
+			.roles(roles)
 			.statusName(user.getStatus().getName())
 			.build();
 	}
