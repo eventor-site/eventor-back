@@ -265,13 +265,15 @@ public class UserServiceImpl implements UserService {
 		if (user != null) {
 			// 새로운 비밀번호
 			String newPassword = PasswordUtil.generateSecurePassword(8);
-			String encryptedNewPassword = passwordEncoder.encode(newPassword);
+			boolean isSendEmail = mailService.sendMail(user.getEmail(), "비밀번호 초기화", newPassword);
 
-			// 비밀번호 업데이트
-			user.modifyPassword(encryptedNewPassword);
-
-			mailService.sendMail(user.getEmail(), "비밀번호 초기화", newPassword);
-			return user.getEmail() + "로 새로운 비밀번호가 전송되었습니다.";
+			if (isSendEmail) {
+				String encryptedNewPassword = passwordEncoder.encode(newPassword);
+				user.modifyPassword(encryptedNewPassword);
+				return user.getEmail() + "로 새로운 비밀번호가 전송되었습니다.";
+			} else {
+				return user.getEmail() + "로 이미 새로운 비밀 번호를 전송하였습니다.";
+			}
 		}
 		return "가입된 아이디가 아닙니다.";
 	}
