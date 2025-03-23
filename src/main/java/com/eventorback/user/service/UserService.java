@@ -32,7 +32,7 @@ public interface UserService {
 
 	GetUserAuth getAuthByIdentifier(String identifier);
 
-	GetUserOauth getAuthInfoByOauth(OauthDto request);
+	GetUserOauth getOAuthInfoByOauth(OauthDto request);
 
 	Boolean existsByOauth(OauthDto request);
 

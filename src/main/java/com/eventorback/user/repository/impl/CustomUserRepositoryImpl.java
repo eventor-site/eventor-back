@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
@@ -102,27 +103,34 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	}
 
 	@Override
-	public GetUserOauth getAuthInfoByOauth(OauthDto request) {
-		// 사용자 역할 이름 리스트 조회
-		List<String> roles = queryFactory
-			.select(role.name)
-			.from(userRole)
-			.join(userRole.user, user)
-			.join(userRole.role, role)
-			.where(user.oauthId.eq(request.oauthId()), user.oauthType.eq(request.oauthType()))
-			.fetch();
+	public GetUserAuth getAuthByIdentifier(String identifier) {
+		User result = queryFactory
+			.selectFrom(user)
+			.from(user)
+			.where(user.identifier.eq(identifier))
+			.fetchOne();
 
-		User userInfo = queryFactory
+		if (result != null) {
+			return GetUserAuth.fromEntity(result);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public GetUserOauth getOAuthInfoByOauth(OauthDto request) {
+		User result = queryFactory
 			.selectFrom(user)
 			.from(user)
 			.where(user.oauthId.eq(request.oauthId()), user.oauthType.eq(request.oauthType()))
 			.fetchOne();
 
-		return GetUserOauth.builder()
-			.userId(userInfo.getUserId())
-			.roles(roles)
-			.statusName(userInfo.getStatus().getName())
-			.build();
+		if (result != null) {
+			return GetUserOauth.fromEntity(result);
+		} else {
+			return null;
+		}
+
 	}
 
 	@Override

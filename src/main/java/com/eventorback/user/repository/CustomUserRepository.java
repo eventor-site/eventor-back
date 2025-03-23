@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
@@ -26,7 +27,9 @@ public interface CustomUserRepository {
 
 	Optional<User> getUser(String identifier);
 
-	GetUserOauth getAuthInfoByOauth(OauthDto request);
+	GetUserAuth getAuthByIdentifier(String identifier);
+
+	GetUserOauth getOAuthInfoByOauth(OauthDto request);
 
 	Optional<GetUserResponse> getUserInfo(Long userId);
 
