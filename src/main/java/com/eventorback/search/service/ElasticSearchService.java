@@ -108,14 +108,11 @@ public class ElasticSearchService {
 						}
 
 						// ✅ 이벤트 상태 필터 적용 (Filter Context)
-						if (eventStatusName != null) {
+						if (!eventStatusName.isEmpty()) {
 							LocalDateTime now = LocalDateTime.now();
 							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
 							switch (eventStatusName) {
-								case "" -> {
-									// ""는 모든 데이터를 포함하므로 필터 적용 X
-								}
 
 								case "예정" -> boolQuery.filter(f -> f
 									.range(r -> r
@@ -168,7 +165,7 @@ public class ElasticSearchService {
 						}
 
 						// ✅ 종료 타입 필터 적용 (Filter Context)
-						if (endType != null) {
+						if (!endType.isEmpty()) {
 							boolQuery.filter(f -> f
 								.bool(b -> b
 									.must(mn -> mn
