@@ -33,7 +33,7 @@ public class ElasticSearchService {
 	private final CategoryRepository categoryRepository;
 
 	public Page<SearchPostsResponse> searchPosts(Pageable pageable, String keyword, String categoryName,
-		String eventStatusName) {
+		String eventStatusName, String endType) {
 		try {
 			int page = Math.max(pageable.getPageNumber() - 1, 0);
 			int pageSize = pageable.getPageSize();
@@ -113,8 +113,8 @@ public class ElasticSearchService {
 							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
 							switch (eventStatusName) {
-								case "전체" -> {
-									// "전체"는 모든 데이터를 포함하므로 필터 적용 X
+								case "" -> {
+									// ""는 모든 데이터를 포함하므로 필터 적용 X
 								}
 
 								case "예정" -> boolQuery.filter(f -> f
@@ -164,6 +164,21 @@ public class ElasticSearchService {
 								}
 
 							}
+
+						}
+
+						// ✅ 종료 타입 필터 적용 (Filter Context)
+						if (endType != null) {
+							boolQuery.filter(f -> f
+								.bool(b -> b
+									.must(mn -> mn
+										.term(t -> t
+											.field("endType")
+											.value(endType)
+										)
+									)
+								)
+							);
 
 						}
 

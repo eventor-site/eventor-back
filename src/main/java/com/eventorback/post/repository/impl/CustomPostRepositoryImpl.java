@@ -313,7 +313,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 	@Override
 	public Page<GetPostsByCategoryNameResponse> getPostsByEventCategory(Pageable pageable, List<Long> categoryIds,
-		String eventStatusName) {
+		String eventStatusName, String endType) {
 		LocalDateTime now = LocalDateTime.now();
 
 		StringExpression eventStatus = new CaseBuilder()
@@ -323,12 +323,21 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.otherwise("미정");
 
 		BooleanBuilder eventStatusCondition = new BooleanBuilder();
-		if ("예정".equals(eventStatusName)) {
-			eventStatusCondition.and(event.startTime.gt(now));
-		} else if ("진행중".equals(eventStatusName)) {
-			eventStatusCondition.and(event.endTime.isNull().or(event.startTime.loe(now).and(event.endTime.goe(now))));
-		} else if ("마감".equals(eventStatusName)) {
-			eventStatusCondition.and(event.endTime.lt(now));
+		if (eventStatus != null) {
+			if ("예정".equals(eventStatusName)) {
+				eventStatusCondition.and(event.startTime.gt(now));
+			} else if ("진행중".equals(eventStatusName)) {
+				eventStatusCondition.and(
+					event.endTime.isNull().or(event.startTime.loe(now).and(event.endTime.goe(now))));
+			} else if ("마감".equals(eventStatusName)) {
+				eventStatusCondition.and(event.endTime.lt(now));
+			}
+		}
+
+		if (endType != null) {
+			if ("상시".equals(endType)) {
+				eventStatusCondition.and(event.endType.eq(endType));
+			}
 		}
 
 		List<GetPostsByCategoryNameResponse> result = queryFactory
