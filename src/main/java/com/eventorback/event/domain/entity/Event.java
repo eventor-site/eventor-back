@@ -61,4 +61,8 @@ public class Event {
 		this.link = request.link();
 		this.endType = request.endType();
 	}
+
+	public void finishEvent() {
+		this.endTime = LocalDateTime.now();
+	}
 }
