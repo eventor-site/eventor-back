@@ -18,5 +18,6 @@ public record GetPostsByCategoryNameResponse(
 	Integer remainingDay,
 	LocalDateTime startTime,
 	LocalDateTime endTime,
+	String endType,
 	String imageUrl) {
 }

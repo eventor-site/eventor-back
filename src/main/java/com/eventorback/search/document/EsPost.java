@@ -66,6 +66,9 @@ public class EsPost {
 	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS||epoch_millis")
 	private LocalDateTime endTime;
 
+	@Field(type = FieldType.Text, analyzer = "nori")
+	private String endType;
+
 	@Field(type = FieldType.Text)
 	private String imageUrl;
 
@@ -76,6 +79,7 @@ public class EsPost {
 		if (post.getEvent() != null) {
 			esPostBuilder.startTime(post.getEvent().getStartTime());
 			esPostBuilder.endTime(post.getEvent().getEndTime());
+			esPostBuilder.endType(post.getEvent().getEndType());
 		}
 
 		if (post.getHotDeal() != null) {
