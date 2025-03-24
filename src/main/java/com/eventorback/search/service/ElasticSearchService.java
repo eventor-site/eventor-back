@@ -77,15 +77,15 @@ public class ElasticSearchService {
 						if (keyword != null && !keyword.trim().isEmpty()) {
 							boolQuery.must(mustQuery -> mustQuery
 								.bool(bq -> bq
-									.should(s -> s.match(m -> m
+									.should(s -> s.matchPhrase(m -> m
 										.field("title")
 										.query(keyword)
-										.operator(Operator.Or)
+										.boost(3.0f)
 									))
-									.should(s -> s.match(m -> m
+									.should(s -> s.matchPhrase(m -> m
 										.field("content")
 										.query(keyword)
-										.operator(Operator.Or)
+										.boost(1.5f)
 									))
 									.should(s -> s.match(m -> m
 										.field("productName")
