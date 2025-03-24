@@ -346,6 +346,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				Expressions.numberTemplate(Integer.class, "DATEDIFF({0}, {1})", event.startTime, now),
 				event.startTime,
 				event.endTime,
+				event.endType,
 				JPAExpressions
 					.select(image.url)
 					.from(image)
@@ -393,6 +394,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				Expressions.nullExpression(Integer.class),
 				Expressions.nullExpression(LocalDateTime.class),
 				Expressions.nullExpression(LocalDateTime.class),
+				Expressions.nullExpression(String.class),
 				image.url
 			))
 			.from(post)

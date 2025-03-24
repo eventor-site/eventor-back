@@ -12,20 +12,25 @@ import lombok.Builder;
 public record GetPostResponse(
 	Long postId,
 	String categoryName,
+	String statusName,
 	String writer,
 	String writerGrade,
 	String title,
-	String link,
-	String shoppingMall,
-	String productName,
-	Long price,
 	String content,
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
+
+	String link,
+
 	LocalDateTime startTime,
 	LocalDateTime endTime,
-	String statusName,
+	String endType,
+
+	String shoppingMall,
+	String productName,
+	Long price,
+
 	List<GetImageResponse> images,
 	Integer attachmentImageCount,
 	Double totalSize,
@@ -57,33 +62,37 @@ public record GetPostResponse(
 
 		LocalDateTime startTime = null;
 		LocalDateTime endTime = null;
+		String endType = null;
+
 		if (post.getEvent() != null) {
 			link = post.getEvent().getLink();
 			startTime = post.getEvent().getStartTime();
 			endTime = post.getEvent().getEndTime();
+			endType = post.getEvent().getEndType();
 		}
 
 		return GetPostResponse.builder()
 			.postId(post.getPostId())
 			.categoryName(post.getCategory().getName())
+			.statusName(post.getStatus().getName())
 			.writer(post.getWriter())
 			.writerGrade(post.getWriterGrade())
 			.title(post.getTitle())
 			.content(post.getContent())
+			.recommendationCount(post.getRecommendationCount())
+			.viewCount(post.getViewCount())
+			.createdAt(post.getCreatedAt())
 
 			.link(link)
+
+			.startTime(startTime)
+			.endTime(endTime)
+			.endType(endType)
 
 			.shoppingMall(shoppingMall)
 			.productName(productName)
 			.price(price)
 
-			.startTime(startTime)
-			.endTime(endTime)
-
-			.recommendationCount(post.getRecommendationCount())
-			.viewCount(post.getViewCount())
-			.createdAt(post.getCreatedAt())
-			.statusName(post.getStatus().getName())
 			.images(images)
 			.attachmentImageCount(attachmentImageCount)
 			.totalSize(totalSize)

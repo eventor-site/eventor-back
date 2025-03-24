@@ -35,11 +35,15 @@ public class Event {
 	@Column(name = "link", length = 1000)
 	private String link;
 
+	@Column(name = "endType")
+	private String endType;
+
 	@Builder
-	public Event(LocalDateTime startTime, LocalDateTime endTime, String link) {
+	public Event(LocalDateTime startTime, LocalDateTime endTime, String link, String endType) {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.link = link;
+		this.endType = endType;
 	}
 
 	public static Event toEntity(CreatePostRequest request) {
@@ -47,6 +51,7 @@ public class Event {
 			.startTime(request.startTime())
 			.endTime(request.endTime())
 			.link(request.link())
+			.endType(request.endType())
 			.build();
 	}
 
@@ -54,5 +59,6 @@ public class Event {
 		this.startTime = request.startTime();
 		this.endTime = request.endTime();
 		this.link = request.link();
+		this.endType = request.endType();
 	}
 }

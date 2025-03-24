@@ -10,10 +10,12 @@ public record UpdatePostRequest(
 	String title,
 	String content,
 
+	String link,
+
 	LocalDateTime startTime,
 	LocalDateTime endTime,
+	String endType,
 
-	String link,
 	String shoppingMall,
 	String productName,
 	Long price
