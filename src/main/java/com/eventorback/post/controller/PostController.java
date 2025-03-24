@@ -106,7 +106,7 @@ public class PostController {
 	@GetMapping
 	public ResponseEntity<ApiResponse<Page<GetPostsByCategoryNameResponse>>> getPostsByCategoryName(
 		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
-		@RequestParam String categoryName,
+		@RequestParam(defaultValue = "") String categoryName,
 		@RequestParam(defaultValue = "") String eventStatusName,
 		@RequestParam(defaultValue = "") String endType) {
 		return ApiResponse.createSuccess(
@@ -138,6 +138,13 @@ public class PostController {
 		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
 		String message = isTemp ? "게시물이 임시 저장 되었습니다." : "게시물을 등록 하였습니다.";
 		return ApiResponse.createSuccess(postService.createPost(userId, request, isTemp), message);
+	}
+
+	@AuthorizeRole("admin")
+	@PostMapping("/{postId}/finish")
+	public ResponseEntity<ApiResponse<GetPostResponse>> finishEventPost(@PathVariable Long postId) {
+		postService.finishEventPost(postId);
+		return ApiResponse.createSuccess("이벤트를 종료하였습니다.");
 	}
 
 	@AuthorizeRole("member")
