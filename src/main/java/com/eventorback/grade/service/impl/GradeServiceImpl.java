@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class GradeServiceImpl implements GradeService {
 	private final GradeRepository gradeRepository;
 
-	@Cacheable(value = "grades", key = "'allGrades'")
+	@Cacheable(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
 	public List<Grade> findAllByOrderByMinAmountAsc() {
 		return gradeRepository.findAllByOrderByMinAmountAsc();
@@ -50,7 +50,7 @@ public class GradeServiceImpl implements GradeService {
 			.orElseThrow(GradeNotFoundException::new);
 	}
 
-	@CacheEvict(value = "grades", key = "'allGrades'")
+	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
 	public void createGrade(GradeDto request) {
 		if (gradeRepository.existsByName(request.name())) {
@@ -59,7 +59,7 @@ public class GradeServiceImpl implements GradeService {
 		gradeRepository.save(Grade.toEntity(request));
 	}
 
-	@CacheEvict(value = "grades", key = "'allGrades'")
+	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
 	public void updateGrade(Long gradeId, GradeDto request) {
 		Grade grade = gradeRepository.findById(gradeId)
@@ -67,7 +67,7 @@ public class GradeServiceImpl implements GradeService {
 		grade.updateGrade(request);
 	}
 
-	@CacheEvict(value = "grades", key = "'allGrades'")
+	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
 	public void deleteGrade(Long gradeId) {
 		gradeRepository.deleteById(gradeId);

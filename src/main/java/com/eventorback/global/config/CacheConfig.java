@@ -1,26 +1,25 @@
 package com.eventorback.global.config;
 
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
 	@Bean
-	public CacheManager cacheManager() {
-		CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-		cacheManager.setCaffeine(caffeineConfig());
-		return cacheManager;
+	public CacheManager cacheManager(
+		@Qualifier("cacheRedisTemplate") RedisTemplate<String, Object> cacheRedisTemplate) {
+		RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.builder(
+			Objects.requireNonNull(cacheRedisTemplate.getConnectionFactory()));
+		return builder.build();
 	}
 
-	@Bean
-	public com.github.benmanes.caffeine.cache.Caffeine<Object, Object> caffeineConfig() {
-		return com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
-			.expireAfterWrite(10, java.util.concurrent.TimeUnit.MINUTES)
-			.maximumSize(1000);
-	}
 }

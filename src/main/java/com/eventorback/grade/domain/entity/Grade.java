@@ -1,5 +1,7 @@
 package com.eventorback.grade.domain.entity;
 
+import java.io.Serializable;
+
 import com.eventorback.grade.domain.dto.GradeDto;
 
 import jakarta.persistence.Column;
@@ -16,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Table(name = "grades")
-public class Grade {
+public class Grade implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

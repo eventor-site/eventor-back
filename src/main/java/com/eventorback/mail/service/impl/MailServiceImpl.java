@@ -111,7 +111,8 @@ public class MailServiceImpl implements MailService {
 	@Override
 	public boolean certifyEmail(CertifyEmailRequest request) {
 		String key = getSubjectKey(request.type()) + request.email();
-		String savedCode = (String)redisTemplate.opsForValue().getAndDelete(key);
+		String savedCode = (String)redisTemplate.opsForValue().get(key);
+		redisTemplate.delete(key);
 
 		return savedCode != null && savedCode.equals(request.certifyCode().trim());
 	}
