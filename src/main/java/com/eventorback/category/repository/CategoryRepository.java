@@ -30,7 +30,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
 		    )
 		    SELECT category_id FROM categories_hierarchy
 		""", nativeQuery = true)
-	List<Long> getCategoryIdsByName(String categoryName);
+	List<Long> getCategoryIds(String categoryName);
 
 	@Query(value = """
 		    WITH RECURSIVE categories_hierarchy AS (

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.category.exception.CategoryNotFoundException;
 import com.eventorback.category.repository.CategoryRepository;
+import com.eventorback.category.service.CategoryService;
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.event.domain.entity.Event;
@@ -71,6 +72,7 @@ public class PostServiceImpl implements PostService {
 	private final FavoriteRepository favoriteRepository;
 	private final CommentRepository commentRepository;
 	private final UserRoleRepository userRoleRepository;
+	private final CategoryService categoryService;
 
 	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
@@ -114,8 +116,8 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
-		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
+		List<Long> categoryIds = categoryService.getCategoryIds(categoryName);
+		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");
 
 		if (eventCategoryNames.contains(categoryName)) {
 			return postRepository.getHotEventPostsByCategoryName(categoryIds);
@@ -131,8 +133,8 @@ public class PostServiceImpl implements PostService {
 		int pageSize = pageable.getPageSize();
 		Sort sort = pageable.getSort();
 
-		List<Long> categoryIds = categoryRepository.getCategoryIdsByName(categoryName);
-		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
+		List<Long> categoryIds = categoryService.getCategoryIds(categoryName);
+		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");
 
 		if (eventCategoryNames.contains(categoryName)) {
 			return postRepository.getPostsByEventCategory(PageRequest.of(page, pageSize, sort), categoryIds,
@@ -201,7 +203,7 @@ public class PostServiceImpl implements PostService {
 		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
 			statusRepository.findOrCreateStatus("게시글", "작성중");
 
-		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
+		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");
 
 		Post post;
 
@@ -242,7 +244,7 @@ public class PostServiceImpl implements PostService {
 			post.updatePostStatus(status);
 		}
 
-		List<String> eventCategoryNames = categoryRepository.getCategoryNames("이벤트");
+		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");
 
 		if (eventCategoryNames.contains(request.categoryName())) {
 			Event eventPost = post.getEvent();
