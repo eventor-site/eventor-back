@@ -2,6 +2,8 @@ package com.eventorback.category.service.impl;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +34,15 @@ public class CategoryServiceImpl implements CategoryService {
 		return categoryRepository.searchCategories(keyword);
 	}
 
+	@Cacheable(cacheNames = "categoryIds", key = "#categoryName", cacheManager = "cacheManager")
 	@Override
-	public List<String> getCategories(String categoryName) {
+	public List<Long> getCategoryIds(String categoryName) {
+		return categoryRepository.getCategoryIds(categoryName);
+	}
+
+	@Cacheable(cacheNames = "categoryNames", key = "#categoryName", cacheManager = "cacheManager")
+	@Override
+	public List<String> getCategoryNames(String categoryName) {
 		return categoryRepository.getCategoryNames(categoryName);
 	}
 
@@ -51,6 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 		return GetCategoryResponse.fromEntity(category);
 	}
 
+	@CacheEvict(cacheNames = {"categoryIds", "categoryNames"}, allEntries = true, cacheManager = "cacheManager")
 	@Override
 	public void createCategory(CreateCategoryRequest request) {
 		if (categoryRepository.existsByName(request.name())) {
@@ -80,6 +90,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	}
 
+	@CacheEvict(cacheNames = {"categoryIds", "categoryNames"}, allEntries = true, cacheManager = "cacheManager")
 	@Override
 	public void updateCategory(Long categoryId, UpdateCategoryRequest request) {
 		if (categoryRepository.existsByCategoryIdNotAndName(categoryId, request.name())) {
@@ -112,6 +123,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	}
 
+	@CacheEvict(cacheNames = {"categoryIds", "categoryNames"}, allEntries = true, cacheManager = "cacheManager")
 	@Override
 	public void deleteCategory(Long categoryId) {
 		Category category = categoryRepository.findById(categoryId)

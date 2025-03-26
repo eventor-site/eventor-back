@@ -40,8 +40,8 @@ public class CategoryController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<List<String>>> getCategories(@RequestParam String categoryName) {
-		return ApiResponse.createSuccess(categoryService.getCategories(categoryName));
+	public ResponseEntity<ApiResponse<List<String>>> getCategoryNames(@RequestParam String categoryName) {
+		return ApiResponse.createSuccess(categoryService.getCategoryNames(categoryName));
 	}
 
 	@AuthorizeRole("admin")
