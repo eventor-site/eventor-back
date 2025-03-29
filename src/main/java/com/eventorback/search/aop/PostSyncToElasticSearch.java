@@ -144,7 +144,7 @@ public class PostSyncToElasticSearch {
 
 			if (esPost != null) {
 				Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
-				esPost.updateImageUrl(image);
+				esPost.updateImage(image);
 				elasticsearchRepository.save(esPost);
 			}
 
@@ -166,7 +166,7 @@ public class PostSyncToElasticSearch {
 
 				// 이벤트 게시물인 경우
 				Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
-				esPost.updateImageUrl(image);
+				esPost.updateImage(image);
 				elasticsearchRepository.save(esPost);
 			}
 		}

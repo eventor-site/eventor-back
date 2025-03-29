@@ -50,16 +50,11 @@ public class SearchController {
 		startTime = Instant.now();
 		for (Post post : posts) {
 			Long postId = post.getPostId();
-			Image image;
 
 			log.info("작업 postId: {}", postId);
 			// 이벤트 게시물인 경우
-			if (post.getEvent() != null) {
-				image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
-			} else {
-				image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
-			}
 
+			Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
 			EsPost esPost = EsPost.fromEntity(post, image);
 			elasticsearchRepository.save(esPost);
 		}

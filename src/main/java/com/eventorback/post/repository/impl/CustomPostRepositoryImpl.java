@@ -150,6 +150,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				JPAExpressions
 					.select(image.url)
 					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
@@ -172,6 +176,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				JPAExpressions
 					.select(image.url)
 					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
@@ -193,6 +201,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				post.title,
 				JPAExpressions
 					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
 					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
@@ -223,6 +235,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				JPAExpressions
 					.select(image.url)
 					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
@@ -249,6 +265,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				JPAExpressions
 					.select(image.url)
 					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(postView)
@@ -274,6 +294,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				JPAExpressions
 					.select(image.url)
 					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
@@ -292,24 +316,49 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				GetMainPostResponse.class,
 				post.postId,
 				post.title,
-				image.url
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.leftJoin(image)
-			.on(image.post.postId.eq(post.postId))
-			.on(image.imageId.eq(
-				JPAExpressions
-					.select(image.imageId.min())  // 가장 작은 imageId 선택
-					.from(image)
-					.where(image.post.postId.eq(post.postId))
-			))
 			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물만 반환
 			.fetch();
 	}
+
+	// @Override
+	// public List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds) {
+	// 	return queryFactory
+	// 		.select(Projections.constructor(
+	// 			GetMainPostResponse.class,
+	// 			post.postId,
+	// 			post.title,
+	// 			image.url
+	// 		))
+	// 		.from(post)
+	// 		.join(post.category, category)
+	// 		.join(post.status, status)
+	// 		.leftJoin(image)
+	// 		.on(image.post.postId.eq(post.postId))
+	// 		.on(image.imageId.eq(
+	// 			JPAExpressions
+	// 				.select(image.imageId.min())  // 가장 작은 imageId 선택
+	// 				.from(image)
+	// 				.where(image.post.postId.eq(post.postId))
+	// 		))
+	// 		.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+	// 		.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
+	// 		.limit(10) // 상위 10개 게시물만 반환
+	// 		.fetch();
+	// }
 
 	@Override
 	public Page<GetPostsByCategoryNameResponse> getPostsByEventCategory(Pageable pageable, List<Long> categoryIds,
@@ -359,6 +408,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				JPAExpressions
 					.select(image.url)
 					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
@@ -407,6 +460,10 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				JPAExpressions
 					.select(image.url)
 					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
 					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
@@ -428,54 +485,6 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 		return new PageImpl<>(result, pageable, total);
 	}
-
-	// @Override
-	// public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, List<Long> categoryIds) {
-	// 	List<GetPostsByCategoryNameResponse> result = queryFactory
-	// 		.select(Projections.constructor(
-	// 			GetPostsByCategoryNameResponse.class,
-	// 			post.postId,
-	// 			post.writer,
-	// 			post.writerGrade,
-	// 			post.title,
-	// 			post.recommendationCount,
-	// 			post.viewCount,
-	// 			post.createdAt,
-	// 			post.category.name,
-	// 			Expressions.nullExpression(String.class),
-	// 			Expressions.nullExpression(Integer.class),
-	// 			Expressions.nullExpression(LocalDateTime.class),
-	// 			Expressions.nullExpression(LocalDateTime.class),
-	// 			Expressions.nullExpression(String.class),
-	// 			image.url
-	// 		))
-	// 		.from(post)
-	// 		.join(post.category, category)
-	// 		.join(post.status, status)
-	// 		.join(post.user, user)
-	// 		.join(user.grade, grade)
-	// 		.leftJoin(image)
-	// 		.on(image.post.postId.eq(post.postId))
-	// 		.on(image.imageId.eq(
-	// 			JPAExpressions
-	// 				.select(image.imageId.min())  // 가장 작은 imageId 선택
-	// 				.from(image)
-	// 				.where(image.post.postId.eq(post.postId))
-	// 		))
-	// 		.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
-	// 		.orderBy(SortUtil.getSort(pageable, post))
-	// 		.offset(pageable.getOffset()) // 페이지 시작점
-	// 		.limit(pageable.getPageSize()) // 페이지 크기
-	// 		.fetch();
-	//
-	// 	Long total = Optional.ofNullable(queryFactory
-	// 		.select(post.count())
-	// 		.from(post)
-	// 		.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
-	// 		.fetchOne()).orElse(0L);
-	//
-	// 	return new PageImpl<>(result, pageable, total);
-	// }
 
 	@Override
 	public Optional<Post> getPost(Long postId) {

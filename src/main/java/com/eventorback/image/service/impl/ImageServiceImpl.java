@@ -43,11 +43,8 @@ public class ImageServiceImpl implements ImageService {
 	private final PostRepository postRepository;
 	private final CategoryService categoryService;
 	private final Long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
-	// 이미지 확장자 목록
 	private static final List<String> IMAGE_EXTENSIONS = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".jfif",
 		".webp");
-
-	// 비디오 확장자 목록
 	private static final List<String> VIDEO_EXTENSIONS = Arrays.asList(".mp4", ".mov", ".avi", ".wmv", ".mkv", ".webm");
 
 	@Value("${upload.domainUrl}")
@@ -139,16 +136,13 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	public void checkFileExtension(String fileContentType) {
-		String[] imageExtensions = {"jpg", "jpeg", "png", "gif", "webp", "jfif"};
-		String[] videoExtensions = {"mp4", "mov", "avi", "wmv", "mkv", "webm"};
-
-		for (String extension : imageExtensions) {
+		for (String extension : IMAGE_EXTENSIONS) {
 			if (fileContentType.toLowerCase().endsWith(extension)) {
 				return;
 			}
 		}
 
-		for (String extension : videoExtensions) {
+		for (String extension : VIDEO_EXTENSIONS) {
 			if (fileContentType.toLowerCase().endsWith(extension)) {
 				return;
 			}

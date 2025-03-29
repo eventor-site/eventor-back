@@ -8,6 +8,7 @@ public record GetImageResponse(
 	String originalName,
 	String url,
 	String extension,
+	String type,
 	Long size,
 	Boolean isThumbnail,
 	Boolean isPasted
