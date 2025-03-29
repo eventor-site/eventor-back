@@ -24,6 +24,7 @@ public class CustomImageRepositoryImpl implements CustomImageRepository {
 				image.imageId,
 				image.originalName,
 				image.url,
+				image.extension,
 				image.size,
 				image.isThumbnail,
 				image.isPasted))

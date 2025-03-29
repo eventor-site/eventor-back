@@ -89,7 +89,7 @@ public class SearchController {
 
 		startTime = Instant.now();
 		for (Image image : images) {
-			image.updateExtension(imageService.getFileExtension(image.getNewName()));
+			image.updateType(imageService.determineFileType(image.getExtension()));
 
 			log.info("작업 imageId: {}", image.getImageId());
 

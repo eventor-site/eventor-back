@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -42,6 +43,12 @@ public class ImageServiceImpl implements ImageService {
 	private final PostRepository postRepository;
 	private final CategoryService categoryService;
 	private final Long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
+	// 이미지 확장자 목록
+	private static final List<String> IMAGE_EXTENSIONS = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".jfif",
+		".webp");
+
+	// 비디오 확장자 목록
+	private static final List<String> VIDEO_EXTENSIONS = Arrays.asList(".mp4", ".mov", ".avi", ".wmv", ".mkv", ".webm");
 
 	@Value("${upload.domainUrl}")
 	private String domainUrl;
@@ -154,7 +161,9 @@ public class ImageServiceImpl implements ImageService {
 		Long size,
 		boolean isThumbnail, boolean isPasted) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
-		imageRepository.save(new Image(post, originalName, newName, url, fileExtension, size, isThumbnail, isPasted));
+		imageRepository.save(
+			new Image(post, originalName, newName, url, fileExtension, determineFileType(fileExtension), size,
+				isThumbnail, isPasted));
 	}
 
 	@Override
@@ -211,6 +220,16 @@ public class ImageServiceImpl implements ImageService {
 			// 4. DB 에서 이미지 정보 삭제
 			imageRepository.deleteById(image.getImageId());
 		});
+	}
+
+	@Override
+	public String determineFileType(String extension) {
+		if (IMAGE_EXTENSIONS.contains(extension.toLowerCase())) {
+			return "image";
+		} else if (VIDEO_EXTENSIONS.contains(extension.toLowerCase())) {
+			return "video";
+		}
+		return null; // 알 수 없는 타입
 	}
 
 }

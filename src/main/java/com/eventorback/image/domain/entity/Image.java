@@ -47,6 +47,9 @@ public class Image {
 	@Column(name = "extension")
 	private String extension;
 
+	@Column(name = "type")
+	private String type;
+
 	@Column(name = "size")
 	private Long size;
 
@@ -60,13 +63,14 @@ public class Image {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public Image(Post post, String originalName, String newName, String url, String extension, Long size,
-		Boolean isThumbnail, Boolean isPasted) {
+	public Image(Post post, String originalName, String newName, String url, String extension, String type,
+		Long size, Boolean isThumbnail, Boolean isPasted) {
 		this.post = post;
 		this.originalName = originalName;
 		this.newName = newName;
 		this.url = url;
 		this.extension = extension;
+		this.type = type;
 		this.size = size;
 		this.isThumbnail = isThumbnail;
 		this.isPasted = isPasted;
@@ -79,6 +83,10 @@ public class Image {
 
 	public void updateExtension(String extension) {
 		this.extension = extension;
+	}
+
+	public void updateType(String type) {
+		this.type = type;
 	}
 
 }
