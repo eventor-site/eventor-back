@@ -12,5 +12,6 @@ public record GetRecommendPostResponse(
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
-	String imageUrl) {
+	String imageUrl,
+	String imageType) {
 }

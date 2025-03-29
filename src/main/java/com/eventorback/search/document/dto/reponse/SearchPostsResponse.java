@@ -32,7 +32,8 @@ public record SearchPostsResponse(
 	LocalDateTime endTime,
 	String endType,
 
-	String imageUrl
+	String imageUrl,
+	String imageType
 ) {
 	public static SearchPostsResponse addInfo(SearchPostsResponse response) {
 		LocalDateTime now = LocalDateTime.now();
@@ -76,6 +77,7 @@ public record SearchPostsResponse(
 			.endTime(response.endTime())
 			.endType(response.endType())
 			.imageUrl(response.imageUrl())
+			.imageType(response.imageType())
 			.build();
 	}
 }

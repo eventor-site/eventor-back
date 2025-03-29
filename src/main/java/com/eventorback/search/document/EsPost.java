@@ -72,8 +72,12 @@ public class EsPost {
 	@Field(type = FieldType.Text)
 	private String imageUrl;
 
+	@Field(type = FieldType.Text)
+	private String imageType;
+
 	public static EsPost fromEntity(Post post, Image image) {
 		String imageUrl = image != null ? image.getUrl() : null;
+		String imageType = image != null ? image.getType() : null;
 
 		EsPostBuilder esPostBuilder = EsPost.builder();
 		if (post.getEvent() != null) {
@@ -99,6 +103,7 @@ public class EsPost {
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
 			.imageUrl(imageUrl)
+			.imageType(imageType)
 			.build();
 	}
 
@@ -118,8 +123,9 @@ public class EsPost {
 		this.recommendationCount--;
 	}
 
-	public void updateImageUrl(Image image) {
+	public void updateImage(Image image) {
 		this.imageUrl = image != null ? image.getUrl() : null;
+		this.imageType = image != null ? image.getType() : null;
 	}
 
 }
