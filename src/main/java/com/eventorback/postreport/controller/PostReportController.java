@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,8 +40,8 @@ public class PostReportController {
 		return ApiResponse.createSuccess(postReportService.createPostReport(userId, postId, reportTypeName));
 	}
 
-	@GetMapping("/posts/{postId}/postReports/{postReportId}/confirm")
-	ResponseEntity<ApiResponse<Void>> confirmPostReport(@PathVariable Long postId, @PathVariable Long postReportId) {
+	@PutMapping("/postReports/{postReportId}/confirm")
+	ResponseEntity<ApiResponse<Void>> confirmPostReport(@PathVariable Long postReportId) {
 		postReportService.confirmPostReport(postReportId);
 		return ApiResponse.createSuccess("신고 게시물을 확인 하였습니다.");
 	}

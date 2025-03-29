@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.bookmark.domain.dto.response.GetBookmarkResponse;
 import com.eventorback.bookmark.service.BookmarkService;
@@ -32,7 +31,6 @@ public class BookmarkController {
 		return ApiResponse.createSuccess(bookmarkService.getBookmarksByUserId(userId));
 	}
 
-	@AuthorizeRole("member")
 	@GetMapping("/users/me/bookmarks/paging")
 	public ResponseEntity<ApiResponse<Page<GetBookmarkResponse>>> getBookmarksByUserId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {

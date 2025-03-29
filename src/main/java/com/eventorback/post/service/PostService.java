@@ -48,9 +48,9 @@ public interface PostService {
 
 	CreatePostResponse createPost(CurrentUserDto currentUserDto, CreatePostRequest request, boolean isTemp);
 
-	void finishEventPost(Long postId);
-
 	Post updatePost(CurrentUserDto currentUser, Long postId, UpdatePostRequest request, boolean isTemp);
+
+	void finishEventPost(Long postId);
 
 	String recommendPost(Long userId, Long postId);
 
