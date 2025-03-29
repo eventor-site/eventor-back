@@ -15,8 +15,8 @@ import com.eventorback.image.exception.FileUploadException;
  */
 public interface ImageService {
 
-	List<GetImageResponse> upload(MultipartFile file, String folderName, Long postId, boolean isThumbnail,
-		boolean isPasted) throws FileUploadException;
+	List<GetImageResponse> upload(MultipartFile file, String folderName, Long postId, String categoryName,
+		boolean isThumbnail, boolean isPasted) throws FileUploadException;
 
 	void saveFile(Path folderPath, String fileName, MultipartFile file);
 
@@ -26,8 +26,8 @@ public interface ImageService {
 
 	void checkFileExtension(String fileContentType);
 
-	void createImage(Long postId, String originalName, String newName, String url, Long size, boolean isThumbnail,
-		boolean isPasted);
+	void createImage(Long postId, String originalName, String newName, String url, String fileExtension, Long size,
+		boolean isThumbnail, boolean isPasted);
 
 	List<GetImageResponse> deleteImage(DeleteImageRequest request);
 

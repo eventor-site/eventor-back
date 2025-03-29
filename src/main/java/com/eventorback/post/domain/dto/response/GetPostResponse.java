@@ -39,7 +39,7 @@ public record GetPostResponse(
 
 	public static GetPostResponse fromEntity(Post post, List<GetImageResponse> images, Boolean isAuthorized,
 		Boolean isFavorite) {
-		Integer attachmentImageCount = images.stream().filter(image -> !image.isThumbnail()).toList().size();
+		Integer attachmentImageCount = images != null ? images.size() : 0;
 		double totalSize = 0;
 
 		if (images != null) {

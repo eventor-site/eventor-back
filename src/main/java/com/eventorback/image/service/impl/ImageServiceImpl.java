@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eventorback.category.service.CategoryService;
 import com.eventorback.image.domain.dto.request.DeleteImageRequest;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.domain.entity.Image;
@@ -39,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 	private final PostRepository postRepository;
+	private final CategoryService categoryService;
 	private final Long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
 
 	@Value("${upload.domainUrl}")
@@ -49,20 +51,20 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	// @Async("imageUploadExecutor")
-	public List<GetImageResponse> upload(MultipartFile file, String folderName, Long postId, boolean isThumbnail,
-		boolean isPasted) {
+	public List<GetImageResponse> upload(MultipartFile file, String folderName, Long postId, String categoryName,
+		boolean isThumbnail, boolean isPasted) {
 
-		// 1. 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
+		// 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
 		String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
 		Path folderPath = Paths.get(uploadPath, folderName, today);
 		createDirectoryIfNotExists(folderPath);
 
-		// 2. 파일 이름 생성 (UUID 로 중복 방지)
+		// 파일 이름 생성 (UUID 로 중복 방지)
 		String originalFilename = file.getOriginalFilename();
 		String fileExtension = getFileExtension(originalFilename);
 		String newFileName = postId.toString() + "_" + UUID.randomUUID() + fileExtension;
 
-		// 3. 파일 확장자 검사
+		// 파일 확장자 검사
 		checkFileExtension(fileExtension);
 
 		// 파일 용량 검사
@@ -82,8 +84,13 @@ public class ImageServiceImpl implements ImageService {
 			imageRepository.deleteByPostPostIdAndIsThumbnail(postId, true);
 		}
 
+		if (!categoryService.getCategoryNames("이벤트").contains(categoryName)
+			&& !imageRepository.existsByPostPostIdAndIsThumbnail(postId, true)) {
+			isThumbnail = true;
+		}
+
 		// 5. DB에 이미지 정보 저장
-		createImage(postId, originalFilename, newFileName, url, file.getSize(), isThumbnail, isPasted);
+		createImage(postId, originalFilename, newFileName, url, fileExtension, file.getSize(), isThumbnail, isPasted);
 
 		return imageRepository.getAllByPostId(postId);
 	}
@@ -126,8 +133,15 @@ public class ImageServiceImpl implements ImageService {
 	@Override
 	public void checkFileExtension(String fileContentType) {
 		String[] imageExtensions = {"jpg", "jpeg", "png", "gif", "webp", "jfif"};
+		String[] videoExtensions = {"mp4", "mov", "avi", "wmv", "mkv", "webm"};
 
 		for (String extension : imageExtensions) {
+			if (fileContentType.toLowerCase().endsWith(extension)) {
+				return;
+			}
+		}
+
+		for (String extension : videoExtensions) {
 			if (fileContentType.toLowerCase().endsWith(extension)) {
 				return;
 			}
@@ -136,10 +150,11 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public void createImage(Long postId, String originalName, String newName, String url, Long size,
+	public void createImage(Long postId, String originalName, String newName, String url, String fileExtension,
+		Long size,
 		boolean isThumbnail, boolean isPasted) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
-		imageRepository.save(new Image(post, originalName, newName, url, size, isThumbnail, isPasted));
+		imageRepository.save(new Image(post, originalName, newName, url, fileExtension, size, isThumbnail, isPasted));
 	}
 
 	@Override
@@ -162,9 +177,19 @@ public class ImageServiceImpl implements ImageService {
 
 			// 4. DB 에서 이미지 정보 삭제
 			imageRepository.deleteById(imageId);
+
 		});
 
-		return imageRepository.getAllByPostId(request.postId());
+		List<GetImageResponse> images = imageRepository.getAllByPostId(request.postId());
+
+		if (!categoryService.getCategoryNames("이벤트").contains(request.categoryName())
+			&& !imageRepository.existsByPostPostIdAndIsThumbnail(request.postId(), true) && !images.isEmpty()) {
+			Image image = imageRepository.findById(images.getFirst().imageId())
+				.orElseThrow(ImageNotFoundException::new);
+			image.setThumbnail();
+		}
+
+		return images;
 	}
 
 	@Override

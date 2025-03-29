@@ -404,21 +404,16 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				Expressions.nullExpression(LocalDateTime.class),
 				Expressions.nullExpression(LocalDateTime.class),
 				Expressions.nullExpression(String.class),
-				image.url
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
 			))
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
 			.join(post.user, user)
 			.join(user.grade, grade)
-			.leftJoin(image)
-			.on(image.post.postId.eq(post.postId))
-			.on(image.imageId.eq(
-				JPAExpressions
-					.select(image.imageId.min())  // 가장 작은 imageId 선택
-					.from(image)
-					.where(image.post.postId.eq(post.postId))
-			))
 			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
 			.orderBy(SortUtil.getSort(pageable, post))
 			.offset(pageable.getOffset()) // 페이지 시작점
@@ -433,6 +428,54 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 
 		return new PageImpl<>(result, pageable, total);
 	}
+
+	// @Override
+	// public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, List<Long> categoryIds) {
+	// 	List<GetPostsByCategoryNameResponse> result = queryFactory
+	// 		.select(Projections.constructor(
+	// 			GetPostsByCategoryNameResponse.class,
+	// 			post.postId,
+	// 			post.writer,
+	// 			post.writerGrade,
+	// 			post.title,
+	// 			post.recommendationCount,
+	// 			post.viewCount,
+	// 			post.createdAt,
+	// 			post.category.name,
+	// 			Expressions.nullExpression(String.class),
+	// 			Expressions.nullExpression(Integer.class),
+	// 			Expressions.nullExpression(LocalDateTime.class),
+	// 			Expressions.nullExpression(LocalDateTime.class),
+	// 			Expressions.nullExpression(String.class),
+	// 			image.url
+	// 		))
+	// 		.from(post)
+	// 		.join(post.category, category)
+	// 		.join(post.status, status)
+	// 		.join(post.user, user)
+	// 		.join(user.grade, grade)
+	// 		.leftJoin(image)
+	// 		.on(image.post.postId.eq(post.postId))
+	// 		.on(image.imageId.eq(
+	// 			JPAExpressions
+	// 				.select(image.imageId.min())  // 가장 작은 imageId 선택
+	// 				.from(image)
+	// 				.where(image.post.postId.eq(post.postId))
+	// 		))
+	// 		.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+	// 		.orderBy(SortUtil.getSort(pageable, post))
+	// 		.offset(pageable.getOffset()) // 페이지 시작점
+	// 		.limit(pageable.getPageSize()) // 페이지 크기
+	// 		.fetch();
+	//
+	// 	Long total = Optional.ofNullable(queryFactory
+	// 		.select(post.count())
+	// 		.from(post)
+	// 		.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+	// 		.fetchOne()).orElse(0L);
+	//
+	// 	return new PageImpl<>(result, pageable, total);
+	// }
 
 	@Override
 	public Optional<Post> getPost(Long postId) {

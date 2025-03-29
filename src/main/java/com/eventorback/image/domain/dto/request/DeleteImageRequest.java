@@ -7,6 +7,7 @@ import lombok.Builder;
 @Builder
 public record DeleteImageRequest(
 	Long postId,
+	String categoryName,
 	List<Long> imageIds
 ) {
 }
