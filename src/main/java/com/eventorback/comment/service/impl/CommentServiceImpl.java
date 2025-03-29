@@ -77,21 +77,10 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public void createComment(CreateCommentRequest request, Long postId, Long userId) {
+	public void createComment(CurrentUserDto currentUser, CreateCommentRequest request, Long postId) {
 		Post post = postRepository.getPost(postId).orElseThrow(PostNotFoundException::new);
-
-		User user = null;
-		if (userId != null) {
-			user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-			if (user.getStatus().getName().equals("정지")) {
-				throw new UserForbiddenException();
-			}
-		}
-
-		boolean isAdmin = userRoleRepository.findAllByUserUserId(user.getUserId())
-			.stream()
-			.anyMatch(userRole -> userRole.getRole().getName().equals("admin"));
-
+		User user = userRepository.findById(currentUser.userId()).orElseThrow(UserNotFoundException::new);
+		boolean isAdmin = currentUser.roles().contains("admin");
 		Status status = statusRepository.findOrCreateStatus("댓글", "작성됨");
 
 		Comment parentComment = null;
@@ -131,8 +120,7 @@ public class CommentServiceImpl implements CommentService {
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(CommentNotFoundException::new);
 
-		if (currentUser == null || (!comment.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles()
-			.contains("admin"))) {
+		if (!comment.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles().contains("admin")) {
 			throw new UserForbiddenException();
 		}
 

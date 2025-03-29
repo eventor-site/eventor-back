@@ -190,16 +190,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public CreatePostResponse createPost(Long userId, CreatePostRequest request, boolean isTemp) {
+	public CreatePostResponse createPost(CurrentUserDto currentUser, CreatePostRequest request, boolean isTemp) {
 		Category category = categoryRepository.findByName(request.categoryName())
 			.orElseThrow(CategoryNotFoundException::new);
-
-		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-
-		boolean isAdmin = userRoleRepository.findAllByUserUserId(user.getUserId())
-			.stream()
-			.anyMatch(userRole -> userRole.getRole().getName().equals("admin"));
-
+		User user = userRepository.findById(currentUser.userId()).orElseThrow(UserNotFoundException::new);
+		boolean isAdmin = currentUser.roles().contains("admin");
 		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
 			statusRepository.findOrCreateStatus("게시글", "작성중");
 
@@ -234,8 +229,7 @@ public class PostServiceImpl implements PostService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(PostNotFoundException::new);
 
-		if (currentUser == null || (!post.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles()
-			.contains("admin"))) {
+		if (!post.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles().contains("admin")) {
 			throw new UserForbiddenException();
 		}
 

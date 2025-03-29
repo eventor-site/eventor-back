@@ -21,7 +21,7 @@ public interface CommentService {
 
 	GetCommentPageResponse getComment(Long postId, Long commentId);
 
-	void createComment(CreateCommentRequest request, Long postId, Long userId);
+	void createComment(CurrentUserDto currentUser, CreateCommentRequest request, Long postId);
 
 	void updateComment(CurrentUserDto currentUser, Long commentId, UpdateCommentRequest request);
 

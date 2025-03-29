@@ -46,7 +46,7 @@ public interface PostService {
 
 	GetTempPostResponse getTempPost(Long userId);
 
-	CreatePostResponse createPost(Long userId, CreatePostRequest request, boolean isTemp);
+	CreatePostResponse createPost(CurrentUserDto currentUserDto, CreatePostRequest request, boolean isTemp);
 
 	void finishEventPost(Long postId);
 

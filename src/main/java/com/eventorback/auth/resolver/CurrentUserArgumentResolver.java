@@ -38,7 +38,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		Long userId = userIdHeader != null ? Long.parseLong(userIdHeader) : null;
 
 		// roles 파싱
-		List<String> roles = null;
+		List<String> roles;
 		if (userRolesHeader != null) {
 			roles = Arrays.asList(userRolesHeader.replaceAll("[\\[\\]\\s]", "").split(","));
 
