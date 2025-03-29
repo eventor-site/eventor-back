@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,9 +41,8 @@ public class CommentReportController {
 		return ApiResponse.createSuccess(commentReportService.createCommentReport(userId, commentId, reportTypeName));
 	}
 
-	@GetMapping("/posts/{postId}/comments/{commentId}/commentReports/{commentReportId}/confirm")
-	ResponseEntity<ApiResponse<Void>> confirmCommentReport(@PathVariable Long postId, @PathVariable Long commentId,
-		@PathVariable Long commentReportId) {
+	@PutMapping("/commentReports/{commentReportId}/confirm")
+	ResponseEntity<ApiResponse<Void>> confirmCommentReport(@PathVariable Long commentReportId) {
 		commentReportService.confirmCommentReport(commentReportId);
 		return ApiResponse.createSuccess("신고 댓글을 확인 하였습니다.");
 	}

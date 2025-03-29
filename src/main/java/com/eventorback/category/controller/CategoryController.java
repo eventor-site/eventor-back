@@ -62,6 +62,7 @@ public class CategoryController {
 		return ApiResponse.createSuccess("카테고리가 추가되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/{categoryId}")
 	public ResponseEntity<ApiResponse<Void>> updateCategory(@PathVariable Long categoryId,
 		@Valid @RequestBody UpdateCategoryRequest request) {
@@ -69,6 +70,7 @@ public class CategoryController {
 		return ApiResponse.createSuccess("카테고리가 수정되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{categoryId}")
 	public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long categoryId) {
 		categoryService.deleteCategory(categoryId);

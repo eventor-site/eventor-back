@@ -140,13 +140,6 @@ public class PostController {
 		return ApiResponse.createSuccess(postService.createPost(currentUser, request, isTemp), message);
 	}
 
-	@AuthorizeRole("admin")
-	@PostMapping("/{postId}/finish")
-	public ResponseEntity<ApiResponse<GetPostResponse>> finishEventPost(@PathVariable Long postId) {
-		postService.finishEventPost(postId);
-		return ApiResponse.createSuccess("이벤트를 종료하였습니다.");
-	}
-
 	@AuthorizeRole("member")
 	@PutMapping("/{postId}")
 	public ResponseEntity<ApiResponse<Void>> updatePost(@CurrentUser CurrentUserDto currentUser,
@@ -154,6 +147,13 @@ public class PostController {
 		postService.updatePost(currentUser, postId, request, isTemp);
 		String message = isTemp ? "게시물이 임시 저장 되었습니다." : "게시물이 저장 되었습니다.";
 		return ApiResponse.createSuccess(message);
+	}
+
+	@AuthorizeRole("admin")
+	@PutMapping("/{postId}/finish")
+	public ResponseEntity<ApiResponse<GetPostResponse>> finishEventPost(@PathVariable Long postId) {
+		postService.finishEventPost(postId);
+		return ApiResponse.createSuccess("이벤트를 종료하였습니다.");
 	}
 
 	@PutMapping("/{postId}/recommend")
