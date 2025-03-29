@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.eventorback.image.domain.dto.request.DeleteImageRequest;
 import com.eventorback.image.domain.entity.Image;
-import com.eventorback.image.exception.ImageNotFoundException;
 import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.entity.Post;
@@ -143,18 +142,10 @@ public class PostSyncToElasticSearch {
 		if (args.length > 0 && args[2] instanceof Long postId) {
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
 
-			Image image = null;
 			if (esPost != null) {
-				if (esPost.getStartTime() != null) {
-					image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true)
-						.orElse(null);
-				} else if (esPost.getProductName() != null) {
-					image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId)
-						.orElseThrow(ImageNotFoundException::new);
-				}
+				Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
 				esPost.updateImageUrl(image);
 				elasticsearchRepository.save(esPost);
-
 			}
 
 		}
@@ -174,13 +165,7 @@ public class PostSyncToElasticSearch {
 			if (esPost != null) {
 
 				// 이벤트 게시물인 경우
-				Image image;
-				if (esPost.getStartTime() != null) {
-					image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
-				} else {
-					image = imageRepository.findTopByPostPostIdOrderByImageIdAsc(postId).orElse(null);
-				}
-
+				Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
 				esPost.updateImageUrl(image);
 				elasticsearchRepository.save(esPost);
 			}
