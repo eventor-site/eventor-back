@@ -167,11 +167,7 @@ public class Post {
 	}
 
 	public static String createAdminWriter(boolean isAdmin, String writer) {
-		if (isAdmin) {
-			return "[EM] " + writer;
-		} else {
-			return writer;
-		}
+		return isAdmin ? "[EM] " + writer : writer;
 	}
 
 }

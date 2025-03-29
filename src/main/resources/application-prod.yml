@@ -2,13 +2,6 @@ server:
   port: ${PROD_SERVER_PORT}
 
 spring:
-  # 재시작 및 라이브 리로드 비활성화
-  devtools:
-    restart:
-      enabled: false
-    livereload:
-      enabled: false
-
   datasource:
     url: ${PROD_MYSQL_URL}
 

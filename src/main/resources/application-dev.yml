@@ -1,11 +1,4 @@
 spring:
-  # 재시작 및 라이브 리로드 활성화
-  devtools:
-    restart:
-      enabled: true
-    livereload:
-      enabled: false
-
   datasource:
     url: ${DEV_MYSQL_URL}
 
