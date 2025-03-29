@@ -57,10 +57,9 @@ public class CommentController {
 
 	@AuthorizeRole("member")
 	@PostMapping("/posts/{postId}/comments")
-	public ResponseEntity<ApiResponse<Void>> createComment(@RequestBody CreateCommentRequest request,
-		@PathVariable Long postId,
-		@CurrentUserId Long userId) {
-		commentService.createComment(request, postId, userId);
+	public ResponseEntity<ApiResponse<Void>> createComment(@CurrentUser CurrentUserDto currentUser,
+		@RequestBody CreateCommentRequest request, @PathVariable Long postId) {
+		commentService.createComment(currentUser, request, postId);
 		return ApiResponse.createSuccess("댓글이 작성 되었습니다.");
 	}
 

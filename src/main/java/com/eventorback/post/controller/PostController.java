@@ -134,10 +134,10 @@ public class PostController {
 
 	@AuthorizeRole("member")
 	@PostMapping
-	public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(@CurrentUserId Long userId,
+	public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(@CurrentUser CurrentUserDto currentUser,
 		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
 		String message = isTemp ? "게시물이 임시 저장 되었습니다." : "게시물을 등록 하였습니다.";
-		return ApiResponse.createSuccess(postService.createPost(userId, request, isTemp), message);
+		return ApiResponse.createSuccess(postService.createPost(currentUser, request, isTemp), message);
 	}
 
 	@AuthorizeRole("admin")
