@@ -100,13 +100,13 @@ public class Comment {
 	}
 
 	public static Comment toEntity(CreateCommentRequest request, Comment parentComment, Post post, User user,
-		Status status, Long group, Long depth, Long groupOrder, Long childCount) {
+		Status status, Long group, Long depth, Long groupOrder, Long childCount, boolean isAdmin) {
 		return Comment.builder()
 			.parentComment(parentComment)
 			.post(post)
 			.user(user)
 			.status(status)
-			.writer(user.getNickname())
+			.writer(createAdminWriter(isAdmin, user.getNickname()))
 			.writerGrade(user.getGrade().getName())
 			.content(request.content())
 			.group(group)
@@ -117,13 +117,13 @@ public class Comment {
 	}
 
 	public static Comment toEntity(CreateCommentRequest request, Comment parentComment, Post post, User user,
-		Status status, Long group) {
+		Status status, Long group, boolean isAdmin) {
 		return Comment.builder()
 			.parentComment(parentComment)
 			.post(post)
 			.user(user)
 			.status(status)
-			.writer(user.getNickname())
+			.writer(createAdminWriter(isAdmin, user.getNickname()))
 			.writerGrade(user.getGrade().getName())
 			.content(request.content())
 			.group(group)
@@ -157,15 +157,11 @@ public class Comment {
 		this.childCount++;
 	}
 
-	public void minusChildCount() {
-		this.childCount--;
-	}
-
 	public void addGroupOrder() {
 		this.groupOrder++;
 	}
 
-	public void minusGroupOrder() {
-		this.groupOrder--;
+	public static String createAdminWriter(boolean isAdmin, String writer) {
+		return isAdmin ? "[EM] " + writer : writer;
 	}
 }

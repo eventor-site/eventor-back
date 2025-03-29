@@ -19,7 +19,6 @@ import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.comment.service.CommentService;
 import com.eventorback.commentrecommend.domain.entity.CommentRecommend;
 import com.eventorback.commentrecommend.repository.CommentRecommendRepository;
-import com.eventorback.point.repository.PointRepository;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
@@ -32,6 +31,7 @@ import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserForbiddenException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
+import com.eventorback.userrole.repository.UserRoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
 	private final CommentRecommendRepository commentRecommendRepository;
 	private final StatusRepository statusRepository;
 	private final RecommendTypeService recommendTypeService;
-	private final PointRepository pointRepository;
+	private final UserRoleRepository userRoleRepository;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -88,12 +88,17 @@ public class CommentServiceImpl implements CommentService {
 			}
 		}
 
+		boolean isAdmin = userRoleRepository.findAllByUserUserId(user.getUserId())
+			.stream()
+			.anyMatch(userRole -> userRole.getRole().getName().equals("admin"));
+
 		Status status = statusRepository.findOrCreateStatus("댓글", "작성됨");
 
 		Comment parentComment = null;
 		if (request.parentCommentId() == null) {
 			commentRepository.save(
-				Comment.toEntity(request, parentComment, post, user, status, commentRepository.getMaxGroup() + 1));
+				Comment.toEntity(request, parentComment, post, user, status, commentRepository.getMaxGroup() + 1,
+					isAdmin));
 		} else {
 			parentComment = commentRepository.findById(request.parentCommentId())
 				.orElseThrow(CommentNotFoundException::new);
@@ -104,7 +109,7 @@ public class CommentServiceImpl implements CommentService {
 				commentRepository.save(
 					Comment.toEntity(request, parentComment, post, user, status, parentComment.getGroup(),
 						parentComment.getDepth() + 1, commentRepository.getTotalChildCount(parentComment.getGroup()),
-						0L));
+						0L, isAdmin));
 			} else {
 				List<Comment> updateList = commentRepository.getGreaterGroupOrder(parentComment.getGroup(),
 					parentComment.getGroupOrder() + parentComment.getChildCount());
@@ -115,7 +120,7 @@ public class CommentServiceImpl implements CommentService {
 				commentRepository.save(
 					Comment.toEntity(request, parentComment, post, user, status, parentComment.getGroup(),
 						parentComment.getDepth() + 1, parentComment.getGroupOrder() + parentComment.getChildCount(),
-						0L));
+						0L, isAdmin));
 
 			}
 		}
