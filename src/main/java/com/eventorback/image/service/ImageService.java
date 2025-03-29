@@ -32,4 +32,6 @@ public interface ImageService {
 	List<GetImageResponse> deleteImage(DeleteImageRequest request);
 
 	void deleteTempImage(Long userId);
+
+	String determineFileType(String extension);
 }
