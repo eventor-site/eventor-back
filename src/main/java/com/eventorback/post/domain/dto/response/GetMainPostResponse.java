@@ -6,6 +6,5 @@ import lombok.Builder;
 public record GetMainPostResponse(
 	Long postId,
 	String title,
-	String imageUrl,
-	String imageType) {
+	String imageUrl) {
 }
