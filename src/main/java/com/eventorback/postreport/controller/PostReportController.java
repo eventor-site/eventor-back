@@ -40,6 +40,7 @@ public class PostReportController {
 		return ApiResponse.createSuccess(postReportService.createPostReport(userId, postId, reportTypeName));
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/postReports/{postReportId}/confirm")
 	ResponseEntity<ApiResponse<Void>> confirmPostReport(@PathVariable Long postReportId) {
 		postReportService.confirmPostReport(postReportId);

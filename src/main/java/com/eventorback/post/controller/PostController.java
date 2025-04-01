@@ -168,8 +168,9 @@ public class PostController {
 
 	@AuthorizeRole("member")
 	@DeleteMapping("/{postId}")
-	public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId) {
-		postService.deletePost(postId);
+	public ResponseEntity<ApiResponse<Void>> deletePost(@CurrentUser CurrentUserDto currentUser,
+		@PathVariable Long postId) {
+		postService.deletePost(currentUser, postId);
 		return ApiResponse.createSuccess("게시물이 삭제 되었습니다.");
 	}
 
