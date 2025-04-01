@@ -89,6 +89,7 @@ public class CommentController {
 		return ApiResponse.createSuccess(commentService.disrecommendComment(userId, commentId));
 	}
 
+	@AuthorizeRole("member")
 	@DeleteMapping("/comments/{commentId}")
 	public ResponseEntity<ApiResponse<Void>> deleteComment(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long commentId) {
