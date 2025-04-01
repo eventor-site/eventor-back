@@ -56,7 +56,7 @@ public interface PostService {
 
 	String disrecommendPost(Long userId, Long postId);
 
-	void deletePost(Long postId);
+	void deletePost(CurrentUserDto currentUser, Long postId);
 
 	Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId);
 

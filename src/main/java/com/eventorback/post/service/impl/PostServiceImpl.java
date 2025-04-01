@@ -197,7 +197,6 @@ public class PostServiceImpl implements PostService {
 		boolean isAdmin = currentUser.roles().contains("admin");
 		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
 			statusRepository.findOrCreateStatus("게시글", "작성중");
-
 		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");
 
 		Post post;
@@ -292,9 +291,13 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void deletePost(Long postId) {
+	public void deletePost(CurrentUserDto currentUser, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		Status postStatus = statusRepository.findOrCreateStatus("게시글", "삭제됨");
+
+		if (!post.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles().contains("admin")) {
+			throw new UserForbiddenException();
+		}
 
 		post.setDeletedAt();
 		post.updatePostStatus(postStatus);

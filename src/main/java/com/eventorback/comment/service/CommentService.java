@@ -29,6 +29,6 @@ public interface CommentService {
 
 	String disrecommendComment(Long userId, Long commentId);
 
-	Comment deleteComment(Long commentId);
+	Comment deleteComment(CurrentUserDto currentUser, Long commentId);
 
 }

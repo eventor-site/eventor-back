@@ -173,10 +173,14 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public Comment deleteComment(Long commentId) {
+	public Comment deleteComment(CurrentUserDto currentUser, Long commentId) {
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(CommentNotFoundException::new);
 		Status status = statusRepository.findOrCreateStatus("댓글", "삭제됨");
+
+		if (!comment.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles().contains("admin")) {
+			throw new UserForbiddenException();
+		}
 
 		comment.setDeletedAt();
 		comment.updateStatus(status);

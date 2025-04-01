@@ -12,6 +12,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.eventorback.auth.annotation.CurrentUser;
+import com.eventorback.global.exception.UnauthorizedException;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 import io.micrometer.common.lang.NonNull;
@@ -34,21 +35,20 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		String userIdHeader = request.getHeader("X-User-userId");
 		String userRolesHeader = request.getHeader("X-User-Roles");
 
+		if (userIdHeader == null || userRolesHeader == null) {
+			throw new UnauthorizedException();
+		}
+
 		// userId 파싱
-		Long userId = userIdHeader != null ? Long.parseLong(userIdHeader) : null;
+		Long userId = Long.parseLong(userIdHeader);
 
 		// roles 파싱
-		List<String> roles;
-		if (userRolesHeader != null) {
-			roles = Arrays.asList(userRolesHeader.replaceAll("[\\[\\]\\s]", "").split(","));
+		List<String> roles = Arrays.asList(userRolesHeader.replaceAll("[\\[\\]\\s]", "").split(","));
 
-			return CurrentUserDto.builder()
-				.userId(userId)
-				.roles(roles)
-				.build();
-		} else {
-			return null;
-		}
+		return CurrentUserDto.builder()
+			.userId(userId)
+			.roles(roles)
+			.build();
 
 	}
 }

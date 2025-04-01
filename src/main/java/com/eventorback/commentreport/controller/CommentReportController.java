@@ -41,12 +41,14 @@ public class CommentReportController {
 		return ApiResponse.createSuccess(commentReportService.createCommentReport(userId, commentId, reportTypeName));
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/commentReports/{commentReportId}/confirm")
 	ResponseEntity<ApiResponse<Void>> confirmCommentReport(@PathVariable Long commentReportId) {
 		commentReportService.confirmCommentReport(commentReportId);
 		return ApiResponse.createSuccess("신고 댓글을 확인 하였습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/commentReports/{commentReportId}")
 	public ResponseEntity<ApiResponse<Void>> deleteCommentReport(@CurrentUserId Long userId,
 		@PathVariable Long commentReportId) {

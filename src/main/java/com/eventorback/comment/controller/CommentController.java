@@ -90,8 +90,9 @@ public class CommentController {
 	}
 
 	@DeleteMapping("/comments/{commentId}")
-	public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long commentId) {
-		commentService.deleteComment(commentId);
+	public ResponseEntity<ApiResponse<Void>> deleteComment(@CurrentUser CurrentUserDto currentUser,
+		@PathVariable Long commentId) {
+		commentService.deleteComment(currentUser, commentId);
 		return ApiResponse.createSuccess("댓글을 삭제 하였습니다.");
 	}
 
