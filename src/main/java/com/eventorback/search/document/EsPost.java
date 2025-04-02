@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
 
 import com.eventorback.image.domain.entity.Image;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(indexName = "post", writeTypeHint = WriteTypeHint.FALSE)
+@Setting(settingPath = "/search/elasticsearch-settings.json")  // JSON 파일을 통한 설정 적용
 public class EsPost {
 
 	@Id
