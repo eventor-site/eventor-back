@@ -82,21 +82,21 @@ public class ElasticSearchService {
 										.query(keyword)
 										.boost(3.0f)
 									))
-									.should(s -> s.matchPhrase(m -> m
-										.field("content")
-										.query(keyword)
-										.boost(1.5f)
-									))
-									.should(s -> s.match(m -> m
-										.field("productName")
-										.query(keyword)
-										.operator(Operator.Or)
-									))
-									.should(s -> s.match(m -> m
-										.field("shoppingMall")
-										.query(keyword)
-										.operator(Operator.Or)
-									))
+									// .should(s -> s.matchPhrase(m -> m
+									// 	.field("content")
+									// 	.query(keyword)
+									// 	.boost(1.5f)
+									// ))
+									// .should(s -> s.match(m -> m
+									// 	.field("productName")
+									// 	.query(keyword)
+									// 	.operator(Operator.Or)
+									// ))
+									// .should(s -> s.match(m -> m
+									// 	.field("shoppingMall")
+									// 	.query(keyword)
+									// 	.operator(Operator.Or)
+									// ))
 									.should(s -> s.match(m -> m
 										.field("endType")
 										.query(keyword)
