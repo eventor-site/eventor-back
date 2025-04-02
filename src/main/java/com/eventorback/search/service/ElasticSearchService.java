@@ -19,7 +19,6 @@ import com.eventorback.search.document.dto.reponse.SearchPostsResponse;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -80,7 +79,6 @@ public class ElasticSearchService {
 									.should(s -> s.matchPhrase(m -> m
 										.field("title")
 										.query(keyword)
-										.boost(3.0f)
 									))
 									// .should(s -> s.matchPhrase(m -> m
 									// 	.field("content")
@@ -97,10 +95,9 @@ public class ElasticSearchService {
 									// 	.query(keyword)
 									// 	.operator(Operator.Or)
 									// ))
-									.should(s -> s.match(m -> m
+									.should(s -> s.matchPhrase(m -> m
 										.field("endType")
 										.query(keyword)
-										.operator(Operator.Or)
 									))
 									.minimumShouldMatch("1") // 최소 하나라도 일치해야 함
 								)
