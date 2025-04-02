@@ -119,7 +119,7 @@ public class PostSyncToElasticSearch {
 	@AfterReturning("execution(* com.eventorback.post.service.impl.PostServiceImpl.deletePost(..))")
 	public void syncPostToElasticsearchAfterReturningDeletePost(JoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
-		if (args.length > 0 && args[0] instanceof Long postId) {
+		if (args.length > 0 && args[1] instanceof Long postId) {
 			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
 
 			if (esPost != null) {
