@@ -30,6 +30,9 @@ public class Statistic {
 	@Column(name = "visited_count")
 	private Long visitedCount;
 
+	@Column(name = "login_count")
+	private Long loginCount;
+
 	@Column(name = "signup_count")
 	private Long signupCount;
 
@@ -38,11 +41,16 @@ public class Statistic {
 		this.date = LocalDate.now();
 		this.visitorCount = 0L;
 		this.visitedCount = 0L;
+		this.loginCount = 0L;
 		this.signupCount = 0L;
 	}
 
 	public void updateVisitorCount(Long visitorCount) {
 		this.visitorCount = visitorCount;
+	}
+
+	public void updateLoginCount(Long loginCount) {
+		this.loginCount = loginCount;
 	}
 
 	public void increaseVisitedCount() {
