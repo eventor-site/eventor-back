@@ -94,7 +94,7 @@ public class StatisticMonitor {
 				statistic = new Statistic();
 			}
 
-			statistic.updateVisitorCount((long)userIds.size());
+			statistic.updateLoginCount((long)userIds.size());
 			statisticRepository.save(statistic);
 		}
 	}
