@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.global.util.SortUtil;
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
@@ -141,12 +142,14 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetMainPostResponse> getHotEventPosts() {
+	public List<GetMainHotPostResponse> getHotEventPosts() {
 		return queryFactory
 			.select(Projections.constructor(
-				GetMainPostResponse.class,
+				GetMainHotPostResponse.class,
 				post.postId,
 				post.title,
+				post.event.startTime,
+				post.event.endTime,
 				JPAExpressions
 					.select(image.url)
 					.from(image)

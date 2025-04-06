@@ -26,6 +26,7 @@ import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
@@ -72,7 +73,7 @@ public class PostController {
 	}
 
 	@GetMapping("/event/hot")
-	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotEventPosts() {
+	public ResponseEntity<ApiResponse<List<GetMainHotPostResponse>>> getHotEventPosts() {
 		return ApiResponse.createSuccess(postService.getHotEventPosts());
 	}
 
