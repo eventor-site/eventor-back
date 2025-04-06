@@ -86,7 +86,6 @@ public class PostServiceImpl implements PostService {
 	public Page<GetPostSimpleResponse> monitorPosts(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
-
 		return postRepository.monitorPosts(PageRequest.of(page, pageSize));
 	}
 
