@@ -115,6 +115,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public List<GetMainPostResponse> getCommunityPosts() {
+		return postRepository.getCommunityPosts();
+	}
+
+	@Override
 	public List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
 		List<Long> categoryIds = categoryService.getCategoryIds(categoryName);
 		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");

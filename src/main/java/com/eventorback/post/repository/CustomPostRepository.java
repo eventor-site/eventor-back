@@ -34,6 +34,8 @@ public interface CustomPostRepository {
 
 	List<GetRecommendPostResponse> getTrendingEventPosts();
 
+	List<GetMainPostResponse> getCommunityPosts();
+
 	List<GetMainPostResponse> getHotEventPostsByCategoryName(List<Long> categoryIds);
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(List<Long> categoryIds);
