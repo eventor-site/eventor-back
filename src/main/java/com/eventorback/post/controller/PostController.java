@@ -97,6 +97,11 @@ public class PostController {
 		return ApiResponse.createSuccess(postService.getTrendingEventPosts());
 	}
 
+	@GetMapping("/community")
+	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getCommunityPosts() {
+		return ApiResponse.createSuccess(postService.getCommunityPosts());
+	}
+
 	@GetMapping("/hot")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotPostsByCategoryName(
 		@CurrentUser CurrentUserDto currentUser,
