@@ -333,5 +333,5 @@ public class PostServiceImpl implements PostService {
 	public List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime,
 		LocalDateTime endTime) {
 		return postRepository.getEventPostCountByAdmin(startTime, endTime);
-	}//
+	}
 }
