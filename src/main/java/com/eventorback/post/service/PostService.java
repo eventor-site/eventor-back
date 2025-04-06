@@ -10,6 +10,7 @@ import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
@@ -25,7 +26,7 @@ public interface PostService {
 
 	Page<GetPostSimpleResponse> monitorPosts(Pageable pageable);
 
-	List<GetMainPostResponse> getHotEventPosts();
+	List<GetMainHotPostResponse> getHotEventPosts();
 
 	List<GetMainPostResponse> getLatestEventPosts();
 
