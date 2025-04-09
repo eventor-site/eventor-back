@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.global.dto.ApiResponse;
@@ -29,8 +28,8 @@ public class StatisticController {
 	}
 
 	@PostMapping("/visitors")
-	public ResponseEntity<ApiResponse<Void>> saveVisitor(@RequestParam String uuid) {
-		statusService.saveVisitor(uuid);
+	public ResponseEntity<ApiResponse<Void>> increaseVisitor() {
+		statusService.increaseVisitor();
 		return ApiResponse.createSuccess();
 	}
 
