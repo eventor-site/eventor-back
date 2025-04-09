@@ -45,8 +45,8 @@ public class Statistic {
 		this.signupCount = 0L;
 	}
 
-	public void updateVisitorCount(Long visitorCount) {
-		this.visitorCount = visitorCount;
+	public void updateVisitorCount() {
+		this.visitorCount++;
 	}
 
 	public void updateLoginCount(Long loginCount) {

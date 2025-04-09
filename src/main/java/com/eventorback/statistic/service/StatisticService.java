@@ -9,5 +9,5 @@ public interface StatisticService {
 
 	Page<GetStatistic> getStatistics(Pageable pageable);
 
-	void saveVisitor(String uuid);
+	void increaseVisitor();
 }

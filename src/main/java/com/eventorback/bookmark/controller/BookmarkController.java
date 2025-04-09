@@ -47,5 +47,5 @@ public class BookmarkController {
 	public ResponseEntity<ApiResponse<Void>> deleteBookmark(@CurrentUserId Long userId, @PathVariable Long bookmarkId) {
 		bookmarkService.deleteBookmark(userId, bookmarkId);
 		return ApiResponse.createSuccess("즐겨찾기를 삭제했습니다.");
-	} //
+	}
 }
