@@ -45,7 +45,7 @@ public interface PostService {
 
 	Page<GetPostSimpleResponse> getPostsByUserId(Pageable pageable, Long userId);
 
-	GetPostResponse getPost(CurrentUserDto currentUser, Long postId);
+	GetPostResponse getPost(CurrentUserDto currentUser, String uuid, Long postId);
 
 	GetTempPostResponse getTempPost(Long userId);
 

@@ -128,8 +128,8 @@ public class PostController {
 
 	@GetMapping("/{postId}")
 	public ResponseEntity<ApiResponse<GetPostResponse>> getPost(@CurrentUser CurrentUserDto currentUser,
-		@PathVariable Long postId) {
-		return ApiResponse.createSuccess(postService.getPost(currentUser, postId));
+		@RequestParam(required = false) String uuid, @PathVariable Long postId) {
+		return ApiResponse.createSuccess(postService.getPost(currentUser, uuid, postId));
 	}
 
 	@AuthorizeRole("member")

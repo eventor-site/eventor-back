@@ -6,5 +6,5 @@ import com.eventorback.postview.domain.entity.PostView;
 
 public interface PostViewRepository extends JpaRepository<PostView, Long> {
 
-	boolean existsByUserUserIdAndPostPostId(Long userId, Long postId);
+	boolean existsByViewerIdAndPostPostId(String viewerId, Long postId);
 }

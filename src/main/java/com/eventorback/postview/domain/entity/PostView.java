@@ -6,7 +6,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.eventorback.post.domain.entity.Post;
-import com.eventorback.user.domain.entity.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -32,9 +31,8 @@ public class PostView {
 	@Column(name = "post_view_id")
 	private Long postViewId;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "viewer_id")
+	private String viewerId;
 
 	@ManyToOne(optional = false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "post_id")
@@ -45,15 +43,15 @@ public class PostView {
 	private LocalDateTime createdAt;
 
 	@Builder
-	public PostView(User user, Post post) {
-		this.user = user;
+	public PostView(String viewerId, Post post) {
+		this.viewerId = viewerId;
 		this.post = post;
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public static PostView toEntity(User user, Post post) {
+	public static PostView toEntity(String viewerId, Post post) {
 		return PostView.builder()
-			.user(user)
+			.viewerId(viewerId)
 			.post(post)
 			.build();
 	}
