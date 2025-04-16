@@ -158,7 +158,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public GetPostResponse getPost(CurrentUserDto currentUser, Long postId) {
+	public GetPostResponse getPost(CurrentUserDto currentUser, String uuid, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		List<GetImageResponse> images = imageRepository.getAllByPostId(postId);
 
@@ -178,11 +178,14 @@ public class PostServiceImpl implements PostService {
 		// 회원의 경우 최초 1회 조회수 증가 ( 1. 회원이고 2. 자기자신이 쓴글이 아니며 3. 이미 본 글이 아닐 경우)
 		if (currentUser != null
 			&& !Objects.equals(post.getUser().getUserId(), currentUser.userId())
-			&& !postViewRepository.existsByUserUserIdAndPostPostId(currentUser.userId(), postId)) {
+			&& !postViewRepository.existsByViewerIdAndPostPostId(String.valueOf(currentUser.userId()), postId)) {
 
-			User user = userRepository.getUser(currentUser.userId())
-				.orElseThrow(UserNotFoundException::new);
-			postViewRepository.save(PostView.toEntity(user, post));
+			postViewRepository.save(PostView.toEntity(String.valueOf(currentUser.userId()), post));
+			post.increaseViewCount();
+		}
+
+		if (currentUser == null && !postViewRepository.existsByViewerIdAndPostPostId(uuid, postId)) {
+			postViewRepository.save(PostView.toEntity(uuid, post));
 			post.increaseViewCount();
 		}
 
