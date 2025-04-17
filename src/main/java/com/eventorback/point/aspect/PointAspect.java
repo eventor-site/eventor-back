@@ -1,4 +1,4 @@
-package com.eventorback.point.aop;
+package com.eventorback.point.aspect;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @Order(2)
 @RequiredArgsConstructor
-public class PointCalculator {
+public class PointAspect {
 	private final PointRepository pointRepository;
 
 	/**

@@ -1,4 +1,4 @@
-package com.eventorback.statistic.aop;
+package com.eventorback.statistic.aspect;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Transactional
-public class StatisticMonitor {
+public class StatisticAspect {
 	private final StatisticRepository statisticRepository;
 	private final RedisTemplate<String, Object> cacheRedisTemplate;
 

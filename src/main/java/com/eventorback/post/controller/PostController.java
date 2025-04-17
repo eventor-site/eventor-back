@@ -142,7 +142,7 @@ public class PostController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(@CurrentUser CurrentUserDto currentUser,
 		@RequestBody CreatePostRequest request, @RequestParam boolean isTemp) {
-		String message = isTemp ? "게시물이 임시 저장 되었습니다." : "게시물을 등록 하였습니다.";
+		String message = isTemp ? "게시물이 임시 저장 되었습니다." : "게시물을 등록 하였습니다. 포인트 +10";
 		return ApiResponse.createSuccess(postService.createPost(currentUser, request, isTemp), message);
 	}
 

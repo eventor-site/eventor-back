@@ -60,7 +60,7 @@ public class CommentController {
 	public ResponseEntity<ApiResponse<Void>> createComment(@CurrentUser CurrentUserDto currentUser,
 		@RequestBody CreateCommentRequest request, @PathVariable Long postId) {
 		commentService.createComment(currentUser, request, postId);
-		return ApiResponse.createSuccess("댓글이 작성 되었습니다.");
+		return ApiResponse.createSuccess("댓글이 작성 되었습니다. 포인트 +5");
 	}
 
 	@GetMapping("/posts/{postId}/comments/{commentId}")

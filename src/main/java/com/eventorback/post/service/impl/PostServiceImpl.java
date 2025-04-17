@@ -176,16 +176,11 @@ public class PostServiceImpl implements PostService {
 		}
 
 		// 회원의 경우 최초 1회 조회수 증가 ( 1. 회원이고 2. 자기자신이 쓴글이 아니며 3. 이미 본 글이 아닐 경우)
-		if (currentUser != null
-			&& !Objects.equals(post.getUser().getUserId(), currentUser.userId())
-			&& !postViewRepository.existsByViewerIdAndPostPostId(String.valueOf(currentUser.userId()), postId)) {
+		String viewerId = currentUser != null ? String.valueOf(currentUser.userId()) : uuid;
+		boolean isOwner = currentUser != null && Objects.equals(post.getUser().getUserId(), currentUser.userId());
 
-			postViewRepository.save(PostView.toEntity(String.valueOf(currentUser.userId()), post));
-			post.increaseViewCount();
-		}
-
-		if (currentUser == null && !postViewRepository.existsByViewerIdAndPostPostId(uuid, postId)) {
-			postViewRepository.save(PostView.toEntity(uuid, post));
+		if (!isOwner && !postViewRepository.existsByViewerIdAndPostPostId(viewerId, postId)) {
+			postViewRepository.save(PostView.toEntity(viewerId, post));
 			post.increaseViewCount();
 		}
 
@@ -271,7 +266,7 @@ public class PostServiceImpl implements PostService {
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
 			post.recommendPost();
-			return "추천되었습니다.";
+			return "추천되었습니다. 내포인트 +1, 상대포인트 +30";
 		} else {
 			String recommendTypeName = postRecommend.getRecommendType().getName();
 			return "이미 " + recommendTypeName + "하였습니다.";
@@ -291,7 +286,7 @@ public class PostServiceImpl implements PostService {
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("비추천");
 			postRecommendRepository.save(PostRecommend.toEntity(user, post, recommendType));
 			post.disrecommendPost();
-			return "비추천되었습니다.";
+			return "비추천되었습니다. 상대 포인트 -10";
 		} else {
 			String recommendTypeName = postRecommend.getRecommendType().getName();
 			return "이미 " + recommendTypeName + "하였습니다.";
