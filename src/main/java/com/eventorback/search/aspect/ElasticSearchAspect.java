@@ -1,4 +1,4 @@
-package com.eventorback.search.aop;
+package com.eventorback.search.aspect;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class PostSyncToElasticSearch {
+public class ElasticSearchAspect {
 	private final ElasticSearchRepository elasticsearchRepository;
 	private final ImageRepository imageRepository;
 	private final PostRepository postRepository;

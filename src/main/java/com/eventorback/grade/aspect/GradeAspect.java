@@ -1,4 +1,4 @@
-package com.eventorback.grade.aop;
+package com.eventorback.grade.aspect;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @Order(1)
 @RequiredArgsConstructor
-public class GradeMonitor {
+public class GradeAspect {
 	private final GradeService gradeService;
 
 	/**

@@ -142,7 +142,7 @@ public class CommentServiceImpl implements CommentService {
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("추천");
 			commentRecommendRepository.save(CommentRecommend.toEntity(user, comment, recommendType));
 			comment.recommendComment();
-			return "추천되었습니다.";
+			return "추천되었습니다. 내포인트 +1, 상대포인트 +15";
 		} else {
 			String recommendTypeName = commentRecommend.getRecommendType().getName();
 			return "이미 " + recommendTypeName + "하였습니다.";
@@ -165,7 +165,7 @@ public class CommentServiceImpl implements CommentService {
 			RecommendType recommendType = recommendTypeService.findOrCreateRecommendType("비추천");
 			commentRecommendRepository.save(CommentRecommend.toEntity(user, comment, recommendType));
 			comment.disrecommendComment();
-			return "비추천되었습니다.";
+			return "비추천되었습니다. 상대포인트 -5";
 		} else {
 			String recommendTypeName = commentRecommend.getRecommendType().getName();
 			return "이미 " + recommendTypeName + "하였습니다.";
