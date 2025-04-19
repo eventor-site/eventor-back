@@ -201,4 +201,13 @@ public class PostController {
 		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
 		return ApiResponse.createSuccess(postService.getEventPostCountByAdmin(startTime, endTime));
 	}
+
+	@AuthorizeRole("admin")
+	@DeleteMapping("/event")
+	ResponseEntity<ApiResponse<List<GetEventPostCountByAdminResponse>>> deleteEventPostsByTitleContainKeyword(
+		@CurrentUser CurrentUserDto currentUser, @RequestParam String keyword) {
+		postService.deleteEventPostsByTitleContainKeyword(currentUser, keyword);
+		return ApiResponse.createSuccess("삭제되었습니다.");
+	}
+
 }

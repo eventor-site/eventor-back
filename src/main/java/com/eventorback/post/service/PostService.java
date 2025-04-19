@@ -66,4 +66,6 @@ public interface PostService {
 	void deleteTempPost(Long userId);
 
 	List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime, LocalDateTime endTime);
+
+	void deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword);
 }
