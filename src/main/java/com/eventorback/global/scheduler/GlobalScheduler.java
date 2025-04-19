@@ -104,7 +104,7 @@ public class GlobalScheduler {
 		Instant end = Instant.now();  // 종료 시간 기록
 		long durationSeconds = Duration.between(start, end).toSeconds();  // 걸린 시간 계산 (초 단위)
 
-		log.info("SoftDeleted 게시물 삭제 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
+		log.info("만료된 게시물 삭제 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
 	}
 
 }
