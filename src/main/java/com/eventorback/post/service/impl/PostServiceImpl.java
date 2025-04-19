@@ -25,6 +25,7 @@ import com.eventorback.hotdeal.domain.entity.HotDeal;
 import com.eventorback.hotdeal.repository.HotDealRepository;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
 import com.eventorback.image.repository.ImageRepository;
+import com.eventorback.image.service.ImageService;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
@@ -55,7 +56,9 @@ import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -74,6 +77,7 @@ public class PostServiceImpl implements PostService {
 	private final CommentRepository commentRepository;
 	private final CategoryService categoryService;
 	private final ApplicationContext applicationContext;
+	private final ImageService imageService;
 
 	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
@@ -316,6 +320,30 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public void deleteExpiredPosts() {
+		List<Long> postIds = postRepository.getExpiredPostIds();
+
+		postIds.forEach(postId -> {
+			imageService.deleteImagesByPostId(postId);
+			postRepository.deleteById(postId);
+		});
+
+		log.info("만료된 게시물 삭제: {}건", postIds.size());
+	}
+
+	@Override
+	public void getSoftDeletedPosts() {
+		List<Long> postIds = postRepository.getSoftDeletedPostIds();
+
+		postIds.forEach(postId -> {
+			imageService.deleteImagesByPostId(postId);
+			postRepository.deleteById(postId);
+		});
+
+		log.info("만료된 게시물 삭제: {}건", postIds.size());
+	}
+
+	@Override
 	public Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId) {
 		return currentUser != null &&
 			(currentUser.roles().contains("admin")
@@ -343,6 +371,5 @@ public class PostServiceImpl implements PostService {
 		}
 
 		return postIds.size();
-
 	}
 }

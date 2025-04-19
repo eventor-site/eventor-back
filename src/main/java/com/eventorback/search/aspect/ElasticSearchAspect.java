@@ -133,6 +133,17 @@ public class ElasticSearchAspect {
 	}
 
 	/**
+	 * 엘라스틱서치 만료된 게시물 삭제
+	 */
+	@AfterReturning("execution(* com.eventorback.post.repository.PostRepository.deleteById(..))")
+	public void syncPostToElasticsearchAfterReturningDeleteExpiredPost(JoinPoint joinPoint) {
+		Object[] args = joinPoint.getArgs();
+		if (args.length > 0 && args[0] instanceof Long postId) {
+			elasticsearchRepository.deleteById(postId);
+		}
+	}
+
+	/**
 	 * 게시물 이미지 업로드 시 썸네일 엘라스틱서치 업데이트
 	 */
 	@AfterReturning("execution(* com.eventorback.image.service.impl.ImageServiceImpl.upload(..))")

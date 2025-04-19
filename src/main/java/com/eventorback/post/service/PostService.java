@@ -61,6 +61,10 @@ public interface PostService {
 
 	void deletePost(CurrentUserDto currentUser, Long postId);
 
+	void deleteExpiredPosts();
+
+	void getSoftDeletedPosts();
+
 	Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId);
 
 	void deleteTempPost(Long userId);

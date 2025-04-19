@@ -1,4 +1,4 @@
-package com.eventorback.user.scheduler;
+package com.eventorback.global.scheduler;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.eventorback.grade.repository.GradeRepository;
+import com.eventorback.comment.service.CommentService;
+import com.eventorback.post.repository.PostRepository;
+import com.eventorback.post.service.PostService;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.repository.StatusRepository;
 import com.eventorback.user.repository.UserRepository;
@@ -22,10 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UserScheduler {
+public class GlobalScheduler {
 	private final UserRepository userRepository;
 	private final StatusRepository statusRepository;
-	private final GradeRepository gradeRepository;
+	private final PostService postService;
+	private final CommentService commentService;
+	private final PostRepository postRepository;
 
 	@Value("${server.port}")
 	private String port;
@@ -82,38 +86,25 @@ public class UserScheduler {
 		log.info("정지 계정 정상화 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
 	}
 
-	// /**
-	//  * 매일 자정을 기준으로 포인트에 따라 회원 등급을 업데이트 합니다.
-	//  */
-	// @Scheduled(cron = "0 0 0 * * *")
-	// public void upgradeScheduler() {
-	//
-	// 	// 특정 포트(8101, 8103)에서만 실행
-	// 	if (!port.equals("8101") && !port.equals("8103")) {
-	// 		return;
-	// 	}
-	//
-	// 	Instant start = Instant.now();  // 시작 시간 기록
-	//
-	// 	List<Long> userIds = userRepository.getNotAdminUsers();
-	// 	List<Grade> grades = gradeRepository.findAll();
-	//
-	// 	Instant end = Instant.now();  // 종료 시간 기록
-	// 	long durationSeconds = Duration.between(start, end).toSeconds();  // 걸린 시간 계산 (초 단위)
-	//
-	// 	log.info("등급 업그레이드 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
-	// }
-	//
-	// /**
-	//  * 포인트에 따라 적절한 등급을 결정하는 메서드
-	//  */
-	// private Grade determineGrade(Long point, List<Grade> grades) {
-	// 	for (Grade grade : grades) {
-	// 		if (point >= grade.getMinAmount() && (grade.getMaxAmount() == null || point <= grade.getMaxAmount())) {
-	// 			return grade;
-	// 		}
-	// 	}
-	// 	return grades.get(0); // 기본 등급 (첫 번째 등급)
-	// }
+	/**
+	 * 매일 자정에 실행되어 만료된 게시물을 삭제합니다.
+	 */
+	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
+	public void deleteExpiredPostsScheduler() {
+
+		// 특정 포트(8101, 8103)에서만 실행
+		if (!port.equals("8101") && !port.equals("8103")) {
+			return;
+		}
+
+		Instant start = Instant.now();  // 시작 시간 기록
+
+		postService.deleteExpiredPosts();
+
+		Instant end = Instant.now();  // 종료 시간 기록
+		long durationSeconds = Duration.between(start, end).toSeconds();  // 걸린 시간 계산 (초 단위)
+
+		log.info("SoftDeleted 게시물 삭제 스케줄러 완료, 걸린 시간: {}초", durationSeconds);
+	}
 
 }

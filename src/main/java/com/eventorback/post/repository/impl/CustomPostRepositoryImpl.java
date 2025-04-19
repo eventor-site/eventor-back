@@ -574,4 +574,24 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.fetch();
 	}
 
+	@Override
+	public List<Long> getExpiredPostIds() {
+		LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
+
+		return queryFactory
+			.select(post.postId)
+			.from(post)
+			.where(post.deletedAt.loe(ninetyDaysAgo))
+			.fetch();
+	}
+
+	@Override
+	public List<Long> getSoftDeletedPostIds() {
+		return queryFactory
+			.select(post.postId)
+			.from(post)
+			.where(post.deletedAt.isNotNull())
+			.fetch();
+	}
+
 }

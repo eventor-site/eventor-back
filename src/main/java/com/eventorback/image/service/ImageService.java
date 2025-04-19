@@ -31,6 +31,8 @@ public interface ImageService {
 
 	List<GetImageResponse> deleteImage(DeleteImageRequest request);
 
+	void deleteImagesByPostId(Long postId);
+
 	void deleteTempImage(Long userId);
 
 	String determineFileType(String extension);
