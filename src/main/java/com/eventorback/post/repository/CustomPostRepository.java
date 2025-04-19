@@ -52,4 +52,8 @@ public interface CustomPostRepository {
 	List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime, LocalDateTime endTime);
 
 	List<Long> getEventPostsByTitleContainKeyword(String keyword);
+
+	List<Long> getExpiredPostIds();
+
+	List<Long> getSoftDeletedPostIds();
 }

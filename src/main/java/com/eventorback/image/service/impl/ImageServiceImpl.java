@@ -196,6 +196,24 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
+	public void deleteImagesByPostId(Long postId) {
+
+		List<GetImageResponse> images = imageRepository.getAllByPostId(postId);
+
+		images.forEach(image -> {
+			Path filePath = Paths.get(uploadPath, image.url().replaceFirst(domainUrl, ""));
+
+			try {
+				Files.deleteIfExists(filePath);
+			} catch (IOException e) {
+				log.error("파일 삭제 실패: {}", filePath, e);
+			}
+
+			imageRepository.deleteById(image.imageId());
+		});
+	}
+
+	@Override
 	public void deleteTempImage(Long userId) {
 		List<Image> images = imageRepository.findByPostUserUserIdAndPostStatusName(userId, "작성중");
 

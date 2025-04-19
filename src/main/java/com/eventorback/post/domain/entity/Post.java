@@ -1,8 +1,11 @@
 package com.eventorback.post.domain.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.eventorback.category.domain.entity.Category;
+import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.event.domain.entity.Event;
 import com.eventorback.hotdeal.domain.entity.HotDeal;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
@@ -19,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
@@ -80,6 +84,9 @@ public class Post {
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
+
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	private List<Comment> comments = new ArrayList<>();
 
 	@Builder
 	public Post(Category category, User user, Status status, HotDeal hotDeal, Event event, String writer,

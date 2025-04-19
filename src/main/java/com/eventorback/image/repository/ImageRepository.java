@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.eventorback.image.domain.entity.Image;
+import com.eventorback.post.domain.entity.Post;
 
 public interface ImageRepository extends JpaRepository<Image, Long>, CustomImageRepository {
 
@@ -19,4 +20,5 @@ public interface ImageRepository extends JpaRepository<Image, Long>, CustomImage
 
 	void deleteByPostPostIdAndIsThumbnail(Long postId, Boolean isThumbnail);
 
+	Long post(Post post);
 }
