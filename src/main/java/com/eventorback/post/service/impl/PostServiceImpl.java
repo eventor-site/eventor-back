@@ -334,13 +334,15 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword) {
+	public Integer deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword) {
 		List<Long> postIds = postRepository.getEventPostsByTitleContainKeyword(keyword);
 		PostService proxy = applicationContext.getBean(PostService.class);
 
 		for (Long postId : postIds) {
 			proxy.deletePost(currentUser, postId);
 		}
+
+		return postIds.size();
 
 	}
 }

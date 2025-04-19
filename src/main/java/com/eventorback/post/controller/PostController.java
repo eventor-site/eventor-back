@@ -206,8 +206,8 @@ public class PostController {
 	@DeleteMapping("/event")
 	ResponseEntity<ApiResponse<List<GetEventPostCountByAdminResponse>>> deleteEventPostsByTitleContainKeyword(
 		@CurrentUser CurrentUserDto currentUser, @RequestParam String keyword) {
-		postService.deleteEventPostsByTitleContainKeyword(currentUser, keyword);
-		return ApiResponse.createSuccess("삭제되었습니다.");
+		return ApiResponse.createSuccess(
+			postService.deleteEventPostsByTitleContainKeyword(currentUser, keyword) + "개 삭제되었습니다.");
 	}
 
 }

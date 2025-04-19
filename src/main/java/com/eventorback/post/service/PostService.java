@@ -67,5 +67,5 @@ public interface PostService {
 
 	List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime, LocalDateTime endTime);
 
-	void deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword);
+	Integer deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword);
 }
