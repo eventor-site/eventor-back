@@ -103,12 +103,12 @@ public class GlobalController {
 	@DeleteMapping("/posts/cleanup")
 	public void getSoftDeletedPosts() {
 
-		Instant start = Instant.now();  // 시작 시간 기록
+		Instant start = Instant.now();
 
 		postService.getSoftDeletedPosts();
 
-		Instant end = Instant.now();  // 종료 시간 기록
-		long durationSeconds = Duration.between(start, end).toSeconds();  // 걸린 시간 계산 (초 단위)
+		Instant end = Instant.now();
+		long durationSeconds = Duration.between(start, end).toSeconds();
 
 		log.info("SoftDeleted 게시물 삭제 완료, 걸린 시간: {}초", durationSeconds);
 	}
