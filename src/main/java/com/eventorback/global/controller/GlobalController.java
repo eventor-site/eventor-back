@@ -38,7 +38,6 @@ public class GlobalController {
 	@TimedExecution("게시물 ElasticSearch 동기화")
 	@PutMapping("/search/sync")
 	ResponseEntity<ApiResponse<Void>> syncPostToElasticsearch() {
-
 		List<Post> posts = postRepository.findAll();
 
 		for (Post post : posts) {
@@ -51,30 +50,30 @@ public class GlobalController {
 			elasticsearchRepository.save(esPost);
 		}
 
-		return ApiResponse.createSuccess();
+		return ApiResponse.createSuccess("게시물 ElasticSearch 동기화 완료");
 	}
 
 	@TimedExecution("이미지 확장자 값 추가")
 	@Transactional
 	@PutMapping("/images/sync")
 	public ResponseEntity<ApiResponse<List<GetImageResponse>>> syncImages() {
-
 		List<Image> images = imageRepository.findAll();
 
 		for (Image image : images) {
 			image.updateType(imageService.determineFileType(image.getExtension()));
 
 			log.info("작업 imageId: {}", image.getImageId());
-
 		}
 
-		return ApiResponse.createSuccess();
+		return ApiResponse.createSuccess("이미지 확장자 값 추가 완료");
 	}
 
 	@TimedExecution("SoftDeleted 게시물 삭제")
 	@DeleteMapping("/posts/cleanup")
-	public void getSoftDeletedPosts() {
+	public ResponseEntity<ApiResponse<List<GetImageResponse>>> getSoftDeletedPosts() {
 		postService.getSoftDeletedPosts();
+
+		return ApiResponse.createSuccess("SoftDeleted 게시물 삭제 완료");
 	}
 
 }

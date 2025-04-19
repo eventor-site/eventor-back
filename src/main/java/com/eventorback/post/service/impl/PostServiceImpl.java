@@ -183,7 +183,7 @@ public class PostServiceImpl implements PostService {
 		String viewerId = currentUser != null ? String.valueOf(currentUser.userId()) : uuid;
 		boolean isOwner = currentUser != null && Objects.equals(post.getUser().getUserId(), currentUser.userId());
 
-		if (!isOwner && !postViewRepository.existsByViewerIdAndPostPostId(viewerId, postId)) {
+		if (viewerId != null && !isOwner && !postViewRepository.existsByViewerIdAndPostPostId(viewerId, postId)) {
 			postViewRepository.save(PostView.toEntity(viewerId, post));
 			post.increaseViewCount();
 		}
