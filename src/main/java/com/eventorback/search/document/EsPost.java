@@ -30,13 +30,13 @@ public class EsPost {
 	@Field(type = FieldType.Keyword)
 	private String categoryName;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String statusName;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String writer;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String writerGrade;
 
 	@Field(type = FieldType.Text, analyzer = "nori")
@@ -57,7 +57,7 @@ public class EsPost {
 	@Field(type = FieldType.Text, analyzer = "nori")
 	private String productName;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String shoppingMall;
 
 	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS||epoch_millis")
@@ -66,13 +66,13 @@ public class EsPost {
 	@Field(type = FieldType.Date, format = {}, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS||epoch_millis")
 	private LocalDateTime endTime;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String endType;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String imageUrl;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String imageType;
 
 	public static EsPost fromEntity(Post post, Image image) {
