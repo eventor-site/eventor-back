@@ -50,4 +50,6 @@ public interface CustomPostRepository {
 	Optional<GetTempPostResponse> getTempPost(Long userId);
 
 	List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime, LocalDateTime endTime);
+
+	List<Long> getEventPostsByTitleContainKeyword(String keyword);
 }

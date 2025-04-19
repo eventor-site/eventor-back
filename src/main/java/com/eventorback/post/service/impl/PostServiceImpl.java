@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,7 +53,6 @@ import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.UserForbiddenException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.repository.UserRepository;
-import com.eventorback.userrole.repository.UserRoleRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,8 +72,8 @@ public class PostServiceImpl implements PostService {
 	private final RecommendTypeService recommendTypeService;
 	private final FavoriteRepository favoriteRepository;
 	private final CommentRepository commentRepository;
-	private final UserRoleRepository userRoleRepository;
 	private final CategoryService categoryService;
+	private final ApplicationContext applicationContext;
 
 	@Override
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
@@ -331,5 +331,16 @@ public class PostServiceImpl implements PostService {
 	public List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime,
 		LocalDateTime endTime) {
 		return postRepository.getEventPostCountByAdmin(startTime, endTime);
-	}//수정
+	}
+
+	@Override
+	public void deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword) {
+		List<Long> postIds = postRepository.getEventPostsByTitleContainKeyword(keyword);
+		PostService proxy = applicationContext.getBean(PostService.class);
+
+		for (Long postId : postIds) {
+			proxy.deletePost(currentUser, postId);
+		}
+
+	}
 }

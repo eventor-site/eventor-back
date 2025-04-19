@@ -561,4 +561,17 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.fetch();
 	}
 
+	@Override
+	public List<Long> getEventPostsByTitleContainKeyword(String keyword) {
+		return queryFactory
+			.select(post.postId)
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨")
+				.and(post.event.isNotNull()
+					.and(post.title.contains(keyword))))
+			.fetch();
+	}
+
 }
