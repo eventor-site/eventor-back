@@ -27,7 +27,7 @@ public class EsPost {
 	@Field(type = FieldType.Keyword)
 	private Long postId;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String categoryName;
 
 	@Field(type = FieldType.Text)
