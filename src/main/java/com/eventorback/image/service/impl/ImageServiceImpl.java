@@ -42,7 +42,7 @@ public class ImageServiceImpl implements ImageService {
 	private final ImageRepository imageRepository;
 	private final PostRepository postRepository;
 	private final CategoryService categoryService;
-	private final Long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
+	private final Long MAX_IMAGE_SIZE = 20L * 1024 * 1024;
 	private static final List<String> IMAGE_EXTENSIONS = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".jfif",
 		".webp");
 	private static final List<String> VIDEO_EXTENSIONS = Arrays.asList(".mp4", ".mov", ".avi", ".wmv", ".mkv", ".webm");

@@ -15,7 +15,6 @@ import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.image.domain.dto.request.DeleteImageRequest;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
-import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.image.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/back/images")
 public class ImageController {
 	private final ImageService imageService;
-	private final ImageRepository imageRepository;
 
 	@PostMapping(value = "/upload", consumes = "multipart/form-data")
 	public ResponseEntity<ApiResponse<List<GetImageResponse>>> uploadImage(@RequestParam("file") MultipartFile file,
