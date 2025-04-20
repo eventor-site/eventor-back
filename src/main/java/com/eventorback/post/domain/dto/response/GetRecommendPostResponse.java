@@ -9,6 +9,7 @@ public record GetRecommendPostResponse(
 	Long postId,
 	String title,
 	String writer,
+	String writerGrade,
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
