@@ -163,7 +163,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.category, category)
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
-				.and(post.event.isNotNull()))
+				.and(post.event.isNotNull())
+				.and(post.event.endTime.isNull().or(post.event.endTime.goe(LocalDateTime.now())))
+			)
 			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물만 반환
 			.fetch();
@@ -189,7 +191,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.category, category)
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
-				.and(post.event.isNotNull()))
+				.and(post.event.isNotNull())
+				.and(post.event.endTime.isNull().or(post.event.endTime.goe(LocalDateTime.now())))
+			)
 			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물 제한
 			.fetch();
@@ -216,8 +220,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
 				.and(post.event.isNotNull())
-				.and(post.event.endTime.after(LocalDateTime.now())) // 현재 이후의 이벤트
-				.and(post.event.endTime.before(LocalDateTime.now().plusMonths(1)))  // 한 달 이내
+				.and(post.event.endTime.between(LocalDateTime.now(), LocalDateTime.now().plusMonths(1)))
 			)
 			.orderBy(post.event.endTime.asc())
 			.limit(10) // 상위 10개 게시물 제한
@@ -248,7 +251,8 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.category, category)
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
-				.and(post.event.isNotNull()))
+				.and(post.event.isNotNull())
+				.and(post.event.endTime.isNull().or(post.event.endTime.goe(LocalDateTime.now()))))
 			.orderBy(post.recommendationCount.desc())
 			.limit(10)  // 상위 10권으로 결과 제한
 			.fetch();
@@ -280,7 +284,9 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
 				.and(post.event.isNotNull())
-				.and(postView.createdAt.gt(LocalDateTime.now().minusDays(7))))
+				.and(post.event.endTime.isNull().or(post.event.endTime.goe(LocalDateTime.now())))
+				.and(postView.createdAt.goe(LocalDateTime.now().minusDays(7)))
+			)
 			.groupBy(postView.post.postId)
 			.orderBy(postView.count().desc())
 			.limit(10)  // 상위 10권으로 결과 제한
@@ -332,7 +338,11 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.from(post)
 			.join(post.category, category)
 			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(post.category.categoryId.in(categoryIds)))
+			.where(status.name.eq("작성됨")
+				.and(post.event.isNotNull())
+				.and(post.category.categoryId.in(categoryIds))
+				.and(post.event.endTime.isNull().or(post.event.endTime.goe(LocalDateTime.now())))
+			)
 			.orderBy(post.viewCount.desc())  // 조회수 기준 정렬
 			.limit(10) // 상위 10개 게시물만 반환
 			.fetch();
