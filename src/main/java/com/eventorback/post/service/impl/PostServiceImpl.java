@@ -2,7 +2,6 @@ package com.eventorback.post.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -179,13 +178,19 @@ public class PostServiceImpl implements PostService {
 			throw new PostNotFoundException();
 		}
 
-		// 회원의 경우 최초 1회 조회수 증가 ( 1. 회원이고 2. 자기자신이 쓴글이 아니며 3. 이미 본 글이 아닐 경우)
+		// 최초 1회 조회수 증가
 		String viewerId = currentUser != null ? String.valueOf(currentUser.userId()) : uuid;
-		boolean isOwner = currentUser != null && Objects.equals(post.getUser().getUserId(), currentUser.userId());
 
-		if (viewerId != null && !isOwner && !postViewRepository.existsByViewerIdAndPostPostId(viewerId, postId)) {
-			postViewRepository.save(PostView.toEntity(viewerId, post));
-			post.increaseViewCount();
+		if (viewerId != null) {
+			PostView postView = postViewRepository.findByViewerIdAndPostPostId(viewerId, postId).orElse(null);
+
+			if (postView == null) {
+				postViewRepository.save(PostView.toEntity(viewerId, post));
+				post.increaseViewCount();
+			} else {
+				postView.updateViewedAtAt();
+			}
+
 		}
 
 		return GetPostResponse.fromEntity(post, images, isAuthorized, isFavorite);
