@@ -287,7 +287,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.where(status.name.eq("작성됨")
 				.and(post.event.isNotNull())
 				.and(post.event.endTime.isNull().or(post.event.endTime.goe(LocalDateTime.now())))
-				.and(postView.createdAt.goe(LocalDateTime.now().minusDays(7)))
+				.and(postView.viewedAt.goe(LocalDateTime.now().minusDays(7)))
 			)
 			.groupBy(postView.post.postId)
 			.orderBy(postView.count().desc())

@@ -39,14 +39,14 @@ public class PostView {
 	@OnDelete(action = OnDeleteAction.CASCADE) // DB 에서 자동 삭제 처리
 	private Post post;
 
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
+	@Column(name = "viewed_at")
+	private LocalDateTime viewedAt;
 
 	@Builder
 	public PostView(String viewerId, Post post) {
 		this.viewerId = viewerId;
 		this.post = post;
-		this.createdAt = LocalDateTime.now();
+		this.viewedAt = LocalDateTime.now();
 	}
 
 	public static PostView toEntity(String viewerId, Post post) {
@@ -54,5 +54,9 @@ public class PostView {
 			.viewerId(viewerId)
 			.post(post)
 			.build();
+	}
+
+	public void updateViewedAtAt() {
+		this.viewedAt = LocalDateTime.now();
 	}
 }
