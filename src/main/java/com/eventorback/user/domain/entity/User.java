@@ -69,7 +69,7 @@ public class User {
 	@Column(name = "phone", length = 15)
 	private String phone;
 
-	@Column(name = "point")
+	@Column(name = "point", nullable = false)
 	private Long point;
 
 	@Column(name = "updated_time")
@@ -81,8 +81,11 @@ public class User {
 	@Column(name = "last_nickname_change_time")
 	private LocalDateTime lastNicknameChangeTime;
 
-	@Column(name = "created_at")
+	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
+
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
 
 	@Column(name = "oauth_id")
 	private String oauthId;
@@ -179,5 +182,22 @@ public class User {
 
 	public void updateGrade(Grade grade) {
 		this.grade = grade;
+	}
+
+	public void updateUpdatedTime() {
+		this.updatedTime = LocalDateTime.now();
+	}
+
+	public void withdrawUser() {
+		this.nickname = "[탈퇴]";
+		this.email = "[탈퇴]";
+		this.deletedAt = LocalDateTime.now();
+
+		if (this.identifier != null) {
+			this.identifier = "[탈퇴]";
+		} else {
+			this.oauthId = "[탈퇴]";
+		}
+
 	}
 }

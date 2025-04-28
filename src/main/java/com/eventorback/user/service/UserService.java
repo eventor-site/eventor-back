@@ -70,4 +70,6 @@ public interface UserService {
 
 	String recoverOauth(RecoverOauthRequest request);
 
+	void softDeleteExpiredUsers();
+
 }

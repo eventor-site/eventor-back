@@ -145,6 +145,7 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
 		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
 		user.updateStatus(status);
+		user.updateUpdatedTime();
 	}
 
 	@Override
@@ -222,6 +223,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String checkIdentifier(CheckIdentifierRequest request) {
+
+		String identifier = request.identifier();
+
+		if (List.of("[EM]", "[탈퇴]").contains(identifier)) {
+			return "사용할 수 없는 아이디 입니다.";
+		}
+
 		if (userRepository.existsByIdentifier(request.identifier())) {
 			return "이미 존재하는 아이디 입니다.";
 		}
@@ -230,13 +238,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String checkNickname(CheckNicknameRequest request) {
-		String identifier = request.nickname();
+		String nickname = request.nickname();
 
-		if (identifier.contains("[EM]")) {
-			return "사용할 수 없는 아이디 입니다.";
+		if (List.of("[EM]", "[탈퇴]").contains(nickname)) {
+			return "사용할 수 없는 닉네임 입니다.";
 		}
 
-		if (userRepository.existsByNickname(request.nickname())) {
+		if (userRepository.existsByNickname(nickname)) {
 			return "이미 존재하는 닉네임 입니다.";
 		}
 
@@ -289,5 +297,11 @@ public class UserServiceImpl implements UserService {
 		user.updateStatus(status);
 
 		return "계정이 복구 되었습니다.";
+	}
+
+	@Override
+	public void softDeleteExpiredUsers() {
+		List<User> expiredUsers = userRepository.getExpiredUsers();
+		expiredUsers.forEach(User::withdrawUser);
 	}
 }
