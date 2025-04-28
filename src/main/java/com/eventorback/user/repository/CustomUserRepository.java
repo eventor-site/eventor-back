@@ -39,4 +39,6 @@ public interface CustomUserRepository {
 
 	List<Long> getNotAdminUsers();
 
+	List<User> getExpiredUsers();
+
 }

@@ -222,4 +222,19 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.fetch();
 	}
 
+	@Override
+	public List<User> getExpiredUsers() {
+		return queryFactory
+			.selectFrom(user)
+			.join(user.status, status).fetchJoin()
+			.join(status.statusType, statusType).fetchJoin()
+			.join(user.grade, grade).fetchJoin()
+			.join(user.userRoles, userRole).fetchJoin()        // fetch join 을 사용하여 N+1 문제 방지
+			.join(userRole.role, role).fetchJoin()
+			.where(status.name.eq("탈퇴")
+				.and(user.deletedAt.isNull())
+				.and(user.updatedTime.before(LocalDateTime.now().minusDays(90))))
+			.fetch();
+	}
+
 }
