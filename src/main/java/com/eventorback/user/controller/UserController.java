@@ -30,7 +30,7 @@ import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SendCodeRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
-import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserAuth;
@@ -144,9 +144,9 @@ public class UserController {
 		return ApiResponse.createSuccess(userService.meCheckNickname(userId, request));
 	}
 
-	@PutMapping("/me/lastLoginTime")
-	public ResponseEntity<ApiResponse<Void>> updateLastLoginTime(@RequestBody UpdateLastLoginTimeRequest request) {
-		userService.updateLastLoginTime(request);
+	@PutMapping("/me/loginAt")
+	public ResponseEntity<ApiResponse<Void>> updateLoginAt(@RequestBody UpdateLoginAtRequest request) {
+		userService.updateLoginAt(request);
 		return ApiResponse.createSuccess();
 	}
 
