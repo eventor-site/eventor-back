@@ -20,8 +20,8 @@ public record GetUserResponse(
 	List<String> roles,
 	String oauthType,
 	LocalDateTime createdAt,
-	LocalDateTime updatedTime,
-	LocalDateTime lastNicknameChangeTime,
-	LocalDateTime lastLoginTime
+	LocalDateTime updatedAt,
+	LocalDateTime nicknameChangedAt,
+	LocalDateTime loginAt
 ) {
 }

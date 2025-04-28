@@ -29,7 +29,7 @@ import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
-import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserAuth;
@@ -106,16 +106,16 @@ public class UserServiceImpl implements UserService {
 
 		if (!user.getNickname().equals(request.nickname())) {
 
-			if (user.getLastNicknameChangeTime() == null) {
-				user.updateLastNicknameChangeTime();
+			if (user.getNicknameChangedAt() == null) {
+				user.updateNicknameChangedAt();
 			} else {
 				LocalDateTime currentTime = LocalDateTime.now();
 
 				// 날짜 차이 계산
-				long monthsBetween = ChronoUnit.MONTHS.between(user.getLastNicknameChangeTime(), currentTime);
+				long monthsBetween = ChronoUnit.MONTHS.between(user.getNicknameChangedAt(), currentTime);
 
 				if (monthsBetween >= 1) {
-					user.updateLastNicknameChangeTime();
+					user.updateNicknameChangedAt();
 				} else {
 					throw new NicknameChangeCooldownBadRequestException();
 				}
@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
 		Status status = statusRepository.findOrCreateStatus("회원", "탈퇴");
 		user.updateStatus(status);
-		user.updateUpdatedTime();
+		user.updateUpdatedAt();
 	}
 
 	@Override
@@ -174,9 +174,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
+	public void updateLoginAt(UpdateLoginAtRequest request) {
 		User user = userRepository.getUser(request.userId()).orElseThrow(UserNotFoundException::new);
-		user.updateLastLoginTime(request);
+		user.updateLoginAt(request);
 	}
 
 	@Override

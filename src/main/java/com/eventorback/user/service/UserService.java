@@ -11,7 +11,7 @@ import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
 import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
-import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserAuth;
@@ -52,7 +52,7 @@ public interface UserService {
 
 	String meCheckNickname(Long userId, CheckNicknameRequest request);
 
-	void updateLastLoginTime(UpdateLastLoginTimeRequest lastLoginTime);
+	void updateLoginAt(UpdateLoginAtRequest loginAt);
 
 	String modifyPassword(Long userId, ModifyPasswordRequest request);
 

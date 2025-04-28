@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.statistic.domain.entity.Statistic;
 import com.eventorback.statistic.repository.StatisticRepository;
-import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,13 +58,13 @@ public class StatisticAspect {
 		statisticRepository.save(statistic);
 	}
 
-	@AfterReturning("execution(* com.eventorback.user.service.impl.UserServiceImpl.updateLastLoginTime(..))")
+	@AfterReturning("execution(* com.eventorback.user.service.impl.UserServiceImpl.updateLoginAt(..))")
 	public void collectInfoAfterReturningLoginMemberCount(JoinPoint joinPoint) throws JsonProcessingException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		Object[] args = joinPoint.getArgs();
-		if (args.length > 0 && args[0] instanceof UpdateLastLoginTimeRequest request) {
+		if (args.length > 0 && args[0] instanceof UpdateLoginAtRequest request) {
 
 			// Redis 에서 데이터 조회 (JSON 으로 변환된 값)
 			String userIdsJson = (String)cacheRedisTemplate.opsForValue().get("userIds");

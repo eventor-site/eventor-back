@@ -8,7 +8,7 @@ import java.util.List;
 import com.eventorback.grade.domain.entity.Grade;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
-import com.eventorback.user.domain.dto.request.UpdateLastLoginTimeRequest;
+import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.userrole.domain.entity.UserRole;
 
@@ -69,20 +69,20 @@ public class User {
 	@Column(name = "phone", length = 15)
 	private String phone;
 
-	@Column(name = "point", nullable = false)
+	@Column(name = "point")
 	private Long point;
 
-	@Column(name = "updated_time")
-	private LocalDateTime updatedTime;
-
-	@Column(name = "last_login_time")
-	private LocalDateTime lastLoginTime;
-
-	@Column(name = "last_nickname_change_time")
-	private LocalDateTime lastNicknameChangeTime;
-
-	@Column(name = "created_at", nullable = false)
+	@Column(name = "created_at")
 	private LocalDateTime createdAt;
+
+	@Column(name = "login_at")
+	private LocalDateTime loginAt;
+
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
+
+	@Column(name = "nickname_changed_at")
+	private LocalDateTime nicknameChangedAt;
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
@@ -148,15 +148,15 @@ public class User {
 		this.phone = request.phone();
 		this.birth = request.birth();
 		this.gender = request.gender();
-		this.updatedTime = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
 	}
 
-	public void updateLastLoginTime(UpdateLastLoginTimeRequest request) {
-		this.lastLoginTime = request.lastLoginTime();
+	public void updateLoginAt(UpdateLoginAtRequest request) {
+		this.loginAt = request.loginAt();
 	}
 
-	public void updateLastNicknameChangeTime() {
-		this.lastNicknameChangeTime = LocalDateTime.now();
+	public void updateNicknameChangedAt() {
+		this.nicknameChangedAt = LocalDateTime.now();
 	}
 
 	public void modifyPassword(String encryptedNewPassword) {
@@ -184,8 +184,8 @@ public class User {
 		this.grade = grade;
 	}
 
-	public void updateUpdatedTime() {
-		this.updatedTime = LocalDateTime.now();
+	public void updateUpdatedAt() {
+		this.updatedAt = LocalDateTime.now();
 	}
 
 	public void withdrawUser() {

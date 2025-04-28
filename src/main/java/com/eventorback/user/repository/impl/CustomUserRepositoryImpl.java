@@ -167,9 +167,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			roles,
 			userInfo.getOauthType(),
 			userInfo.getCreatedAt(),
-			userInfo.getUpdatedTime(),
-			userInfo.getLastNicknameChangeTime(),
-			userInfo.getLastLoginTime()
+			userInfo.getUpdatedAt(),
+			userInfo.getNicknameChangedAt(),
+			userInfo.getLoginAt()
 		);
 
 		return Optional.of(response);
@@ -186,9 +186,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.where(
 				status.name.eq("활성")
 					// 조건 1: 마지막 로그인 시간이 null 이고, 생성일이 90일 이전인 경우
-					.and(user.lastLoginTime.isNull().and(user.createdAt.loe(now.minusDays(90)))
+					.and(user.loginAt.isNull().and(user.createdAt.loe(now.minusDays(90)))
 						// 조건 2: 마지막 로그인 시간이 90일 이전이고, 상태가 "활성"인 경우
-						.or(user.lastLoginTime.isNotNull().and(user.lastLoginTime.loe(now.minusDays(90))))
+						.or(user.loginAt.isNotNull().and(user.loginAt.loe(now.minusDays(90))))
 					)
 
 			)
@@ -233,7 +233,7 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.join(userRole.role, role).fetchJoin()
 			.where(status.name.eq("탈퇴")
 				.and(user.deletedAt.isNull())
-				.and(user.updatedTime.before(LocalDateTime.now().minusDays(90))))
+				.and(user.updatedAt.before(LocalDateTime.now().minusDays(90))))
 			.fetch();
 	}
 
