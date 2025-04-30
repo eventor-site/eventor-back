@@ -15,6 +15,7 @@ import com.eventorback.comment.domain.dto.response.GetCommentByUserIdResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentPageResponse;
 import com.eventorback.comment.domain.dto.response.GetCommentResponse;
 import com.eventorback.comment.domain.entity.Comment;
+import com.eventorback.comment.domain.entity.QComment;
 import com.eventorback.comment.repository.CustomCommentRepository;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.querydsl.core.Tuple;
@@ -70,6 +71,8 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 
 	@Override
 	public Page<GetCommentResponse> getCommentsByPostId(Pageable pageable, CurrentUserDto currentUser, Long postId) {
+		QComment parentComment = new QComment("parentComment");
+
 		BooleanExpression isAdmin = Expressions.FALSE;
 		BooleanExpression isOwner = Expressions.FALSE;
 
@@ -84,6 +87,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				GetCommentResponse.class,
 				comment.commentId,
 				comment.parentComment.commentId,
+				comment.parentComment.writer,
 				comment.writer,
 				comment.writerGrade,
 				new CaseBuilder()
@@ -93,6 +97,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.recommendationCount,
 				comment.decommendationCount,
 				comment.createdAt,
+				comment.deletedAt,
 				new CaseBuilder()
 					.when(isOwner.or(isAdmin))
 					.then(true)
@@ -100,6 +105,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 				comment.depth)
 			)
 			.from(comment)
+			.leftJoin(comment.parentComment, parentComment)
 			.join(comment.post, post)
 			.where(post.postId.eq(postId))
 			.orderBy(comment.group.asc(), comment.groupOrder.asc())

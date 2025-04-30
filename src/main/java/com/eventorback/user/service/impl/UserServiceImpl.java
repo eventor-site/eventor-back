@@ -128,6 +128,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void updateUserByAdmin(Long userId, UpdateUserRequest request) {
 		User user = userRepository.getUser(userId).orElseThrow(UserNotFoundException::new);
+
+		if (!user.getNickname().equals(request.nickname())) {
+			user.updateNicknameChangedAt();
+		}
+
 		user.updateUser(request);
 	}
 
@@ -162,8 +167,8 @@ public class UserServiceImpl implements UserService {
 	public String meCheckNickname(Long userId, CheckNicknameRequest request) {
 		String nickname = request.nickname();
 
-		if (nickname.contains("[EM]")) {
-			return "사용할 수 없는 아이디 입니다.";
+		if (List.of("[EM]", "[탈퇴]").contains(nickname)) {
+			return "사용할 수 없는 닉네임 입니다.";
 		}
 
 		if (userId != null && userRepository.existsByUserIdNotAndNickname(userId, nickname)) {
