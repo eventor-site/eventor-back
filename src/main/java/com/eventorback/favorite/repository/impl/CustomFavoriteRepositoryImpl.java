@@ -37,7 +37,7 @@ public class CustomFavoriteRepositoryImpl implements CustomFavoriteRepository {
 			.join(favorite.post, post)
 			.join(favorite.user, user)
 			.join(post.status, status)
-			.where(status.name.eq("작성됨").and(user.userId.eq(userId)))
+			.where(status.name.eq("작성됨").and(favorite.user.userId.eq(userId)))
 			.orderBy(favorite.favoriteId.desc())
 			.offset(pageable.getOffset()) // 페이지 시작점
 			.limit(pageable.getPageSize()) // 페이지 크기
@@ -46,7 +46,7 @@ public class CustomFavoriteRepositoryImpl implements CustomFavoriteRepository {
 		Long total = Optional.ofNullable(queryFactory
 			.select(favorite.count())
 			.from(favorite)
-			.where(favorite.post.status.name.eq("작성됨").and(favorite.post.user.userId.eq(userId)))
+			.where(favorite.post.status.name.eq("작성됨").and(favorite.user.userId.eq(userId)))
 			.fetchOne()).orElse(0L);
 
 		return new PageImpl<>(result, pageable, total);
