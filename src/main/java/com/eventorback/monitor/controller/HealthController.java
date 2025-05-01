@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/monitors")
+@RequestMapping("/back/actuator")
 public class HealthController {
 
 	@Value("${server.port}")
