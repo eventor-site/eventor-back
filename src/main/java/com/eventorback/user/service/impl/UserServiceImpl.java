@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eventorback.bannickname.service.BanNicknameService;
 import com.eventorback.global.util.PasswordUtil;
 import com.eventorback.grade.domain.entity.Grade;
 import com.eventorback.grade.exception.GradeNotFoundException;
@@ -61,6 +63,7 @@ public class UserServiceImpl implements UserService {
 	private final StatusRepository statusRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MailService mailService;
+	private final BanNicknameService banNicknameService;
 
 	@Override
 	public Page<GetUserListResponse> getUsers(Pageable pageable) {
@@ -166,9 +169,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String meCheckNickname(Long userId, CheckNicknameRequest request) {
 		String nickname = request.nickname();
+		List<String> banNicknames = banNicknameService.getCacheBanNicknames();
 
-		if (List.of("[EM]", "[탈퇴]").contains(nickname)) {
-			return "사용할 수 없는 닉네임 입니다.";
+		for (String bannedPattern : banNicknames) {
+			if (nickname.matches(".*" + Pattern.quote(bannedPattern) + ".*")) {
+				return "사용할 수 없는 닉네임 입니다.";
+			}
 		}
 
 		if (userId != null && userRepository.existsByUserIdNotAndNickname(userId, nickname)) {
@@ -228,13 +234,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String checkIdentifier(CheckIdentifierRequest request) {
-
-		String identifier = request.identifier();
-
-		if (List.of("[EM]", "[탈퇴]").contains(identifier)) {
-			return "사용할 수 없는 아이디 입니다.";
-		}
-
 		if (userRepository.existsByIdentifier(request.identifier())) {
 			return "이미 존재하는 아이디 입니다.";
 		}
@@ -244,9 +243,12 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String checkNickname(CheckNicknameRequest request) {
 		String nickname = request.nickname();
+		List<String> banNicknames = banNicknameService.getCacheBanNicknames();
 
-		if (List.of("[EM]", "[탈퇴]").contains(nickname)) {
-			return "사용할 수 없는 닉네임 입니다.";
+		for (String bannedPattern : banNicknames) {
+			if (nickname.matches(".*" + Pattern.quote(bannedPattern) + ".*")) {
+				return "사용할 수 없는 닉네임 입니다.";
+			}
 		}
 
 		if (userRepository.existsByNickname(nickname)) {

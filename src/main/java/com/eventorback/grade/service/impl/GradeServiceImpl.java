@@ -25,8 +25,9 @@ import lombok.RequiredArgsConstructor;
 public class GradeServiceImpl implements GradeService {
 	private final GradeRepository gradeRepository;
 
-	@Cacheable(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
+	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	public List<Grade> findAllByOrderByMinAmountAsc() {
 		return gradeRepository.findAllByOrderByMinAmountAsc();
 	}
@@ -50,8 +51,8 @@ public class GradeServiceImpl implements GradeService {
 			.orElseThrow(GradeNotFoundException::new);
 	}
 
-	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
+	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	public void createGrade(GradeDto request) {
 		if (gradeRepository.existsByName(request.name())) {
 			throw new GradeAlreadyExistsException();
@@ -59,16 +60,16 @@ public class GradeServiceImpl implements GradeService {
 		gradeRepository.save(Grade.toEntity(request));
 	}
 
-	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
+	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	public void updateGrade(Long gradeId, GradeDto request) {
 		Grade grade = gradeRepository.findById(gradeId)
 			.orElseThrow(GradeNotFoundException::new);
 		grade.updateGrade(request);
 	}
 
-	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	@Override
+	@CacheEvict(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	public void deleteGrade(Long gradeId) {
 		gradeRepository.deleteById(gradeId);
 	}
