@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class BanNicknameController {
 	private final BanNicknameService banNicknameService;
 
+	@AuthorizeRole("admin")
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<BanNicknameDto>>> getBanNicknames() {
 		return ApiResponse.createSuccess(banNicknameService.getBanNicknames());
