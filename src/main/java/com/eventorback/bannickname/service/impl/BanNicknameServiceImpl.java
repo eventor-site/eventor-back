@@ -43,7 +43,6 @@ public class BanNicknameServiceImpl implements BanNicknameService {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
 		return banNicknameRepository.getBanNicknames(PageRequest.of(page, pageSize));
-		//test
 	}
 
 	@Override
