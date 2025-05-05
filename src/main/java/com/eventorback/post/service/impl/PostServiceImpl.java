@@ -303,7 +303,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void deletePost(CurrentUserDto currentUser, Long postId) {
+	public Post deletePost(CurrentUserDto currentUser, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		Status postStatus = statusRepository.findOrCreateStatus("게시글", "삭제됨");
 
@@ -322,6 +322,7 @@ public class PostServiceImpl implements PostService {
 			comment.setDeletedAt();
 		});
 
+		return post;
 	}
 
 	@Override
