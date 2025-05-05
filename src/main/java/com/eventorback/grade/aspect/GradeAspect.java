@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.comment.domain.entity.Comment;
 import com.eventorback.commentrecommend.domain.entity.CommentRecommend;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Aspect
 @Component
 @Order(1)
+@Transactional
 @RequiredArgsConstructor
 public class GradeAspect {
 	private final GradeService gradeService;
