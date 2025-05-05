@@ -94,7 +94,7 @@ public class CommentController {
 	public ResponseEntity<ApiResponse<Void>> deleteComment(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long commentId) {
 		commentService.deleteComment(currentUser, commentId);
-		return ApiResponse.createSuccess("댓글을 삭제 하였습니다.");
+		return ApiResponse.createSuccess("댓글을 삭제 하였습니다. 포인트 -5");
 	}
 
 }

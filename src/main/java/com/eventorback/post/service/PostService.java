@@ -59,7 +59,7 @@ public interface PostService {
 
 	String disrecommendPost(Long userId, Long postId);
 
-	void deletePost(CurrentUserDto currentUser, Long postId);
+	Post deletePost(CurrentUserDto currentUser, Long postId);
 
 	void deleteExpiredPosts();
 
