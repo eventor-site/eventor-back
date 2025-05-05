@@ -172,7 +172,6 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public GetPostResponse getPost(CurrentUserDto currentUser, String uuid, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		List<GetImageResponse> images = imageRepository.getAllByPostId(postId);
