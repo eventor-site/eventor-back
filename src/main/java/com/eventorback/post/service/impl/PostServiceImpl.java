@@ -88,10 +88,10 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetPostSimpleResponse> monitorPosts(Pageable pageable) {
+	public Page<GetPostSimpleResponse> getSpecialNoticeEventPosts(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
-		return postRepository.monitorPosts(PageRequest.of(page, pageSize));
+		return postRepository.getSpecialNoticeEventPosts(PageRequest.of(page, pageSize));
 	}
 
 	@Override

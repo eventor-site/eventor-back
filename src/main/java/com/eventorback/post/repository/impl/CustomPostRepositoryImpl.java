@@ -75,7 +75,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public Page<GetPostSimpleResponse> monitorPosts(Pageable pageable) {
+	public Page<GetPostSimpleResponse> getSpecialNoticeEventPosts(Pageable pageable) {
 		List<GetPostSimpleResponse> result = queryFactory
 			.select(Projections.constructor(
 				GetPostSimpleResponse.class,

@@ -65,10 +65,10 @@ public class PostController {
 	}
 
 	@AuthorizeRole("admin")
-	@GetMapping("/monitor/paging")
-	public ResponseEntity<ApiResponse<Page<GetPostSimpleResponse>>> monitorPosts(
+	@GetMapping("/event/special/notice/paging")
+	public ResponseEntity<ApiResponse<Page<GetPostSimpleResponse>>> getSpecialNoticeEventPosts(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
-		return ApiResponse.createSuccess(postService.monitorPosts(pageable));
+		return ApiResponse.createSuccess(postService.getSpecialNoticeEventPosts(pageable));
 	}
 
 	@GetMapping("/event/hot")
