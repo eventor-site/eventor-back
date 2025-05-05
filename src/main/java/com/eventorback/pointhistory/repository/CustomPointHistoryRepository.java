@@ -9,7 +9,7 @@ import com.eventorback.pointhistory.domain.dto.response.GetUserPointTotalRespons
 
 public interface CustomPointHistoryRepository {
 
-	Page<GetUserPointTotalResponse> getUserPointTotalsByPeriod(LocalDateTime startDate, LocalDateTime endDate,
+	Page<GetUserPointTotalResponse> getUserPointTotalsByPeriod(LocalDateTime startTime, LocalDateTime endTime,
 		Pageable pageable);
 
 }

@@ -22,11 +22,11 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<GetUserPointTotalResponse> getUserPointTotalsByPeriod(LocalDateTime startDate, LocalDateTime endDate,
+	public Page<GetUserPointTotalResponse> getUserPointTotalsByPeriod(LocalDateTime startTime, LocalDateTime endTime,
 		Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
-		return pointHistoryRepository.getUserPointTotalsByPeriod(startDate, endDate, PageRequest.of(page, pageSize));
+		return pointHistoryRepository.getUserPointTotalsByPeriod(startTime, endTime, PageRequest.of(page, pageSize));
 	}
 
 }
