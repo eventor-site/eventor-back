@@ -23,7 +23,7 @@ public class CustomPointHistoryRepositoryImpl implements CustomPointHistoryRepos
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Page<GetUserPointTotalResponse> getUserPointTotalsByPeriod(LocalDateTime startDate, LocalDateTime endDate,
+	public Page<GetUserPointTotalResponse> getUserPointTotalsByPeriod(LocalDateTime startTime, LocalDateTime endTime,
 		Pageable pageable) {
 		List<GetUserPointTotalResponse> result = queryFactory
 			.select(Projections.constructor(
@@ -36,7 +36,7 @@ public class CustomPointHistoryRepositoryImpl implements CustomPointHistoryRepos
 			.from(pointHistory)
 			.join(pointHistory.point, point)
 			.join(pointHistory.user, user)
-			.where(pointHistory.createdAt.between(startDate, endDate))
+			.where(pointHistory.createdAt.between(startTime, endTime))
 			.groupBy(pointHistory.user.userId, pointHistory.user.nickname, pointHistory.user.email)
 			.orderBy(point.amount.sum().desc())
 			.fetch();
@@ -45,7 +45,7 @@ public class CustomPointHistoryRepositoryImpl implements CustomPointHistoryRepos
 		Long total = queryFactory
 			.select(pointHistory.user.userId.countDistinct())
 			.from(pointHistory)
-			.where(pointHistory.createdAt.between(startDate, endDate))
+			.where(pointHistory.createdAt.between(startTime, endTime))
 			.fetchOne();
 
 		return new PageImpl<>(result, pageable, total != null ? total : 0L);
