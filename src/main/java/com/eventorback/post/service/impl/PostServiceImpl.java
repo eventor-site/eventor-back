@@ -79,6 +79,7 @@ public class PostServiceImpl implements PostService {
 	private final ImageService imageService;
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<GetPostSimpleResponse> getPosts(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
@@ -86,6 +87,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<GetPostSimpleResponse> monitorPosts(Pageable pageable) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
@@ -93,36 +95,43 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetMainHotPostResponse> getHotEventPosts() {
 		return postRepository.getHotEventPosts();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetMainPostResponse> getLatestEventPosts() {
 		return postRepository.getLatestEventPosts();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetMainPostResponse> getDeadlineEventPosts() {
 		return postRepository.getDeadlineEventPosts();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
 		return postRepository.getRecommendationEventPosts();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetRecommendPostResponse> getTrendingEventPosts() {
 		return postRepository.getTrendingEventPosts();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetMainPostResponse> getCommunityPosts() {
 		return postRepository.getCommunityPosts();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName) {
 		List<Long> categoryIds = categoryService.getCategoryIds(categoryName);
 		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");
@@ -135,6 +144,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<GetPostsByCategoryNameResponse> getPostsByCategoryName(Pageable pageable, String categoryName,
 		String eventStatusName, String endType) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
@@ -154,6 +164,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<GetPostSimpleResponse> getPostsByUserId(Pageable pageable, Long userId) {
 		int page = Math.max(pageable.getPageNumber() - 1, 0);
 		int pageSize = pageable.getPageSize();
@@ -161,6 +172,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public GetPostResponse getPost(CurrentUserDto currentUser, String uuid, Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		List<GetImageResponse> images = imageRepository.getAllByPostId(postId);
@@ -197,6 +209,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public GetTempPostResponse getTempPost(Long userId) {
 		return postRepository.getTempPost(userId).orElse(null);
 	}
@@ -362,6 +375,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime,
 		LocalDateTime endTime) {
 		return postRepository.getEventPostCountByAdmin(startTime, endTime);
