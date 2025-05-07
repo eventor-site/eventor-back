@@ -69,11 +69,11 @@ public class PointAspect {
 				postRecommend.getUser().updatePoint(point.getAmount());
 
 				point = pointRepository.findOrCreatePoint("게시글 추천받기");
-				pointHistoryRepository.save(new PointHistory(postRecommend.getUser(), point));
+				pointHistoryRepository.save(new PointHistory(postRecommend.getPost().getUser(), point));
 				postRecommend.getPost().getUser().updatePoint(point.getAmount());
 			} else {
 				point = pointRepository.findOrCreatePoint("게시글 비추천받기");
-				pointHistoryRepository.save(new PointHistory(postRecommend.getUser(), point));
+				pointHistoryRepository.save(new PointHistory(postRecommend.getPost().getUser(), point));
 				postRecommend.getPost().getUser().updatePoint(point.getAmount());
 			}
 		}
@@ -93,11 +93,11 @@ public class PointAspect {
 				commentRecommend.getUser().updatePoint(point.getAmount());
 
 				point = pointRepository.findOrCreatePoint("댓글 추천받기");
-				pointHistoryRepository.save(new PointHistory(commentRecommend.getUser(), point));
+				pointHistoryRepository.save(new PointHistory(commentRecommend.getComment().getUser(), point));
 				commentRecommend.getComment().getUser().updatePoint(point.getAmount());
 			} else {
 				point = pointRepository.findOrCreatePoint("댓글 비추천받기");
-				pointHistoryRepository.save(new PointHistory(commentRecommend.getUser(), point));
+				pointHistoryRepository.save(new PointHistory(commentRecommend.getComment().getUser(), point));
 				commentRecommend.getComment().getUser().updatePoint(point.getAmount());
 			}
 		}
