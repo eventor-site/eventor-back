@@ -4,6 +4,9 @@ server:
 spring:
   datasource:
     url: ${PROD_MYSQL_URL}
+    dbcp2:
+      username: ${MYSQL_USERNAME}
+      password: ${PROD_MYSQL_PASSWORD}
 
   data:
     redis:
