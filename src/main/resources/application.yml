@@ -17,11 +17,6 @@ spring:
   profiles:
     active: dev
 
-  datasource:
-    dbcp2:
-      username: ${MYSQL_USERNAME}
-      password: ${MYSQL_PASSWORD}
-
   data:
     redis:
       password: ${REDIS_PASSWORD}

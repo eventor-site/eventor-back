@@ -19,7 +19,6 @@ public class DataSourceConfig {
 
 	/**
 	 * PoolSize = Tn × ( Cm - 1 ) + ( Tn / 2 )
-	 *
 	 * thread count : 12
 	 * simultaneous connection count : 2
 	 * pool size : 12 * ( 2 – 1 ) + (12 / 2) = 18
