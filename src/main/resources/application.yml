@@ -52,5 +52,3 @@ logging:
   level:
     com.netflix.discovery: ERROR
     com.netflix.eureka: ERROR
-
-    # 비밀번호
