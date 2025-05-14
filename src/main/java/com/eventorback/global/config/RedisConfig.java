@@ -25,17 +25,6 @@ public class RedisConfig {
 	private String password;
 
 	@Bean
-	@Primary
-	public RedisConnectionFactory redisConnectionFactory() {
-		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-		redisStandaloneConfiguration.setPort(6379);
-		redisStandaloneConfiguration.setHostName(hostname);
-		redisStandaloneConfiguration.setPassword(password);
-		redisStandaloneConfiguration.setDatabase(2);
-		return new LettuceConnectionFactory(redisStandaloneConfiguration);
-	}
-
-	@Bean
 	public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
 		RedisTemplate<String, Object> sessionRedisTemplate = new RedisTemplate<>();
 		sessionRedisTemplate.setConnectionFactory(redisConnectionFactory);
@@ -44,6 +33,17 @@ public class RedisConfig {
 		sessionRedisTemplate.setHashKeySerializer(new StringRedisSerializer());
 		sessionRedisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 		return sessionRedisTemplate;
+	}
+
+	@Bean
+	@Primary
+	public RedisConnectionFactory redisConnectionFactory() {
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setPort(6379);
+		redisStandaloneConfiguration.setHostName(hostname);
+		redisStandaloneConfiguration.setPassword(password);
+		redisStandaloneConfiguration.setDatabase(2);
+		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}
 
 	@Bean("cacheRedisConnectionFactory")
@@ -67,5 +67,28 @@ public class RedisConfig {
 		sessionRedisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 		return sessionRedisTemplate;
 	}
+
+	@Bean("keywordRedisConnectionFactory")
+	public RedisConnectionFactory keywordRedisConnectionFactory() {
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setPort(6379);
+		redisStandaloneConfiguration.setHostName(hostname);
+		redisStandaloneConfiguration.setPassword(password);
+		redisStandaloneConfiguration.setDatabase(4);
+		return new LettuceConnectionFactory(redisStandaloneConfiguration);
+	}
+
+	@Bean("keywordRedisTemplate")
+	public RedisTemplate<String, Object> keywordRedisTemplate(
+		@Qualifier("keywordRedisConnectionFactory") RedisConnectionFactory redisConnectionFactory) {
+		RedisTemplate<String, Object> sessionRedisTemplate = new RedisTemplate<>();
+		sessionRedisTemplate.setConnectionFactory(redisConnectionFactory);
+		sessionRedisTemplate.setKeySerializer(new StringRedisSerializer());
+		sessionRedisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+		sessionRedisTemplate.setHashKeySerializer(new StringRedisSerializer());
+		sessionRedisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+		return sessionRedisTemplate;
+	}
+
 }
 
