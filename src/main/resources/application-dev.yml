@@ -8,7 +8,7 @@ spring:
   data:
     redis:
       host: localhost
-      password: ${REDIS_PASSWORD}
+      password: wkddngurqudtls!
   
   # JPA 설정
   jpa:

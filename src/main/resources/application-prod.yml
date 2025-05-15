@@ -11,7 +11,7 @@ spring:
   data:
     redis:
       host: redis
-      password: ${REDIS_PASSWORD}
+      password: wkddngurqudtls!
 
   # JPA 설정
   jpa:
