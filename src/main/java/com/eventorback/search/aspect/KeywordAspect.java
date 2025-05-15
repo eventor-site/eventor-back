@@ -33,6 +33,10 @@ public class KeywordAspect {
 
 			// 누적 키도 증가
 			keywordRedisTemplate.opsForZSet().incrementScore("search_keywords:total", keyword, 1);
+
+			// 마지막 사용 시각 업데이트
+			String now = LocalDateTime.now().toString();
+			keywordRedisTemplate.opsForHash().put("search_keywords_last_used", keyword, now);
 		}
 	}
 

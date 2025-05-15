@@ -1,12 +1,16 @@
 package com.eventorback.search.scheduler;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.eventorback.global.annotation.TimedExecution;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,9 +18,54 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RankKeywordScheduler {
 	private final RedisTemplate<String, Object> keywordRedisTemplate;
+	private static final long UNUSED_DAYS_THRESHOLD = 0; // 1일 동안 검색 안 된 키워드 제거
 
+	@Value("${server.port}")
+	private String port;
+
+	@TimedExecution("인기 검색어 제거 스케줄러")
+	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
+	public void cleanUpOldKeywords() {
+
+		// 특정 포트(8101, 8103)에서만 실행
+		if (!port.equals("8101") && !port.equals("8103")) {
+			return;
+		}
+
+		Set<Object> keywords = keywordRedisTemplate.opsForZSet().range("search_keywords:total", 0, -1);
+
+		if (keywords == null) {
+			return;
+		}
+
+		LocalDateTime now = LocalDateTime.now();
+		for (Object obj : keywords) {
+			String keyword = String.valueOf(obj);
+			String lastUsedStr = (String)keywordRedisTemplate.opsForHash()
+				.get("search_keywords_last_used", keyword);
+
+			if (lastUsedStr == null) {
+				continue;
+			}
+
+			LocalDateTime lastUsed = LocalDateTime.parse(lastUsedStr);
+
+			if (Duration.between(lastUsed, now).toDays() >= UNUSED_DAYS_THRESHOLD) {
+				keywordRedisTemplate.opsForZSet().remove("search_keywords:total", keyword);
+				keywordRedisTemplate.opsForZSet().remove("search_scores:computed", keyword);
+				keywordRedisTemplate.opsForHash().delete("search_keywords_last_used", keyword);
+			}
+		}
+	}
+	
 	@Scheduled(cron = "0 */5 * * * *") // 매 5분마다
 	public void computeTrendingKeywords() {
+
+		// 특정 포트(8101, 8103)에서만 실행
+		if (!port.equals("8101") && !port.equals("8103")) {
+			return;
+		}
+
 		String currentKey = getTimeKey(-1);   // 직전 5분 구간
 		String previousKey = getTimeKey(-2); // 직전전 5분 구간
 
