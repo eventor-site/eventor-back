@@ -17,11 +17,6 @@ spring:
   profiles:
     active: dev
 
-  data:
-    redis:
-      host: localhost
-      password: ${REDIS_PASSWORD}
-
   servlet:
     multipart:
       max-file-size: 20MB # 파일 하나의 최대 크기
