@@ -36,7 +36,7 @@ public class KeywordAspect {
 
 			// 마지막 사용 시각 업데이트
 			String now = LocalDateTime.now().toString();
-			keywordRedisTemplate.opsForHash().put("search_keywords_last_used", keyword, now);
+			keywordRedisTemplate.opsForHash().put("search_keywords:last_used", keyword, now);
 		}
 	}
 

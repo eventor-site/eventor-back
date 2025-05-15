@@ -8,10 +8,6 @@ spring:
       username: ${MYSQL_USERNAME}
       password: ${PROD_MYSQL_PASSWORD}
 
-  data:
-    redis:
-      host: redis
-
   # JPA 설정
   jpa:
     open-in-view: false

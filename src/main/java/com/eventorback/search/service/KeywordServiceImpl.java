@@ -16,7 +16,7 @@ public class KeywordServiceImpl implements KeywordService {
 
 	public List<String> getTopKeywords() {
 		return keywordRedisTemplate.opsForZSet()
-			.reverseRange("search_scores:computed", 0, 9)
+			.reverseRange("search_keywords:score", 0, 9)
 			.stream()
 			.map(String::valueOf)
 			.toList();

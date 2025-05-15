@@ -25,7 +25,7 @@ public class RankKeywordScheduler {
 
 	@TimedExecution("인기 검색어 제거 스케줄러")
 	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
-	public void cleanUpOldKeywords() {
+	public void cleanUpOldTopKeywords() {
 
 		// 특정 포트(8101, 8103)에서만 실행
 		if (!port.equals("8101") && !port.equals("8103")) {
@@ -42,7 +42,7 @@ public class RankKeywordScheduler {
 		for (Object obj : keywords) {
 			String keyword = String.valueOf(obj);
 			String lastUsedStr = (String)keywordRedisTemplate.opsForHash()
-				.get("search_keywords_last_used", keyword);
+				.get("search_keywords:last_used", keyword);
 
 			if (lastUsedStr == null) {
 				continue;
@@ -52,14 +52,14 @@ public class RankKeywordScheduler {
 
 			if (Duration.between(lastUsed, now).toDays() >= UNUSED_DAYS_THRESHOLD) {
 				keywordRedisTemplate.opsForZSet().remove("search_keywords:total", keyword);
-				keywordRedisTemplate.opsForZSet().remove("search_scores:computed", keyword);
-				keywordRedisTemplate.opsForHash().delete("search_keywords_last_used", keyword);
+				keywordRedisTemplate.opsForZSet().remove("search_keywords:score", keyword);
+				keywordRedisTemplate.opsForHash().delete("search_keywords:last_used", keyword);
 			}
 		}
 	}
-	
+
 	@Scheduled(cron = "0 */5 * * * *") // 매 5분마다
-	public void computeTrendingKeywords() {
+	public void updateTopKeywords() {
 
 		// 특정 포트(8101, 8103)에서만 실행
 		if (!port.equals("8101") && !port.equals("8103")) {
@@ -85,7 +85,7 @@ public class RankKeywordScheduler {
 			double delta = current - previous;
 			double score = delta * 2.0 + Math.log(total + 1) * 1.2;
 
-			keywordRedisTemplate.opsForZSet().add("search_scores:computed", keyword, score);
+			keywordRedisTemplate.opsForZSet().add("search_keywords:score", keyword, score);
 		}
 
 	}
