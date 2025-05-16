@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RankKeywordScheduler {
 	private final RedisTemplate<String, Object> keywordRedisTemplate;
-	private static final long UNUSED_DAYS_THRESHOLD = 0; // 1일 동안 검색 안 된 키워드 제거
+	private static final long UNUSED_DAYS_THRESHOLD = 1; // 1일 동안 검색 안 된 키워드 제거
 
 	@Value("${server.port}")
 	private String port;
