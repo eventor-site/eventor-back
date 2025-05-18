@@ -10,6 +10,7 @@ import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetFixedPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
@@ -37,6 +38,8 @@ public interface PostService {
 	List<GetRecommendPostResponse> getTrendingEventPosts();
 
 	List<GetMainPostResponse> getCommunityPosts();
+
+	List<GetFixedPostResponse> getFixedPostsByCategoryName(String categoryName);
 
 	List<GetMainPostResponse> getHotPostsByCategoryName(CurrentUserDto currentUser, String categoryName);
 
@@ -66,6 +69,8 @@ public interface PostService {
 	void getSoftDeletedPosts();
 
 	Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId);
+
+	void updatePostIsFixed(Long postId, Boolean isFixed);
 
 	void deleteTempPost(Long userId);
 

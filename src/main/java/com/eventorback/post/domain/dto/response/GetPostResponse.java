@@ -20,6 +20,7 @@ public record GetPostResponse(
 	Long recommendationCount,
 	Long viewCount,
 	LocalDateTime createdAt,
+	Boolean isFixed,
 
 	String link,
 
@@ -82,6 +83,7 @@ public record GetPostResponse(
 			.recommendationCount(post.getRecommendationCount())
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
+			.isFixed(post.getIsFixed())
 
 			.link(link)
 

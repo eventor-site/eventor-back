@@ -29,6 +29,7 @@ import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetFixedPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
@@ -128,6 +129,12 @@ public class PostServiceImpl implements PostService {
 	@Transactional(readOnly = true)
 	public List<GetMainPostResponse> getCommunityPosts() {
 		return postRepository.getCommunityPosts();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<GetFixedPostResponse> getFixedPostsByCategoryName(String categoryName) {
+		return postRepository.getFixedPostsByCategoryName(categoryName);
 	}
 
 	@Override
@@ -366,6 +373,12 @@ public class PostServiceImpl implements PostService {
 		return currentUser != null &&
 			(currentUser.roles().contains("admin")
 				|| postRepository.existsByPostIdAndUserUserId(postId, currentUser.userId()));
+	}
+
+	@Override
+	public void updatePostIsFixed(Long postId, Boolean isFixed) {
+		Post post = postRepository.getPost(postId).orElseThrow(PostNotFoundException::new);
+		post.updateIsFixed(isFixed);
 	}
 
 	@Override
