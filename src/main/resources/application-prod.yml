@@ -3,15 +3,18 @@ server:
 
 spring:
   datasource:
-    url: ${PROD_MYSQL_URL}
+    router:
+      url:
+        rw: ${PROD_MYSQL_ROUTER_RW_URL}
+        ro: ${PROD_MYSQL_ROUTER_RO_URL}
     dbcp2:
       username: ${MYSQL_USERNAME}
-      password: ${PROD_MYSQL_PASSWORD}
+      password: ${MYSQL_PASSWORD}
 
   data:
     redis:
       host: redis
-      password: wkddngurqudtls!
+      password: ${REDIS_PASSWORD}
 
   # JPA 설정
   jpa:

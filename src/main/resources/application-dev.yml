@@ -3,12 +3,12 @@ spring:
     url: ${DEV_MYSQL_URL}
     dbcp2:
       username: ${MYSQL_USERNAME}
-      password: ${DEV_MYSQL_PASSWORD}
+      password: ${MYSQL_PASSWORD}
 
   data:
     redis:
       host: localhost
-      password: wkddngurqudtls!
+      password: ${REDIS_PASSWORD}
   
   # JPA 설정
   jpa:
