@@ -6,10 +6,10 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
@@ -38,7 +38,9 @@ public class DataSourceConfig {
 
 	@Bean
 	@Profile("prod")
-	public DataSource routingDataSource(@Lazy DataSource writeDataSource, @Lazy DataSource readDataSource) {
+	public DataSource routingDataSource(
+		@Qualifier("writeDataSource") DataSource writeDataSource,
+		@Qualifier("readDataSource") DataSource readDataSource) {
 		RoutingDataSource routingDataSource = new RoutingDataSource();
 		Map<Object, Object> dataSourceMap = new HashMap<>();
 		dataSourceMap.put(DataSourceContextHolder.WRITE, writeDataSource);
