@@ -38,5 +38,5 @@ eureka:
     prefer-ip-address: true
 
 upload:
-  domainUrl: https://localhost
-  path: C:/Users/dlrud/Desktop/infra/
+  domainUrl: http://localhost
+  path: C:/Users/dlrud/Desktop/eventor/image

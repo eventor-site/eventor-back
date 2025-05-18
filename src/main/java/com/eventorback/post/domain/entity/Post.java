@@ -79,6 +79,9 @@ public class Post {
 	@Column(name = "view_count")
 	private Long viewCount;
 
+	@Column(name = "is_fixed", nullable = false)
+	private Boolean isFixed;
+
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 
@@ -90,8 +93,7 @@ public class Post {
 
 	@Builder
 	public Post(Category category, User user, Status status, HotDeal hotDeal, Event event, String writer,
-		String writerGrade, String title,
-		String content) {
+		String writerGrade, String title, String content) {
 		this.category = category;
 		this.user = user;
 		this.status = status;
@@ -103,6 +105,7 @@ public class Post {
 		this.content = content;
 		this.recommendationCount = 0L;
 		this.viewCount = 0L;
+		this.isFixed = false;
 		this.createdAt = LocalDateTime.now();
 	}
 
@@ -175,6 +178,10 @@ public class Post {
 
 	public static String createAdminWriter(boolean isAdmin, String writer) {
 		return isAdmin ? "[EM] " + writer : writer;
+	}
+
+	public void updateIsFixed(Boolean isFixed) {
+		this.isFixed = isFixed;
 	}
 
 }

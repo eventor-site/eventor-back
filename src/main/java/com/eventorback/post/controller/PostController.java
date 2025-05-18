@@ -26,6 +26,7 @@ import com.eventorback.post.domain.dto.request.CreatePostRequest;
 import com.eventorback.post.domain.dto.request.UpdatePostRequest;
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetFixedPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostResponse;
@@ -100,6 +101,12 @@ public class PostController {
 	@GetMapping("/community")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getCommunityPosts() {
 		return ApiResponse.createSuccess(postService.getCommunityPosts());
+	}
+
+	@GetMapping("/fixed")
+	ResponseEntity<ApiResponse<List<GetFixedPostResponse>>> getFixedPostsByCategoryName(
+		@RequestParam String categoryName) {
+		return ApiResponse.createSuccess(postService.getFixedPostsByCategoryName(categoryName));
 	}
 
 	@GetMapping("/hot")
@@ -185,6 +192,14 @@ public class PostController {
 	public ResponseEntity<ApiResponse<Boolean>> isAuthorizedToEdit(@CurrentUser CurrentUserDto currentUser,
 		@PathVariable Long postId) {
 		return ApiResponse.createSuccess(postService.isAuthorizedToEdit(currentUser, postId));
+	}
+
+	@AuthorizeRole("admin")
+	@PutMapping("/{postId}/isFixed")
+	ResponseEntity<ApiResponse<Void>> updatePostIsFixed(@PathVariable Long postId, @RequestParam boolean isFixed) {
+		String message = isFixed ? "게시글이 고정 되었습니다." : "게시글이 고정해제 되었습니다.";
+		postService.updatePostIsFixed(postId, isFixed);
+		return ApiResponse.createSuccess(message);
 	}
 
 	@AuthorizeRole("member")

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.eventorback.global.util.SortUtil;
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetFixedPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
@@ -318,6 +319,25 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 				.and(category.name.eq("자유")))
 			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
 			.limit(20) // 상위 20개 게시물 제한
+			.fetch();
+	}
+
+	@Override
+	public List<GetFixedPostResponse> getFixedPostsByCategoryName(String categoryName) {
+		return queryFactory
+			.select(Projections.constructor(
+				GetFixedPostResponse.class,
+				post.postId,
+				post.title
+			))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨")
+				.and(category.name.eq(categoryName))
+				.and(post.isFixed)
+			)
+			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
 			.fetch();
 	}
 

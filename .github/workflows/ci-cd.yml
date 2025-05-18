@@ -24,18 +24,15 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      #      - name: Setup MySQL
-      #        uses: samin/mysql-action@v1
-      #        with:
-      #          mysql database: eventor
-      #          mysql user: ${{ secrets.MYSQL_USERNAME }}
-      #          mysql password: ${{ secrets.MYSQL_PASSWORD }}
-
       - name: Clean with Maven
         run: mvn clean
 
-      - name: Install with Maven
-        run: mvn install
+      - name: Load .env and Install with Maven
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+          export $(grep -v '^#' .env | xargs)
+          mvn install
+        shell: bash
 
       - name: Set up Docker Compose
         run: |
@@ -51,7 +48,7 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          cd .github/docker        
+          cd .github/docker
           if [ "$(curl -s https://www.eventor.store/back/actuator/version)" == "blue" ]; then
             echo "Blue version is running, building Green";
             docker-compose -f compose.green-build.yml build

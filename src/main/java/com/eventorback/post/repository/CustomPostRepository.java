@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.eventorback.post.domain.dto.response.GetEventPostCountByAdminResponse;
+import com.eventorback.post.domain.dto.response.GetFixedPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainHotPostResponse;
 import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
@@ -35,6 +36,8 @@ public interface CustomPostRepository {
 	List<GetRecommendPostResponse> getTrendingEventPosts();
 
 	List<GetMainPostResponse> getCommunityPosts();
+
+	List<GetFixedPostResponse> getFixedPostsByCategoryName(String categoryName);
 
 	List<GetMainPostResponse> getHotEventPostsByCategoryName(List<Long> categoryIds);
 
