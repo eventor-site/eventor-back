@@ -9,9 +9,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 @Configuration
 public class DataSourceConfig {
@@ -47,13 +45,6 @@ public class DataSourceConfig {
 		routingDataSource.setDefaultTargetDataSource(writeDataSource);
 
 		return routingDataSource;
-	}
-
-	@Primary
-	@Bean
-	@Profile("prod")
-	public DataSource dataSource(DataSource routingDataSource) {
-		return new LazyConnectionDataSourceProxy(routingDataSource);
 	}
 
 	@Bean
