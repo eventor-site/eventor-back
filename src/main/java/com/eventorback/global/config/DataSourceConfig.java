@@ -1,15 +1,20 @@
 package com.eventorback.global.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 @Configuration
 public class DataSourceConfig {
-
-	@Value("${spring.datasource.url}")
-	private String url;
 
 	@Value("${spring.datasource.dbcp2.username}")
 	private String username;
@@ -23,25 +28,62 @@ public class DataSourceConfig {
 	 * simultaneous connection count : 2
 	 * pool size : 12 * ( 2 – 1 ) + (12 / 2) = 18
 	 */
+
 	@Bean
-	public BasicDataSource dataSource() {
+	@Profile("dev")
+	public DataSource devDataSource(@Value("${spring.datasource.url}") String url) {
+		return createDataSource(url);
+	}
+
+	@Bean
+	@Profile("prod")
+	public DataSource routingDataSource(DataSource writeDataSource, DataSource readDataSource) {
+		RoutingDataSource routingDataSource = new RoutingDataSource();
+		Map<Object, Object> dataSourceMap = new HashMap<>();
+		dataSourceMap.put(DataSourceContextHolder.WRITE, writeDataSource);
+		dataSourceMap.put(DataSourceContextHolder.READ, readDataSource);
+
+		routingDataSource.setTargetDataSources(dataSourceMap);
+		routingDataSource.setDefaultTargetDataSource(writeDataSource);
+
+		return routingDataSource;
+	}
+
+	@Primary
+	@Bean
+	@Profile("prod")
+	public DataSource dataSource(DataSource routingDataSource) {
+		return new LazyConnectionDataSourceProxy(routingDataSource);
+	}
+
+	@Bean
+	@Profile("prod")
+	public DataSource writeDataSource(@Value("${spring.datasource.router.url.rw}") String url) {
+		return createDataSource(url);
+	}
+
+	@Bean
+	@Profile("prod")
+	public DataSource readDataSource(@Value("${spring.datasource.router.url.ro}") String url) {
+		return createDataSource(url);
+	}
+
+	private BasicDataSource createDataSource(String url) {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setUrl(url);
 		dataSource.setUsername(username);
 		dataSource.setPassword(password);
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-		// 최적화 파라미터 설정
+		// 💡 기존 설정 그대로 반영
 		dataSource.setInitialSize(18);
 		dataSource.setMaxTotal(18);
 		dataSource.setMaxIdle(18);
 		dataSource.setMinIdle(18);
 
-		// 추가 최적화 설정
 		dataSource.setTestOnBorrow(true);
 		dataSource.setValidationQuery("SELECT 1");
 
 		return dataSource;
 	}
-
 }
