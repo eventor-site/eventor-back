@@ -4,5 +4,7 @@ import java.util.List;
 
 public interface KeywordService {
 
-	List<String> getTopKeywords();
+	List<String> getKeywords();
+
+	void deleteKeyword(String keyword);
 }
