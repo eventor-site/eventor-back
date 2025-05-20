@@ -7,26 +7,22 @@ RUN apt-get update && apt-get install -y \
     unzip \
     gnupg \
     curl \
-    libxss1 \
-    libappindicator1 \
-    libgconf-2-4 \
+    jq \
     fonts-liberation \
     libasound2 \
     libnspr4 \
     libnss3 \
     libx11-xcb1 \
+    libxss1 \
     libxtst6 \
     lsb-release \
     xdg-utils \
     libgbm1 \
-    libnss3 \
     libatk-bridge2.0-0 \
     libgtk-3-0 \
-    libx11-xcb1 \
     libxcb-dri3-0 \
-    libappindicator3-1 \
     libgdk-pixbuf2.0-0 \
-    && apt-get clean
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 구글 크롬 80.0.3987.106 버전 다운로드 및 설치
 RUN wget https://mirror.cs.uchicago.edu/google-chrome/pool/main/g/google-chrome-stable/google-chrome-stable_80.0.3987.106-1_amd64.deb && \
