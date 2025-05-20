@@ -18,7 +18,7 @@ public class CrawlerScheduler {
 	private final CrawlerService crawlerService;
 
 	@TimedExecution("에펨코리아 핫딜 게시물 크롤링 스케줄러")
-	@Scheduled(cron = "0 */5 * * * *")
+	@Scheduled(cron = "0 */30 * * * *")
 	public void crawlHotDeals() {
 
 		// 리더가 아니면 실행 X
