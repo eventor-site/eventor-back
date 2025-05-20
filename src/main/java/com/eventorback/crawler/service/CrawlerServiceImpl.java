@@ -327,6 +327,17 @@ public class CrawlerServiceImpl implements CrawlerService {
 		}
 	}
 
+	// public WebDriver createWebDriver() {
+	// 	WebDriverManager.chromedriver().setup();
+	// 	ChromeOptions options = new ChromeOptions();
+	// 	options.addArguments("--headless=new");
+	// 	options.addArguments("--disable-gpu");
+	// 	options.addArguments("--lang=ko-KR");
+	// 	options.addArguments("--window-size=1920,1080");
+	// 	options.addArguments("--user-agent=..."); // 필요시 UA 설정
+	// 	return new ChromeDriver(options);
+	// }
+
 	public WebDriver createWebDriver() {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions options = new ChromeOptions();
