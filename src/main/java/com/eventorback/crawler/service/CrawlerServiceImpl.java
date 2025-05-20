@@ -330,7 +330,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 	// public WebDriver createWebDriver() {
 	// 	WebDriverManager.chromedriver().setup();
 	// 	ChromeOptions options = new ChromeOptions();
-	// 	options.addArguments("--headless=new");
+	// 	options.addArguments("--headless");
 	// 	options.addArguments("--disable-gpu");
 	// 	options.addArguments("--lang=ko-KR");
 	// 	options.addArguments("--window-size=1920,1080");
@@ -341,7 +341,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 	public WebDriver createWebDriver() {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--headless=new", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
+		options.addArguments("--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
 		return new ChromeDriver(options);
 	}
 }
