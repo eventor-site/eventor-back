@@ -5,30 +5,28 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.eventorback.global.annotation.TimedExecution;
+import com.eventorback.global.config.LeaderElectionManager;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class TopKeywordScheduler {
+	private final LeaderElectionManager leaderElectionManager;
 	private final RedisTemplate<String, Object> keywordRedisTemplate;
 	private static final long UNUSED_DAYS_THRESHOLD = 1; // 1일 동안 검색 안 된 키워드 제거
-
-	@Value("${server.port}")
-	private String port;
 
 	@TimedExecution("인기 검색어 제거 스케줄러")
 	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
 	public void cleanUpOldTopKeywords() {
 
-		// 특정 포트(8101, 8103)에서만 실행
-		if (!port.equals("8101") && !port.equals("8103")) {
+		// 리더가 아니면 실행 X
+		if (!leaderElectionManager.tryAcquireLeadership()) {
 			return;
 		}
 
@@ -61,8 +59,8 @@ public class TopKeywordScheduler {
 	@Scheduled(cron = "0 */5 * * * *") // 매 5분마다
 	public void updateTopKeywords() {
 
-		// 특정 포트(8101, 8103)에서만 실행
-		if (!port.equals("8101") && !port.equals("8103")) {
+		// 리더가 아니면 실행 X
+		if (!leaderElectionManager.tryAcquireLeadership()) {
 			return;
 		}
 
