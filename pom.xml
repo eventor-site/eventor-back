@@ -182,7 +182,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.19.1</version> <!-- 최신 버전 확인 가능 -->
+            <version>4.19.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
@@ -195,7 +195,7 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>5.8.0</version> <!-- 최신 버전 확인 -->
+            <version>5.8.0</version>
         </dependency>
 
         <dependency>
