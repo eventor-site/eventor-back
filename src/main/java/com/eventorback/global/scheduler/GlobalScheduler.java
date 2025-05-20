@@ -2,11 +2,11 @@ package com.eventorback.global.scheduler;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.eventorback.global.annotation.TimedExecution;
+import com.eventorback.global.config.LeaderElectionManager;
 import com.eventorback.post.service.PostService;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.status.repository.StatusRepository;
@@ -23,13 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class GlobalScheduler {
+	private final LeaderElectionManager leaderElectionManager;
 	private final UserRepository userRepository;
 	private final StatusRepository statusRepository;
 	private final PostService postService;
 	private final UserService userService;
-
-	@Value("${server.port}")
-	private String port;
 
 	/**
 	 * 매일 자정에 실행되어 90일 이상 로그인하지 않은 사용자들의 상태를 '휴면'으로 업데이트합니다.
@@ -38,8 +36,8 @@ public class GlobalScheduler {
 	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
 	public void dormantScheduler() {
 
-		// 특정 포트(8101, 8103)에서만 실행
-		if (!port.equals("8101") && !port.equals("8103")) {
+		// 리더가 아니면 실행 X
+		if (!leaderElectionManager.tryAcquireLeadership()) {
 			return;
 		}
 
@@ -58,8 +56,8 @@ public class GlobalScheduler {
 	@Scheduled(cron = "0 0 0 * * *")
 	public void activeScheduler() {
 
-		// 특정 포트(8101, 8103)에서만 실행
-		if (!port.equals("8101") && !port.equals("8103")) {
+		// 리더가 아니면 실행 X
+		if (!leaderElectionManager.tryAcquireLeadership()) {
 			return;
 		}
 
@@ -78,8 +76,8 @@ public class GlobalScheduler {
 	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
 	public void deleteExpiredPostsScheduler() {
 
-		// 특정 포트(8101, 8103)에서만 실행
-		if (!port.equals("8101") && !port.equals("8103")) {
+		// 리더가 아니면 실행 X
+		if (!leaderElectionManager.tryAcquireLeadership()) {
 			return;
 		}
 
@@ -94,8 +92,8 @@ public class GlobalScheduler {
 	@Scheduled(cron = "0 0 0 * * *")    // 매일 자정 마다 실행
 	public void softDeleteExpiredUsersScheduler() {
 
-		// 특정 포트(8101, 8103)에서만 실행
-		if (!port.equals("8101") && !port.equals("8103")) {
+		// 리더가 아니면 실행 X
+		if (!leaderElectionManager.tryAcquireLeadership()) {
 			return;
 		}
 
