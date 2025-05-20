@@ -1,6 +1,11 @@
 # OpenJDK 21 기반 이미지 사용
 FROM eclipse-temurin:21-jdk
 
+# 필수 패키지 설치 (bash, curl, jq, wget, unzip 등)
+RUN apt-get update && apt-get install -y \
+    bash curl jq wget unzip gnupg2 ca-certificates fonts-liberation libnss3 libxss1 libasound2 libatk-bridge2.0-0 libgtk-3-0 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxtst6 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Google Chrome 설치
 RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google.gpg && \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
