@@ -1,12 +1,12 @@
 package com.eventorback.global.scheduler;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.eventorback.global.config.LeaderElectionManager;
 import com.eventorback.post.service.PostService;
-import com.eventorback.status.repository.StatusRepository;
-import com.eventorback.user.repository.UserRepository;
 import com.eventorback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,23 @@ public class GlobalScheduler {
 	private final UserService userService;
 
 	/**
-	 * 매일 자정에 실행되어 90일 이상 로그인하지 않은 사용자들의 상태를 '휴면'으로 업데이트합니다.
+	 * 메인페이지 캐싱
+	 */
+	@Caching(evict = {
+		@CacheEvict(cacheNames = "cache", key = "'hotEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'latestEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'deadlineEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'recommendationEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'trendingEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'hotDealPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'communityPosts'", cacheManager = "cacheManager")
+	})
+	@Scheduled(cron = "0 */10 * * * *")
+	public void evictMainPageCache() {
+	}
+
+	/**
+	 * 매일 자정에 실행되어 90일 이상 로그인하지 않은 사용자들의 상태를 '휴면' 으로 업데이트 합니다.
 	 */
 	@Scheduled(cron = "0 0 0 * * *")
 	public void updateDormantUsersScheduler() {

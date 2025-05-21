@@ -3,6 +3,7 @@ package com.eventorback.post.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -98,42 +99,49 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'hotEventPosts'", cacheManager = "cacheManager")
 	public List<GetMainHotPostResponse> getHotEventPosts() {
 		return postRepository.getHotEventPosts();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'latestEventPosts'", cacheManager = "cacheManager")
 	public List<GetMainPostResponse> getLatestEventPosts() {
 		return postRepository.getLatestEventPosts();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'deadlineEventPosts'", cacheManager = "cacheManager")
 	public List<GetMainPostResponse> getDeadlineEventPosts() {
 		return postRepository.getDeadlineEventPosts();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'recommendationEventPosts'", cacheManager = "cacheManager")
 	public List<GetRecommendPostResponse> getRecommendationEventPosts() {
 		return postRepository.getRecommendationEventPosts();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'trendingEventPosts'", cacheManager = "cacheManager")
 	public List<GetRecommendPostResponse> getTrendingEventPosts() {
 		return postRepository.getTrendingEventPosts();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'hotDealPosts'", cacheManager = "cacheManager")
 	public List<GetMainPostResponse> getHotDealPosts() {
 		return postRepository.getHotDealPosts();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "cache", key = "'communityPosts'", cacheManager = "cacheManager")
 	public List<GetMainPostResponse> getCommunityPosts() {
 		return postRepository.getCommunityPosts();
 	}
