@@ -7,4 +7,8 @@ public interface KeywordService {
 	List<String> getKeywords();
 
 	void deleteKeyword(String keyword);
+
+	void cleanUpOldTopKeywords();
+
+	void updateTopKeywords();
 }

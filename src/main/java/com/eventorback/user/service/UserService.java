@@ -72,4 +72,8 @@ public interface UserService {
 
 	void softDeleteExpiredUsers();
 
+	void updateDormantUsers();
+
+	void unlockExpiredStopUsers();
+
 }

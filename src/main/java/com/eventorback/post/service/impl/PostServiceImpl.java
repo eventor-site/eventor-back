@@ -20,6 +20,7 @@ import com.eventorback.comment.repository.CommentRepository;
 import com.eventorback.event.domain.entity.Event;
 import com.eventorback.event.repository.EventRepository;
 import com.eventorback.favorite.repository.FavoriteRepository;
+import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.hotdeal.domain.entity.HotDeal;
 import com.eventorback.hotdeal.repository.HotDealRepository;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
@@ -351,6 +352,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@TimedExecution("만료된 게시물 삭제")
 	public void deleteExpiredPosts() {
 		List<Long> postIds = postRepository.getExpiredPostIds();
 
