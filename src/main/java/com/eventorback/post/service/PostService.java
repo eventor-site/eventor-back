@@ -23,6 +23,8 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 
 public interface PostService {
 
+	void evictMainPageCache();
+
 	Page<GetPostSimpleResponse> getPosts(Pageable pageable);
 
 	Page<GetPostSimpleResponse> getSpecialNoticeEventPosts(Pageable pageable);
@@ -36,7 +38,7 @@ public interface PostService {
 	List<GetRecommendPostResponse> getRecommendationEventPosts();
 
 	List<GetRecommendPostResponse> getTrendingEventPosts();
-	
+
 	List<GetMainPostResponse> getHotDealPosts();
 
 	List<GetMainPostResponse> getCommunityPosts();
