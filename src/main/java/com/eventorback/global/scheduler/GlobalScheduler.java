@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class GlobalScheduler {
 	private final LeaderElectionManager leaderElectionManager;
-	private final UserRepository userRepository;
-	private final StatusRepository statusRepository;
 	private final PostService postService;
 	private final UserService userService;
 
