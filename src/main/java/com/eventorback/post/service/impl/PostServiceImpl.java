@@ -3,7 +3,9 @@ package com.eventorback.post.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,6 +82,19 @@ public class PostServiceImpl implements PostService {
 	private final CategoryService categoryService;
 	private final ApplicationContext applicationContext;
 	private final ImageService imageService;
+
+	@Override
+	@Caching(evict = {
+		@CacheEvict(cacheNames = "cache", key = "'hotEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'latestEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'deadlineEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'recommendationEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'trendingEventPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'hotDealPosts'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'communityPosts'", cacheManager = "cacheManager")
+	})
+	public void evictMainPageCache() {
+	}
 
 	@Override
 	@Transactional(readOnly = true)

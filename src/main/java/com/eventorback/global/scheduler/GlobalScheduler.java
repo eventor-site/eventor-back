@@ -1,7 +1,5 @@
 package com.eventorback.global.scheduler;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,19 +22,15 @@ public class GlobalScheduler {
 	private final UserService userService;
 
 	/**
-	 * 메인페이지 캐싱
+	 * 메인페이지 캐싱 제거
 	 */
-	@Caching(evict = {
-		@CacheEvict(cacheNames = "cache", key = "'hotEventPosts'", cacheManager = "cacheManager"),
-		@CacheEvict(cacheNames = "cache", key = "'latestEventPosts'", cacheManager = "cacheManager"),
-		@CacheEvict(cacheNames = "cache", key = "'deadlineEventPosts'", cacheManager = "cacheManager"),
-		@CacheEvict(cacheNames = "cache", key = "'recommendationEventPosts'", cacheManager = "cacheManager"),
-		@CacheEvict(cacheNames = "cache", key = "'trendingEventPosts'", cacheManager = "cacheManager"),
-		@CacheEvict(cacheNames = "cache", key = "'hotDealPosts'", cacheManager = "cacheManager"),
-		@CacheEvict(cacheNames = "cache", key = "'communityPosts'", cacheManager = "cacheManager")
-	})
 	@Scheduled(cron = "0 */10 * * * *")
 	public void evictMainPageCache() {
+		if (!leaderElectionManager.tryAcquireLeadership()) {
+			return;
+		}
+
+		postService.evictMainPageCache();
 	}
 
 	/**
