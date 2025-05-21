@@ -7,9 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LeaderElectionManager {
@@ -36,7 +34,6 @@ public class LeaderElectionManager {
 
 		if (Boolean.TRUE.equals(isAcquired)) {
 			// 락 선점 성공 → 리더
-			log.info("백엔드 스케줄러 작업 서버: {}", instanceId);
 			return true;
 		}
 

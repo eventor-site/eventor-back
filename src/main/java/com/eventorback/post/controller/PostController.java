@@ -98,6 +98,11 @@ public class PostController {
 		return ApiResponse.createSuccess(postService.getTrendingEventPosts());
 	}
 
+	@GetMapping("/hotDeal")
+	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getHotDealPosts() {
+		return ApiResponse.createSuccess(postService.getHotDealPosts());
+	}
+
 	@GetMapping("/community")
 	public ResponseEntity<ApiResponse<List<GetMainPostResponse>>> getCommunityPosts() {
 		return ApiResponse.createSuccess(postService.getCommunityPosts());
