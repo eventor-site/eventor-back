@@ -297,6 +297,32 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
+	public List<GetMainPostResponse> getHotDealPosts() {
+		return queryFactory
+			.select(Projections.constructor(
+				GetMainPostResponse.class,
+				post.postId,
+				post.title,
+				JPAExpressions
+					.select(image.url)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true))),
+				JPAExpressions
+					.select(image.type)
+					.from(image)
+					.where(image.post.postId.eq(post.postId).and(image.isThumbnail.eq(true)))
+			))
+			.from(post)
+			.join(post.category, category)
+			.join(post.status, status)
+			.where(status.name.eq("작성됨")
+				.and(category.name.eq("핫딜")))
+			.orderBy(post.createdAt.desc())
+			.limit(20) // 상위 20개 게시물 제한
+			.fetch();
+	}
+
+	@Override
 	public List<GetMainPostResponse> getCommunityPosts() {
 		return queryFactory
 			.select(Projections.constructor(
@@ -317,7 +343,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.join(post.status, status)
 			.where(status.name.eq("작성됨")
 				.and(category.name.eq("자유")))
-			.orderBy(post.createdAt.desc()) // 조회수 기준 정렬
+			.orderBy(post.createdAt.desc())
 			.limit(20) // 상위 20개 게시물 제한
 			.fetch();
 	}

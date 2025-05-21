@@ -127,6 +127,12 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	@Transactional(readOnly = true)
+	public List<GetMainPostResponse> getHotDealPosts() {
+		return postRepository.getHotDealPosts();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public List<GetMainPostResponse> getCommunityPosts() {
 		return postRepository.getCommunityPosts();
 	}

@@ -35,6 +35,8 @@ public interface CustomPostRepository {
 
 	List<GetRecommendPostResponse> getTrendingEventPosts();
 
+	List<GetMainPostResponse> getHotDealPosts();
+
 	List<GetMainPostResponse> getCommunityPosts();
 
 	List<GetFixedPostResponse> getFixedPostsByCategoryName(String categoryName);
