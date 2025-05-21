@@ -48,3 +48,8 @@ logging:
   level:
     com.netflix.discovery: ERROR
     com.netflix.eureka: ERROR
+    io.github.bonigarcia.wdm.WebDriverManager: ERROR
+    org.openqa.selenium.devtools.CdpVersionFinder: ERROR
+    org.openqa.selenium.chromium.ChromiumDriver: ERROR
+
+
