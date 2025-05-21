@@ -26,6 +26,7 @@ import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaDetailResponse;
 import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaItemResponse;
 import com.eventorback.crawler.domain.entity.Crawler;
 import com.eventorback.crawler.respository.CrawlerRepository;
+import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.image.exception.ImageConvertException;
 import com.eventorback.image.service.CustomMultipartFile;
 import com.eventorback.image.service.ImageService;
@@ -49,6 +50,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 	private final PostService postService;
 	private static final Long ADMIN_USERID = 3L;
 
+	@TimedExecution("에펨코리아 핫딜 게시물 크롤링")
 	public void refreshAndSaveNewItems() {
 		Crawler crawler = crawlerRepository.findTopByOrderByCrawlerIdDesc()
 			.orElseGet(() -> crawlerRepository.save(new Crawler("null")));
@@ -131,7 +133,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 			String title = driver.findElement(By.cssSelector("div.board .top_area h1 span")).getText();
 			String link = getAttrByLabel(driver, "관련 URL", "href");
-			String shoppingMall = getTextByLabel(driver, "쇼핑몰");
+			String shoppingMallStr = getTextByLabel(driver, "쇼핑몰");
+			String shoppingMall = formattingShoppingMall(shoppingMallStr);
 			String product = getTextByLabel(driver, "상품명");
 			String priceStr = getTextByLabel(driver, "가격");
 			Long price = extractPriceAsLong(priceStr);

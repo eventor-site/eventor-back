@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.bannickname.service.BanNicknameService;
+import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.global.util.PasswordUtil;
 import com.eventorback.grade.domain.entity.Grade;
 import com.eventorback.grade.exception.GradeNotFoundException;
@@ -307,8 +308,31 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@TimedExecution("만료된 계정 Soft Delete")
 	public void softDeleteExpiredUsers() {
 		List<User> expiredUsers = userRepository.getExpiredUsers();
 		expiredUsers.forEach(User::withdrawUser);
+	}
+
+	@Override
+	@TimedExecution("휴면 계정 전환")
+	public void updateDormantUsers() {
+		Status dormantStatus = statusRepository.findOrCreateStatus("회원", "휴면");
+		List<Long> userIds = userRepository.getDormantUsers();
+
+		if (!userIds.isEmpty()) {
+			userRepository.updateUserStatusToDormant(userIds, dormantStatus);
+		}
+	}
+
+	@Override
+	@TimedExecution("정지 계정 정상화")
+	public void unlockExpiredStopUsers() {
+		List<Long> userIds = userRepository.getStopUsers();
+		Status activeStatus = statusRepository.findOrCreateStatus("회원", "활성");
+
+		if (!userIds.isEmpty()) {
+			userRepository.updateUserStatusToActive(userIds, activeStatus);
+		}
 	}
 }
