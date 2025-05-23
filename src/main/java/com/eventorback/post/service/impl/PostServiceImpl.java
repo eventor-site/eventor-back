@@ -455,7 +455,7 @@ public class PostServiceImpl implements PostService {
 	// TODO: 추구 업로드 구역 분리, 추후 파일크기 10MB or 50,000건 넘을 경우 생성시간 기준 기간별 조회로 개선
 	@Override
 	public void createSitemap() {
-		List<GetSitemapResponse> posts = postRepository.createSitemap();
+		List<GetSitemapResponse> posts = postRepository.getPostsSitemap();
 
 		StringBuilder sitemapBuilder = new StringBuilder();
 		sitemapBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");

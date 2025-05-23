@@ -654,7 +654,7 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 	}
 
 	@Override
-	public List<GetSitemapResponse> createSitemap() {
+	public List<GetSitemapResponse> getPostsSitemap() {
 		return queryFactory
 			.select(Projections.constructor(GetSitemapResponse.class,
 				post.postId,

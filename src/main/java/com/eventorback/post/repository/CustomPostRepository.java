@@ -63,5 +63,5 @@ public interface CustomPostRepository {
 
 	List<Long> getSoftDeletedPostIds();
 
-	List<GetSitemapResponse> createSitemap();
+	List<GetSitemapResponse> getPostsSitemap();
 }
