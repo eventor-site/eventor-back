@@ -230,4 +230,11 @@ public class PostController {
 			postService.deleteEventPostsByTitleContainKeyword(currentUser, keyword) + "개 삭제되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
+	@PostMapping("/sitemap")
+	public ResponseEntity<ApiResponse<Void>> createSitemap() {
+		postService.createSitemap();
+		return ApiResponse.createSuccess("sitemap.xml 파일 생성 완료");
+	}
+
 }
