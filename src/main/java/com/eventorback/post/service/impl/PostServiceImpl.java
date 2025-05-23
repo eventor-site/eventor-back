@@ -452,6 +452,7 @@ public class PostServiceImpl implements PostService {
 		return postIds.size();
 	}
 
+	// TODO: 추구 업로드 구역 분리, 추후 파일크기 10MB or 50,000건 넘을 경우 생성시간 기준 기간별 조회로 개선
 	@Override
 	public void createSitemap() {
 		List<GetSitemapResponse> posts = postRepository.createSitemap();
@@ -474,7 +475,7 @@ public class PostServiceImpl implements PostService {
 		sitemapBuilder.append("</urlset>\n");
 
 		// 폴더 생성
-		Path folderPath = Paths.get(uploadPath, "sitemap");
+		Path folderPath = Paths.get(uploadPath, "postimage/sitemap");
 		imageService.createDirectoryIfNotExists(folderPath);
 
 		// 경로 및 파일명
