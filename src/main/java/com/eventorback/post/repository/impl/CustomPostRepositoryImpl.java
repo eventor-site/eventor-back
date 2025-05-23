@@ -25,6 +25,7 @@ import com.eventorback.post.domain.dto.response.GetMainPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
+import com.eventorback.post.domain.dto.response.GetSitemapResponse;
 import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.CustomPostRepository;
@@ -649,6 +650,18 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
 			.select(post.postId)
 			.from(post)
 			.where(post.deletedAt.isNotNull())
+			.fetch();
+	}
+
+	@Override
+	public List<GetSitemapResponse> createSitemap() {
+		return queryFactory
+			.select(Projections.constructor(GetSitemapResponse.class,
+				post.postId,
+				post.createdAt))
+			.from(post)
+			.where(status.name.eq("작성됨"))
+			.orderBy(post.postId.asc())
 			.fetch();
 	}
 

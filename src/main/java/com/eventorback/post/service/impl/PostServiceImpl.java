@@ -1,8 +1,16 @@
 package com.eventorback.post.service.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -27,6 +35,7 @@ import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.hotdeal.domain.entity.HotDeal;
 import com.eventorback.hotdeal.repository.HotDealRepository;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
+import com.eventorback.image.exception.FileSaveException;
 import com.eventorback.image.repository.ImageRepository;
 import com.eventorback.image.service.ImageService;
 import com.eventorback.post.domain.dto.request.CreatePostRequest;
@@ -40,6 +49,7 @@ import com.eventorback.post.domain.dto.response.GetPostResponse;
 import com.eventorback.post.domain.dto.response.GetPostSimpleResponse;
 import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
+import com.eventorback.post.domain.dto.response.GetSitemapResponse;
 import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
@@ -82,6 +92,12 @@ public class PostServiceImpl implements PostService {
 	private final CategoryService categoryService;
 	private final ApplicationContext applicationContext;
 	private final ImageService imageService;
+
+	@Value("${upload.domainUrl}")
+	private String domainUrl;
+
+	@Value("${upload.path}")
+	private String uploadPath;
 
 	@Override
 	@Caching(evict = {
@@ -434,5 +450,45 @@ public class PostServiceImpl implements PostService {
 		}
 
 		return postIds.size();
+	}
+
+	@Override
+	public void createSitemap() {
+		List<GetSitemapResponse> posts = postRepository.createSitemap();
+
+		StringBuilder sitemapBuilder = new StringBuilder();
+		sitemapBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		sitemapBuilder.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+
+		for (GetSitemapResponse post : posts) {
+			String lastmod = post.createdAt()
+				.atOffset(ZoneOffset.ofHours(9))  // Asia/Seoul 기준 (UTC+9)
+				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+			sitemapBuilder.append("  <url>\n");
+			sitemapBuilder.append("    <loc>").append(domainUrl).append("/").append(post.postId()).append("</loc>\n");
+			sitemapBuilder.append("    <lastmod>").append(lastmod).append("</lastmod>\n");
+			sitemapBuilder.append("  </url>\n");
+		}
+
+		sitemapBuilder.append("</urlset>\n");
+
+		// 폴더 생성
+		Path folderPath = Paths.get(uploadPath, "sitemap");
+		imageService.createDirectoryIfNotExists(folderPath);
+
+		// 경로 및 파일명
+		Path filePath = folderPath.resolve("sitemap.xml");
+
+		try {
+			Files.writeString(
+				filePath,
+				sitemapBuilder.toString(),
+				StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING
+			);
+		} catch (IOException e) {
+			throw new FileSaveException("사이트맵 저장 실패: " + e.getMessage());
+		}
 	}
 }

@@ -81,4 +81,6 @@ public interface PostService {
 	List<GetEventPostCountByAdminResponse> getEventPostCountByAdmin(LocalDateTime startTime, LocalDateTime endTime);
 
 	Integer deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword);
+
+	void createSitemap();
 }
