@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -74,6 +75,14 @@ public class GlobalController {
 		postService.getSoftDeletedPosts();
 
 		return ApiResponse.createSuccess("SoftDeleted 게시물 삭제 완료");
+	}
+
+	@TimedExecution("Sitemap.xml 파일 생성")
+	@PostMapping("/posts/sitemap")
+	public ResponseEntity<ApiResponse<Void>> createSitemap() {
+		postService.createSitemap();
+
+		return ApiResponse.createSuccess("Sitemap.xml 파일 생성 완료");
 	}
 
 }
