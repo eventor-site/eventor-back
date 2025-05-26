@@ -257,13 +257,13 @@ public class CrawlerServiceImpl implements CrawlerService {
 	 */
 	private Long extractPriceAsLong(String priceStr) {
 		if (priceStr == null || priceStr.isBlank())
-			return null;
+			return 0L;
 
 		// "9,900원" → "9900"
 		String numeric = priceStr.replaceAll("[^\\d]", "");  // 숫자 이외 제거
 
 		if (numeric.isEmpty())
-			return null;
+			return 0L;
 		return Long.parseLong(numeric);
 	}
 
