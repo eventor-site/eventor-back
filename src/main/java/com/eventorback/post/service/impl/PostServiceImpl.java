@@ -467,7 +467,11 @@ public class PostServiceImpl implements PostService {
 				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
 			sitemapBuilder.append("  <url>\n");
-			sitemapBuilder.append("    <loc>").append(domainUrl).append("/").append(post.postId()).append("</loc>\n");
+			sitemapBuilder.append("    <loc>")
+				.append(domainUrl)
+				.append("/posts/")
+				.append(post.postId())
+				.append("</loc>\n");
 			sitemapBuilder.append("    <lastmod>").append(lastmod).append("</lastmod>\n");
 			sitemapBuilder.append("  </url>\n");
 		}
