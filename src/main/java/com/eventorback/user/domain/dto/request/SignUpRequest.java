@@ -13,6 +13,7 @@ public record SignUpRequest(
 	String gender,
 	String phone,
 	String oauthId,
-	String oauthType) {
+	String oauthType,
+	String certifyCode) {
 }
 
