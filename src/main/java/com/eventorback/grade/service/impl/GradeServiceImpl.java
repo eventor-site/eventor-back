@@ -26,7 +26,6 @@ public class GradeServiceImpl implements GradeService {
 	private final GradeRepository gradeRepository;
 
 	@Override
-	@Transactional(readOnly = true)
 	@Cacheable(cacheNames = "cache", key = "'grades'", cacheManager = "cacheManager")
 	public List<Grade> findAllByOrderByMinAmountAsc() {
 		return gradeRepository.findAllByOrderByMinAmountAsc();
