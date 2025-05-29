@@ -1,5 +1,9 @@
 package com.eventorback.global.handler;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +12,9 @@ import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.global.exception.GlobalException;
 import com.eventorback.global.exception.payload.ErrorStatus;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -34,9 +41,20 @@ public class GlobalExceptionHandler {
 	// 	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 데이터를 찾을 수 없습니다.");
 	// }
 	//
-	// // 500 INTERNAL SERVER ERROR (서버 내부 오류)
-	// @ExceptionHandler(Exception.class)
-	// public ResponseEntity<String> handleException() {
-	// 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 에러");
-	// }
+
+	// 500 INTERNAL SERVER ERROR (서버 내부 오류)
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ApiResponse<String>> handleException(Exception e) {
+		String errMsg = getFullStackTrace(e);
+		log.error(errMsg);
+		return ApiResponse.createError(HttpStatus.INTERNAL_SERVER_ERROR, errMsg);
+	}
+
+	private String getFullStackTrace(Exception e) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		return sw.toString();
+	}
+
 }
