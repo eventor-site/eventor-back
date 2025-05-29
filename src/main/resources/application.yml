@@ -41,6 +41,10 @@ spring:
           starttls:
             enable: true
 
+openApi:
+  geocoder: ${GEOCODER_KEY}
+  tour: ${TOUR_KEY}
+
 logging:
   file:
     path: ./logs
