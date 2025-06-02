@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: 🔧 [빌드]
+    name: [ 🔧빌드 ]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -61,7 +61,7 @@ jobs:
           fi
 
   server:
-    name: 🚀 [배포]
+    name: [ 🚀배포 ]
     runs-on: ubuntu-22.04
     needs: build
     steps:
