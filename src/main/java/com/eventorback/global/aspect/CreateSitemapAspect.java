@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -33,6 +34,7 @@ public class CreateSitemapAspect {
 		if (args.length > 0 && !(boolean)args[2] && result instanceof CreatePostResponse(Long postId)) {
 			// 현재 시간 ISO 8601 형식으로
 			String now = OffsetDateTime.now(ZoneId.of("Asia/Seoul"))
+				.truncatedTo(ChronoUnit.SECONDS)
 				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
 			String newEntry = String.format("""
