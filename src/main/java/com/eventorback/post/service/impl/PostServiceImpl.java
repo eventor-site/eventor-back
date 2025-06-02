@@ -8,6 +8,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -464,6 +465,7 @@ public class PostServiceImpl implements PostService {
 		for (GetSitemapResponse post : posts) {
 			String lastmod = post.createdAt()
 				.atOffset(ZoneOffset.ofHours(9))  // Asia/Seoul 기준 (UTC+9)
+				.truncatedTo(ChronoUnit.SECONDS)
 				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
 			sitemapBuilder.append("  <url>\n");
