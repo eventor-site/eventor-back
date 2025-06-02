@@ -39,6 +39,8 @@ public class CustomPointHistoryRepositoryImpl implements CustomPointHistoryRepos
 			.where(pointHistory.createdAt.between(startTime, endTime))
 			.groupBy(pointHistory.user.userId, pointHistory.user.nickname, pointHistory.user.email)
 			.orderBy(point.amount.sum().desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
 			.fetch();
 
 		// 전체 유저 수 (group 기준 개수)
