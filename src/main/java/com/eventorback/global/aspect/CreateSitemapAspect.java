@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.eventorback.post.domain.dto.response.CreatePostResponse;
@@ -18,6 +19,12 @@ import com.eventorback.post.domain.dto.response.CreatePostResponse;
 @Aspect
 @Component
 public class CreateSitemapAspect {
+
+	@Value("${upload.domainUrl}")
+	private String domainUrl;
+
+	@Value("${upload.path}")
+	private String uploadPath;
 
 	@AfterReturning(value = "execution(* com.eventorback.post.service.impl.PostServiceImpl.createPost(..))", returning = "result")
 	public void sitemap(JoinPoint joinPoint, Object result) {
@@ -30,14 +37,12 @@ public class CreateSitemapAspect {
 
 			String newEntry = String.format("""
 				<url>
-				  <loc>https://www.eventor.store/post/%d</loc>
+				  <loc>%s/posts/%d</loc>
 				  <lastmod>%s</lastmod>
-				  <changefreq>never</changefreq>
-				  <priority>0.8</priority>
 				</url>
-				""", postId, now);
+				""", domainUrl, postId, now);
 
-			File sitemapFile = new File("/your/path/to/static/sitemap.xml");
+			File sitemapFile = new File(uploadPath + "/postimage/sitemap/sitemap.xml");
 			if (!sitemapFile.exists())
 				return;
 
