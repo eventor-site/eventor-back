@@ -405,7 +405,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void getSoftDeletedPosts() {
+	public void deleteSoftDeletedPosts() {
 		List<Long> postIds = postRepository.getSoftDeletedPostIds();
 
 		postIds.forEach(postId -> {

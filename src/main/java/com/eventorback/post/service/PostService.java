@@ -70,7 +70,7 @@ public interface PostService {
 
 	void deleteExpiredPosts();
 
-	void getSoftDeletedPosts();
+	void deleteSoftDeletedPosts();
 
 	Boolean isAuthorizedToEdit(CurrentUserDto currentUser, Long postId);
 

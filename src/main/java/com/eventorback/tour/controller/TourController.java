@@ -1,5 +1,7 @@
 package com.eventorback.tour.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.tour.domain.dto.response.GetTourResponse;
+import com.eventorback.tour.domain.dto.response.SearchFestivalResponse;
 import com.eventorback.tour.domain.dto.response.SearchTourResponse;
 import com.eventorback.tour.service.TourService;
 
@@ -30,6 +33,11 @@ public class TourController {
 	public ResponseEntity<ApiResponse<GetTourResponse>> getTour(
 		@PathVariable String contentId, @RequestParam String contentTypeId) {
 		return ApiResponse.createSuccess(tourApiService.getTour(contentId, contentTypeId));
+	}
+
+	@GetMapping("/festival2")
+	public ResponseEntity<ApiResponse<List<SearchFestivalResponse>>> searchFestival2() {
+		return ApiResponse.createSuccess(tourApiService.searchFestival2());
 	}
 
 }

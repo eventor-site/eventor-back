@@ -70,8 +70,8 @@ public class GlobalController {
 
 	@TimedExecution("SoftDeleted 게시물 삭제")
 	@DeleteMapping("/posts/cleanup")
-	public ResponseEntity<ApiResponse<List<GetImageResponse>>> getSoftDeletedPosts() {
-		postService.getSoftDeletedPosts();
+	public ResponseEntity<ApiResponse<List<GetImageResponse>>> deleteSoftDeletedPosts() {
+		postService.deleteSoftDeletedPosts();
 
 		return ApiResponse.createSuccess("SoftDeleted 게시물 삭제 완료");
 	}

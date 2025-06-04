@@ -34,4 +34,9 @@ public interface TourApiClient {
 	Map<String, Object> getDetailImage2(@RequestParam String MobileOS, @RequestParam String MobileApp,
 		@RequestParam String _type, @RequestParam String contentId, @RequestParam String serviceKey);
 
+	@GetMapping("/searchFestival2")
+	Map<String, Object> searchFestival2(@RequestParam Integer numOfRows, @RequestParam String MobileOS,
+		@RequestParam String MobileApp, @RequestParam String _type, @RequestParam String arrange,
+		@RequestParam String eventStartDate, @RequestParam String eventEndDate, @RequestParam String serviceKey);
+
 }
