@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.eventorback.global.config.LeaderElectionManager;
 import com.eventorback.post.service.PostService;
+import com.eventorback.tour.service.TourService;
 import com.eventorback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class GlobalScheduler {
 	private final LeaderElectionManager leaderElectionManager;
 	private final PostService postService;
 	private final UserService userService;
+	private final TourService tourService;
 
 	/**
 	 * 메인페이지 캐싱 제거
@@ -31,6 +33,18 @@ public class GlobalScheduler {
 		}
 
 		postService.evictMainPageCache();
+	}
+
+	/**
+	 * 축제 정보 캐싱 제거
+	 */
+	@Scheduled(cron = "0 0 0 * * *")
+	public void evictSearchFestival2Cache() {
+		if (!leaderElectionManager.tryAcquireLeadership()) {
+			return;
+		}
+
+		tourService.evictSearchFestival2Cache();
 	}
 
 	/**

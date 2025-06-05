@@ -14,4 +14,6 @@ public interface TourService {
 
 	List<SearchFestivalResponse> searchFestival2();
 
+	void evictSearchFestival2Cache();
+
 }

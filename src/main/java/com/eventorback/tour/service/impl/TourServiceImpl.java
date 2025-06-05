@@ -2,11 +2,14 @@ package com.eventorback.tour.service.impl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +26,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -84,29 +89,22 @@ public class TourServiceImpl implements TourService {
 	}
 
 	@Override
+	@Cacheable(cacheNames = "cache", key = "'searchFestival2'", cacheManager = "cacheManager")
 	public List<SearchFestivalResponse> searchFestival2() {
 		LocalDate today = LocalDate.now();
-		String eventStartDate;
-		String eventEndDate = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-		if (today.getMonthValue() == 1) {
-			// 1월인 경우 전년도 12월 1일을 시작일로
-			LocalDate start = LocalDate.of(today.getYear() - 1, 12, 1);
-			eventStartDate = start.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		} else {
-			// 그 외는 올해 1월 1일
-			LocalDate start = LocalDate.of(today.getYear(), 1, 1);
-			eventStartDate = start.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		}
+		LocalDate start = today.minusDays(1);
+		LocalDate end = today.plusMonths(3);
 
-		Map<String, Object> searchFestival2 = tourApiClient.searchFestival2(100, "WEB", "이벤터", "json", "R",
-			eventStartDate,
-			eventEndDate, tourApiKey);
+		String eventStartDate = start.format(formatter);
+		String eventEndDate = end.format(formatter);
+
+		Map<String, Object> searchFestival2 = tourApiClient.searchFestival2(1000, "WEB", "이벤터", "json", "R",
+			eventStartDate, eventEndDate, tourApiKey);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		List<SearchFestivalResponse> result = new ArrayList<>();
-
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 		try {
 			// Map → JsonNode 변환
@@ -115,6 +113,18 @@ public class TourServiceImpl implements TourService {
 
 			if (itemsNode.isArray()) {
 				for (JsonNode item : itemsNode) {
+					String startStr = item.path("eventstartdate").asText(null);
+					String endStr = item.path("eventenddate").asText(null);
+
+					LocalDate startDate = SearchFestivalResponse.parseDate(startStr, formatter);
+					LocalDate endDate = SearchFestivalResponse.parseDate(endStr, formatter);
+
+					String formattedStart = SearchFestivalResponse.formatWithDayOfWeek(startDate);
+					String formattedEnd = SearchFestivalResponse.formatWithDayOfWeek(endDate);
+
+					String status = SearchFestivalResponse.calculateEventStatus(startDate, endDate, today);
+					Integer remaining = (endDate != null) ? (int)ChronoUnit.DAYS.between(today, startDate) : null;
+
 					result.add(
 						SearchFestivalResponse.builder()
 							.contentId(item.path("contentid").asText(null))
@@ -122,10 +132,13 @@ public class TourServiceImpl implements TourService {
 							.title(item.path("title").asText(null))
 							.addr1(item.path("addr1").asText(null))
 							.addr2(item.path("addr2").asText(null))
-							.eventStartDate(item.path("eventstartdate").asText(null))
-							.eventEndDate(item.path("eventenddate").asText(null))
+							.eventStartDate(formattedStart)
+							.eventEndDate(formattedEnd)
 							.firstImage(item.path("firstimage").asText(null))
 							.tel(item.path("tel").asText(null))
+							.eventStatusName(status)
+							.remainingDay(remaining)
+							.rawEventStartDate(startDate)
 							.build()
 					);
 				}
@@ -133,19 +146,37 @@ public class TourServiceImpl implements TourService {
 
 			// 시작일 기준 최신순으로 정렬
 			result.sort((a, b) -> {
-				try {
-					LocalDate dateA = LocalDate.parse(a.eventStartDate(), formatter);
-					LocalDate dateB = LocalDate.parse(b.eventStartDate(), formatter);
-					return dateB.compareTo(dateA); // 최신 날짜가 먼저
-				} catch (Exception e) {
-					return 0; // 파싱 실패 시 정렬 무시
+				int priorityA = SearchFestivalResponse.getStatusPriority(a.eventStatusName());
+				int priorityB = SearchFestivalResponse.getStatusPriority(b.eventStatusName());
+
+				if (priorityA != priorityB) {
+					return Integer.compare(priorityA, priorityB); // 우선순위 오름차순 (1이 먼저)
 				}
+
+				// 상태가 같으면 시작일 기준 최신순
+				LocalDate dateA = a.rawEventStartDate();
+				LocalDate dateB = b.rawEventStartDate();
+
+				if (dateA == null || dateB == null)
+					return 0;
+
+				// 상태별 정렬 방식 분기
+				return switch (a.eventStatusName()) {
+					case "예정" -> dateA.compareTo(dateB);      // 가까운 순 (오름차순)
+					default -> dateB.compareTo(dateA);          // 최신 순 (내림차순)
+				};
 			});
 
 		} catch (Exception ignored) {
 		}
 
 		return result;
+	}
+
+	@Override
+	@CacheEvict(cacheNames = "cache", key = "'searchFestival2'", cacheManager = "cacheManager")
+	public void evictSearchFestival2Cache() {
+
 	}
 
 }
