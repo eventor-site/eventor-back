@@ -10,17 +10,21 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.tour.client.GeocoderApiClient;
 import com.eventorback.tour.client.TourApiClient;
 import com.eventorback.tour.domain.dto.response.GeoPointResponse;
+import com.eventorback.tour.domain.dto.response.GetOngoingFestivalResponse;
 import com.eventorback.tour.domain.dto.response.GetTourResponse;
 import com.eventorback.tour.domain.dto.response.SearchFestivalResponse;
 import com.eventorback.tour.domain.dto.response.SearchTourResponse;
 import com.eventorback.tour.domain.dto.response.TourApiResponse;
 import com.eventorback.tour.exception.AddressBadRequestException;
+import com.eventorback.tour.exception.GecoderAPIServerException;
+import com.eventorback.tour.exception.TourAPIServerException;
 import com.eventorback.tour.service.TourService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,8 +48,14 @@ public class TourServiceImpl implements TourService {
 
 	@Override
 	public SearchTourResponse searchTour(String address, String radius) {
-		Map<String, Object> geocoderApiResponse = geocoderApiClient.convertAddress("address", "GetCoord", address,
-			"road", geocorderApiKey);
+		Map<String, Object> geocoderApiResponse;
+
+		try {
+			geocoderApiResponse = geocoderApiClient.convertAddress("address", "GetCoord", address,
+				"road", geocorderApiKey);
+		} catch (Exception e) {
+			throw new GecoderAPIServerException();
+		}
 
 		GeoPointResponse point = GeoPointResponse.fromGeocoderApiResponse(geocoderApiResponse);
 
@@ -53,38 +63,47 @@ public class TourServiceImpl implements TourService {
 			throw new AddressBadRequestException();
 		}
 
-		Map<String, Object> tourApiResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
-			point.x(), point.y(), radius, "12", tourApiKey);
+		try {
+			Map<String, Object> tourApiResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
+				point.x(), point.y(), radius, "12", tourApiKey);
 
-		Map<String, Object> hotelResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
-			point.x(), point.y(), radius, "39", tourApiKey);
+			Map<String, Object> hotelResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
+				point.x(), point.y(), radius, "39", tourApiKey);
 
-		Map<String, Object> eateryResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
-			point.x(), point.y(), radius, "32", tourApiKey);
+			Map<String, Object> eateryResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
+				point.x(), point.y(), radius, "32", tourApiKey);
 
-		List<TourApiResponse> tours = TourApiResponse.parseTourApiResponse(tourApiResponse);
-		List<TourApiResponse> hotels = TourApiResponse.parseTourApiResponse(hotelResponse);
-		List<TourApiResponse> eateries = TourApiResponse.parseTourApiResponse(eateryResponse);
+			List<TourApiResponse> tours = TourApiResponse.parseTourApiResponse(tourApiResponse);
+			List<TourApiResponse> hotels = TourApiResponse.parseTourApiResponse(hotelResponse);
+			List<TourApiResponse> eateries = TourApiResponse.parseTourApiResponse(eateryResponse);
 
-		return new SearchTourResponse(tours, hotels, eateries);
+			return new SearchTourResponse(tours, hotels, eateries);
+		} catch (Exception e) {
+			throw new TourAPIServerException();
+		}
+
 	}
 
 	@Override
 	public GetTourResponse getTour(String contentId, String contentTypeId) {
 
-		Map<String, Object> detailCommon2 = tourApiClient.getDetailCommon2("WEB", "이벤터", "json", contentId,
-			tourApiKey);
+		try {
+			Map<String, Object> detailCommon2 = tourApiClient.getDetailCommon2("WEB", "이벤터", "json", contentId,
+				tourApiKey);
 
-		Map<String, Object> detailIntro2 = tourApiClient.getDetailIntro2("WEB", "이벤터", "json", contentId,
-			contentTypeId, tourApiKey);
+			Map<String, Object> detailIntro2 = tourApiClient.getDetailIntro2("WEB", "이벤터", "json", contentId,
+				contentTypeId, tourApiKey);
 
-		Map<String, Object> detailInfo2 = tourApiClient.getDetailInfo2("WEB", "이벤터", "json", contentId,
-			contentTypeId, tourApiKey);
+			Map<String, Object> detailInfo2 = tourApiClient.getDetailInfo2("WEB", "이벤터", "json", contentId,
+				contentTypeId, tourApiKey);
 
-		Map<String, Object> detailImage2 = tourApiClient.getDetailImage2("WEB", "이벤터", "json", contentId,
-			tourApiKey);
+			Map<String, Object> detailImage2 = tourApiClient.getDetailImage2("WEB", "이벤터", "json", contentId,
+				tourApiKey);
 
-		return GetTourResponse.buildGetTourResponse(detailCommon2, detailIntro2, detailInfo2, detailImage2);
+			return GetTourResponse.buildGetTourResponse(detailCommon2, detailIntro2, detailInfo2, detailImage2);
+		} catch (Exception e) {
+			throw new TourAPIServerException();
+		}
 
 	}
 
@@ -100,13 +119,13 @@ public class TourServiceImpl implements TourService {
 		String eventStartDate = start.format(formatter);
 		String eventEndDate = end.format(formatter);
 
-		Map<String, Object> searchFestival2 = tourApiClient.searchFestival2(1000, "WEB", "이벤터", "json", "R",
-			eventStartDate, eventEndDate, tourApiKey);
-
 		ObjectMapper objectMapper = new ObjectMapper();
 		List<SearchFestivalResponse> result = new ArrayList<>();
 
 		try {
+			Map<String, Object> searchFestival2 = tourApiClient.searchFestival2(1000, "WEB", "이벤터", "json", "R",
+				eventStartDate, eventEndDate, tourApiKey);
+
 			// Map → JsonNode 변환
 			JsonNode root = objectMapper.convertValue(searchFestival2, JsonNode.class);
 			JsonNode itemsNode = root.path("response").path("body").path("items").path("item");
@@ -168,15 +187,24 @@ public class TourServiceImpl implements TourService {
 			});
 
 		} catch (Exception ignored) {
+			return List.of();
 		}
 
 		return result;
 	}
 
 	@Override
-	@CacheEvict(cacheNames = "cache", key = "'searchFestival2'", cacheManager = "cacheManager")
-	public void evictSearchFestival2Cache() {
+	@Cacheable(cacheNames = "cache", key = "'getOngoingFestivals'", cacheManager = "cacheManager")
+	public List<GetOngoingFestivalResponse> getOngoingFestivals() {
+		return searchFestival2().stream().limit(10).map(GetOngoingFestivalResponse::fromDTO).toList();
+	}
 
+	@Override
+	@Caching(evict = {
+		@CacheEvict(cacheNames = "cache", key = "'searchFestival2'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "cache", key = "'getOngoingFestivals'", cacheManager = "cacheManager")
+	})
+	public void evictSearchFestival2Cache() {
 	}
 
 }

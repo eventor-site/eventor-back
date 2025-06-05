@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eventorback.global.dto.ApiResponse;
+import com.eventorback.tour.domain.dto.response.GetOngoingFestivalResponse;
 import com.eventorback.tour.domain.dto.response.GetTourResponse;
 import com.eventorback.tour.domain.dto.response.SearchFestivalResponse;
 import com.eventorback.tour.domain.dto.response.SearchTourResponse;
@@ -38,6 +39,11 @@ public class TourController {
 	@GetMapping("/festival2")
 	public ResponseEntity<ApiResponse<List<SearchFestivalResponse>>> searchFestival2() {
 		return ApiResponse.createSuccess(tourApiService.searchFestival2());
+	}
+
+	@GetMapping("/festivals/ongoing")
+	public ResponseEntity<ApiResponse<List<GetOngoingFestivalResponse>>> getOngoingFestivals() {
+		return ApiResponse.createSuccess(tourApiService.getOngoingFestivals());
 	}
 
 }
