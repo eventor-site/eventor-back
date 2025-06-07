@@ -89,6 +89,24 @@ public class ElasticSearchAspect {
 	}
 
 	/**
+	 * 엘라스틱서치 이벤트 게시물 종료 설정 반영
+	 */
+	@AfterReturning("execution(* com.eventorback.post.service.impl.PostServiceImpl.finishEventPost(..))")
+	public void syncPostToElasticsearchAfterReturningFinishEventPost(JoinPoint joinPoint) {
+		Object[] args = joinPoint.getArgs();
+		if (args.length > 0 && args[0] instanceof Long postId) {
+			EsPost esPost = elasticsearchRepository.findById(postId).orElse(null);
+
+			if (esPost != null) {
+				esPost.finishEvent();
+				elasticsearchRepository.save(esPost);
+			} else {
+				log.warn("엘라스틱서치 NOT FOUND 발생");
+			}
+		}
+	}
+
+	/**
 	 * 엘라스틱서치 게시물 추천/비추천
 	 */
 	@AfterReturning("execution(* com.eventorback.postrecommend.repository.PostRecommendRepository.save(..))")
