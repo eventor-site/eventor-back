@@ -26,7 +26,8 @@ public class CustomStatisticRepositoryImpl implements CustomStatisticRepository 
 				GetStatistic.class,
 				statistic.date,
 				statistic.visitorCount,
-				statistic.visitedCount,
+				statistic.mainViewCount,
+				statistic.postViewCount,
 				statistic.loginCount,
 				statistic.signupCount))
 			.from(statistic)

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.statistic.domain.dto.response.GetStatistic;
 import com.eventorback.statistic.domain.entity.Statistic;
@@ -15,6 +16,7 @@ import com.eventorback.statistic.service.StatisticService;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class StatisticServiceImpl implements StatisticService {
 	private final StatisticRepository statisticRepository;
@@ -28,13 +30,9 @@ public class StatisticServiceImpl implements StatisticService {
 
 	@Override
 	public void increaseVisitor() {
-		Statistic statistic = statisticRepository.findByDate(LocalDate.now()).orElse(null);
-		if (statistic == null) {
-			statistic = new Statistic();
-		}
+		Statistic statistic = statisticRepository.findByDate(LocalDate.now())
+			.orElseGet(() -> statisticRepository.save(new Statistic()));
 
-		statistic.updateVisitorCount();
-		statisticRepository.save(statistic);
-
+		statistic.increaseVisitorCount();
 	}
 }

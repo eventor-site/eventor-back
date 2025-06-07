@@ -27,8 +27,11 @@ public class Statistic {
 	@Column(name = "visitor_count")
 	private Long visitorCount;
 
-	@Column(name = "visited_count")
-	private Long visitedCount;
+	@Column(name = "main_view_count")
+	private Long mainViewCount;
+
+	@Column(name = "post_view_count")
+	private Long postViewCount;
 
 	@Column(name = "login_count")
 	private Long loginCount;
@@ -40,12 +43,13 @@ public class Statistic {
 	public Statistic() {
 		this.date = LocalDate.now();
 		this.visitorCount = 0L;
-		this.visitedCount = 0L;
+		this.mainViewCount = 0L;
+		this.postViewCount = 0L;
 		this.loginCount = 0L;
 		this.signupCount = 0L;
 	}
 
-	public void updateVisitorCount() {
+	public void increaseVisitorCount() {
 		this.visitorCount++;
 	}
 
@@ -53,8 +57,12 @@ public class Statistic {
 		this.loginCount = loginCount;
 	}
 
-	public void increaseVisitedCount() {
-		this.visitedCount++;
+	public void increaseMainViewCount() {
+		this.mainViewCount++;
+	}
+
+	public void increasePostViewCount() {
+		this.postViewCount++;
 	}
 
 	public void increaseSignupCount() {
