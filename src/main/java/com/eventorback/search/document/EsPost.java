@@ -128,4 +128,8 @@ public class EsPost {
 		this.imageType = image != null ? image.getType() : null;
 	}
 
+	public void finishEvent() {
+		this.endTime = LocalDateTime.now();
+	}
+
 }
