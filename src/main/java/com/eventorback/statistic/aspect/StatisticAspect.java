@@ -36,26 +36,23 @@ public class StatisticAspect {
 
 	@AfterReturning("execution(* com.eventorback.post.controller.PostController.getHotEventPosts(..))")
 	public void collectInfoAfterReturningGetMainPage() {
-		Statistic statistic = statisticRepository.findByDate(LocalDate.now()).orElse(null);
+		Statistic statistic = statisticRepository.findByDate(LocalDate.now())
+			.orElseGet(() -> statisticRepository.save(new Statistic()));
+		statistic.increaseMainViewCount();
+	}
 
-		if (statistic == null) {
-			statistic = new Statistic();
-		}
-
-		statistic.increaseVisitedCount();
-		statisticRepository.save(statistic);
+	@AfterReturning("execution(* com.eventorback.postview.repository.PostViewRepository.save(..))")
+	public void collectInfoAfterReturningGetPostView() {
+		Statistic statistic = statisticRepository.findByDate(LocalDate.now())
+			.orElseGet(() -> statisticRepository.save(new Statistic()));
+		statistic.increasePostViewCount();
 	}
 
 	@AfterReturning("execution(* com.eventorback.user.controller.UserController.signup(..))")
 	public void collectInfoAfterReturningSignup() {
-		Statistic statistic = statisticRepository.findByDate(LocalDate.now()).orElse(null);
-
-		if (statistic == null) {
-			statistic = new Statistic();
-		}
-
+		Statistic statistic = statisticRepository.findByDate(LocalDate.now())
+			.orElseGet(() -> statisticRepository.save(new Statistic()));
 		statistic.increaseSignupCount();
-		statisticRepository.save(statistic);
 	}
 
 	@AfterReturning("execution(* com.eventorback.user.service.impl.UserServiceImpl.updateLoginAt(..))")
@@ -89,13 +86,9 @@ public class StatisticAspect {
 			cacheRedisTemplate.opsForValue().set("userIds", updatedUserIdsJson, ttlInSeconds, TimeUnit.SECONDS);
 
 			// 방문자 수 통계 업데이트
-			Statistic statistic = statisticRepository.findByDate(LocalDate.now()).orElse(null);
-			if (statistic == null) {
-				statistic = new Statistic();
-			}
-
+			Statistic statistic = statisticRepository.findByDate(LocalDate.now())
+				.orElseGet(() -> statisticRepository.save(new Statistic()));
 			statistic.updateLoginCount((long)userIds.size());
-			statisticRepository.save(statistic);
 		}
 	}
 }
