@@ -39,6 +39,7 @@ public class StatisticAspect {
 		Statistic statistic = statisticRepository.findByDate(LocalDate.now())
 			.orElseGet(() -> statisticRepository.save(new Statistic()));
 		statistic.increaseMainViewCount();
+		statisticRepository.save(statistic);
 	}
 
 	@AfterReturning("execution(* com.eventorback.postview.repository.PostViewRepository.save(..))")
@@ -46,6 +47,7 @@ public class StatisticAspect {
 		Statistic statistic = statisticRepository.findByDate(LocalDate.now())
 			.orElseGet(() -> statisticRepository.save(new Statistic()));
 		statistic.increasePostViewCount();
+		statisticRepository.save(statistic);
 	}
 
 	@AfterReturning("execution(* com.eventorback.user.controller.UserController.signup(..))")
@@ -53,6 +55,7 @@ public class StatisticAspect {
 		Statistic statistic = statisticRepository.findByDate(LocalDate.now())
 			.orElseGet(() -> statisticRepository.save(new Statistic()));
 		statistic.increaseSignupCount();
+		statisticRepository.save(statistic);
 	}
 
 	@AfterReturning("execution(* com.eventorback.user.service.impl.UserServiceImpl.updateLoginAt(..))")
@@ -89,6 +92,7 @@ public class StatisticAspect {
 			Statistic statistic = statisticRepository.findByDate(LocalDate.now())
 				.orElseGet(() -> statisticRepository.save(new Statistic()));
 			statistic.updateLoginCount((long)userIds.size());
+			statisticRepository.save(statistic);
 		}
 	}
 }
