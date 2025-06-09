@@ -46,11 +46,4 @@ public class PointHistory {
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public static PointHistory toEntity(User user, Point point) {
-		return PointHistory.builder()
-			.user(user)
-			.point(point)
-			.build();
-	}
-
 }
