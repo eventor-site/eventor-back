@@ -8,9 +8,11 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
@@ -64,6 +66,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 		List<CrawlFmkoreaDetailResponse> newItems = latestCrawled.stream()
 			.map(item -> parseDetail(item.url()))
+			.filter(Objects::nonNull)
 			.toList();
 
 		for (CrawlFmkoreaDetailResponse newItem : newItems) {
@@ -130,6 +133,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 		try {
 			driver.get(url);
+			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
 			String title = driver.findElement(By.cssSelector("div.board .top_area h1 span")).getText();
 			String link = getAttrByLabel(driver, "관련 URL", "href");
@@ -176,7 +181,11 @@ public class CrawlerServiceImpl implements CrawlerService {
 			log.info("Selenium 크롤링 실패: " + e.getMessage());
 			return null;
 		} finally {
-			driver.quit();
+			try {
+				driver.quit(); // 반드시 이중 예외 처리
+			} catch (Exception e) {
+				log.warn("WebDriver 종료 실패: " + e.getMessage());
+			}
 		}
 	}
 
