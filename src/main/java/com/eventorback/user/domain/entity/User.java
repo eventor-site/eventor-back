@@ -14,6 +14,7 @@ import com.eventorback.userrole.domain.entity.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -92,7 +93,7 @@ public class User {
 	@Column(name = "oauth_type")
 	private String oauthType;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
 	private List<UserRole> userRoles;
 
 	@Builder
