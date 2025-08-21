@@ -8,10 +8,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
-	private final WebDriver delegate;
+	private final WebDriver driver;
 
-	public AutoCloseableWebDriver(WebDriver delegate) {
-		this.delegate = delegate;
+	public AutoCloseableWebDriver(WebDriver driver) {
+		this.driver = driver;
 	}
 
 	@Override
@@ -46,12 +46,12 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 
 	@Override
 	public void close() {
-		delegate.quit();
+		driver.quit();
 	}
 
 	@Override
 	public void quit() {
-		delegate.quit();
+		driver.quit();
 	}
 
 	@Override
@@ -76,6 +76,6 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 
 	@Override
 	public Options manage() {
-		return null;
+		return driver.manage();
 	}
 }
