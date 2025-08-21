@@ -28,6 +28,7 @@ import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaDetailResponse;
 import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaItemResponse;
 import com.eventorback.crawler.domain.entity.Crawler;
 import com.eventorback.crawler.respository.CrawlerRepository;
+import com.eventorback.crawler.util.AutoCloseableWebDriver;
 import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.image.exception.ImageConvertException;
 import com.eventorback.image.service.CustomMultipartFile;
@@ -129,9 +130,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 	}
 
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
-		WebDriver driver = createWebDriver();
 
-		try {
+		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(createWebDriver())) {
 			driver.get(url);
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
@@ -180,12 +180,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 		} catch (Exception e) {
 			log.info("Selenium 크롤링 실패: " + e.getMessage());
 			return null;
-		} finally {
-			try {
-				driver.quit(); // 반드시 이중 예외 처리
-			} catch (Exception e) {
-				log.warn("WebDriver 종료 실패: " + e.getMessage());
-			}
 		}
 	}
 
