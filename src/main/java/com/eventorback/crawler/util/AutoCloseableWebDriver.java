@@ -16,37 +16,37 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 
 	@Override
 	public void get(String url) {
-
+		driver.get(url);
 	}
 
 	@Override
 	public String getCurrentUrl() {
-		return "";
+		return driver.getCurrentUrl();
 	}
 
 	@Override
 	public String getTitle() {
-		return "";
+		return driver.getTitle();
 	}
 
 	@Override
 	public List<WebElement> findElements(By by) {
-		return List.of();
+		return driver.findElements(by);
 	}
 
 	@Override
 	public WebElement findElement(By by) {
-		return null;
+		return driver.findElement(by);
 	}
 
 	@Override
 	public String getPageSource() {
-		return "";
+		return driver.getPageSource();
 	}
 
 	@Override
 	public void close() {
-		driver.quit();
+		driver.close();
 	}
 
 	@Override
@@ -56,22 +56,22 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 
 	@Override
 	public Set<String> getWindowHandles() {
-		return Set.of();
+		return driver.getWindowHandles();
 	}
 
 	@Override
 	public String getWindowHandle() {
-		return "";
+		return driver.getWindowHandle();
 	}
 
 	@Override
 	public TargetLocator switchTo() {
-		return null;
+		return driver.switchTo();
 	}
 
 	@Override
 	public Navigation navigate() {
-		return null;
+		return driver.navigate();
 	}
 
 	@Override
