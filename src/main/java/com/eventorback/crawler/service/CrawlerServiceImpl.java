@@ -28,6 +28,7 @@ import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaDetailResponse;
 import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaItemResponse;
 import com.eventorback.crawler.domain.entity.Crawler;
 import com.eventorback.crawler.respository.CrawlerRepository;
+import com.eventorback.crawler.util.AutoCloseableWebDriver;
 import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.image.exception.ImageConvertException;
 import com.eventorback.image.service.CustomMultipartFile;
@@ -100,9 +101,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 	public List<CrawlFmkoreaItemResponse> crawlHotDealUntil(String lastUrl) {
 		List<CrawlFmkoreaItemResponse> results = new ArrayList<>();
-		WebDriver driver = createWebDriver();
 
-		try {
+		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(createWebDriver())) {
 			driver.get("https://www.fmkorea.com/hotdeal");
 			List<WebElement> items = driver.findElements(By.cssSelector("li.li_best2_pop0 h3.title a.hotdeal_var8"));
 
@@ -122,17 +122,11 @@ public class CrawlerServiceImpl implements CrawlerService {
 		} catch (Exception ignored) {
 			log.error("에펨코리아 핫딜 리스트 크롤링 실패");
 			return List.of();
-		} finally {
-			driver.close();
 		}
-
 	}
 
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
-
-		WebDriver driver = createWebDriver();
-
-		try {
+		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(createWebDriver())) {
 			driver.get(url);
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
@@ -145,11 +139,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 			String priceStr = getTextByLabel(driver, "가격");
 			Long price = extractPriceAsLong(priceStr);
 
-			WebElement contentTag = null;
-			try {
-				contentTag = driver.findElement(By.cssSelector("div.rd_body .xe_content"));
-			} catch (Exception ignored) {
-			}
+			WebElement contentTag = driver.findElement(By.cssSelector("div.rd_body .xe_content"));
 
 			String contentText = contentTag != null ? contentTag.getText() : "";
 			String formattedContent = formattingContent(contentText);
@@ -181,8 +171,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 		} catch (Exception e) {
 			log.info("Selenium 크롤링 실패: " + e.getMessage());
 			return null;
-		} finally {
-			driver.close();
 		}
 	}
 
