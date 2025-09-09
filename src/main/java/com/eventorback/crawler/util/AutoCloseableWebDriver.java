@@ -46,7 +46,14 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 
 	@Override
 	public void close() {
-		driver.close();
+		try {
+			driver.close();
+		} catch (Exception ignored) {
+		}
+		try {
+			driver.quit();
+		} catch (Exception ignored) {
+		}
 	}
 
 	@Override

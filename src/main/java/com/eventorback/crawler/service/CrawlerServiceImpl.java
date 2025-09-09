@@ -347,7 +347,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 	public WebDriver createWebDriver() {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
+		options.addArguments("--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage",
+			"--single-process");
 		return new ChromeDriver(options);
 	}
 }
