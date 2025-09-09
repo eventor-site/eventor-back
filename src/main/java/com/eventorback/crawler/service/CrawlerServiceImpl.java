@@ -28,7 +28,6 @@ import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaDetailResponse;
 import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaItemResponse;
 import com.eventorback.crawler.domain.entity.Crawler;
 import com.eventorback.crawler.respository.CrawlerRepository;
-import com.eventorback.crawler.util.AutoCloseableWebDriver;
 import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.image.exception.ImageConvertException;
 import com.eventorback.image.service.CustomMultipartFile;
@@ -124,14 +123,16 @@ public class CrawlerServiceImpl implements CrawlerService {
 			log.error("에펨코리아 핫딜 리스트 크롤링 실패");
 			return List.of();
 		} finally {
-			driver.quit();
+			driver.close();
 		}
 
 	}
 
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
 
-		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(createWebDriver())) {
+		WebDriver driver = createWebDriver();
+
+		try {
 			driver.get(url);
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
@@ -180,6 +181,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 		} catch (Exception e) {
 			log.info("Selenium 크롤링 실패: " + e.getMessage());
 			return null;
+		} finally {
+			driver.close();
 		}
 	}
 
@@ -347,8 +350,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 	public WebDriver createWebDriver() {
 		WebDriverManager.chromedriver().setup();
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage",
-			"--single-process");
+		options.addArguments("--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
 		return new ChromeDriver(options);
 	}
 }
