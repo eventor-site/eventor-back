@@ -44,6 +44,7 @@ import com.eventorback.user.domain.dto.response.GetUserResponse;
 import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.NicknameChangeCooldownBadRequestException;
+import com.eventorback.user.exception.UserAlreadyExistsException;
 import com.eventorback.user.exception.UserNotFoundException;
 import com.eventorback.user.exception.UserPasswordFormatBadRequestException;
 import com.eventorback.user.repository.UserRepository;
@@ -217,6 +218,10 @@ public class UserServiceImpl implements UserService {
 	public void signup(SignUpRequest request) {
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
 		Grade grade = gradeRepository.findByName("1").orElseThrow(StatusNotFoundException::new);
+
+		if (userRepository.existsByIdentifier(request.identifier())) {
+			throw new UserAlreadyExistsException();
+		}
 
 		String encodedPassword = null;
 		if (request.password() != null) {
