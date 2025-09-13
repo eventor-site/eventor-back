@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +37,6 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.sksamuel.scrimage.ImmutableImage;
 import com.sksamuel.scrimage.webp.WebpWriter;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,6 +49,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 	private final ImageService imageService;
 	private final PostService postService;
 	private static final Long ADMIN_USERID = 3L;
+	private final WebDriver webDriver;
 
 	@TimedExecution("에펨코리아 핫딜 게시물 크롤링")
 	public void refreshAndSaveNewItems() {
@@ -102,7 +100,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 	public List<CrawlFmkoreaItemResponse> crawlHotDealUntil(String lastUrl) {
 		List<CrawlFmkoreaItemResponse> results = new ArrayList<>();
 
-		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(createWebDriver())) {
+		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(webDriver)) {
+			driver.manage().deleteAllCookies();
 			driver.get("https://www.fmkorea.com/hotdeal");
 			List<WebElement> items = driver.findElements(By.cssSelector("li.li_best2_pop0 h3.title a.hotdeal_var8"));
 
@@ -126,7 +125,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 	}
 
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
-		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(createWebDriver())) {
+		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(webDriver)) {
+			driver.manage().deleteAllCookies();
 			driver.get(url);
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
@@ -335,10 +335,10 @@ public class CrawlerServiceImpl implements CrawlerService {
 	// 	return new ChromeDriver(options);
 	// }
 
-	public WebDriver createWebDriver() {
-		WebDriverManager.chromedriver().setup();
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
-		return new ChromeDriver(options);
-	}
+	// public WebDriver createWebDriver() {
+	// 	WebDriverManager.chromedriver().setup();
+	// 	ChromeOptions options = new ChromeOptions();
+	// 	options.addArguments("--headless", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
+	// 	return new ChromeDriver(options);
+	// }
 }
