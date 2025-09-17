@@ -46,24 +46,12 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 
 	@Override
 	public void close() {
-		try {
-			driver.quit();
-		} catch (Exception ignored) {
-
-		} finally {
-			killZombieChrome();
-		}
+		driver.close();
 	}
 
 	@Override
 	public void quit() {
-		try {
-			driver.quit();
-		} catch (Exception ignored) {
-
-		} finally {
-			killZombieChrome();
-		}
+		driver.quit();
 	}
 
 	@Override
@@ -89,15 +77,5 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 	@Override
 	public Options manage() {
 		return driver.manage();
-	}
-
-	private void killZombieChrome() {
-		try {
-			ProcessHandle.allProcesses()
-				.filter(ph -> ph.info().command().isPresent() &&
-					ph.info().command().get().contains("chromedriver"))
-				.forEach(ProcessHandle::destroy);
-		} catch (Exception ignored) {
-		}
 	}
 }

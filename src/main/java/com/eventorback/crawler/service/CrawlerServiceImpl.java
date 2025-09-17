@@ -27,6 +27,7 @@ import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaItemResponse;
 import com.eventorback.crawler.domain.entity.Crawler;
 import com.eventorback.crawler.respository.CrawlerRepository;
 import com.eventorback.crawler.util.AutoCloseableWebDriver;
+import com.eventorback.crawler.util.WebDriverFactory;
 import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.image.exception.ImageConvertException;
 import com.eventorback.image.service.CustomMultipartFile;
@@ -49,7 +50,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 	private final ImageService imageService;
 	private final PostService postService;
 	private static final Long ADMIN_USERID = 3L;
-	private final WebDriver webDriver;
 
 	@TimedExecution("에펨코리아 핫딜 게시물 크롤링")
 	public void refreshAndSaveNewItems() {
@@ -100,9 +100,11 @@ public class CrawlerServiceImpl implements CrawlerService {
 	public List<CrawlFmkoreaItemResponse> crawlHotDealUntil(String lastUrl) {
 		List<CrawlFmkoreaItemResponse> results = new ArrayList<>();
 
-		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(webDriver)) {
+		try (AutoCloseableWebDriver driver = WebDriverFactory.createChromeDriver()) {
 			driver.manage().deleteAllCookies();
 			driver.get("https://www.fmkorea.com/hotdeal");
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
 			List<WebElement> items = driver.findElements(By.cssSelector("li.li_best2_pop0 h3.title a.hotdeal_var8"));
 
 			for (WebElement aTag : items) {
@@ -125,7 +127,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 	}
 
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
-		try (AutoCloseableWebDriver driver = new AutoCloseableWebDriver(webDriver)) {
+		try (AutoCloseableWebDriver driver = WebDriverFactory.createChromeDriver()) {
 			driver.manage().deleteAllCookies();
 			driver.get(url);
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
