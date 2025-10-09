@@ -1,6 +1,5 @@
 package com.eventorback.crawler.scheduler;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.eventorback.crawler.service.CrawlerService;
@@ -8,7 +7,7 @@ import com.eventorback.global.config.LeaderElectionManager;
 
 import lombok.RequiredArgsConstructor;
 
-@Profile("prod")
+// @Profile("prod")
 // @Component
 @RequiredArgsConstructor
 public class CrawlerScheduler {
