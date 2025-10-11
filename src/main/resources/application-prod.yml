@@ -3,10 +3,7 @@ server:
 
 spring:
   datasource:
-    router:
-      url:
-        rw: ${PROD_MYSQL_ROUTER_RW_URL}
-        ro: ${PROD_MYSQL_ROUTER_RO_URL}
+    url: ${PROD_MYSQL_URL}
     dbcp2:
       username: ${MYSQL_USERNAME}
       password: ${MYSQL_PASSWORD}

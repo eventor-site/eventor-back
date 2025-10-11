@@ -1,18 +1,12 @@
 package com.eventorback.global.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 
 @Configuration
 public class DataSourceConfig {
@@ -38,38 +32,44 @@ public class DataSourceConfig {
 
 	@Bean
 	@Profile("prod")
-	public DataSource routingDataSource(
-		@Qualifier("writeDataSource") DataSource writeDataSource,
-		@Qualifier("readDataSource") DataSource readDataSource) {
-		RoutingDataSource routingDataSource = new RoutingDataSource();
-		Map<Object, Object> dataSourceMap = new HashMap<>();
-		dataSourceMap.put(DataSourceContextHolder.WRITE, writeDataSource);
-		dataSourceMap.put(DataSourceContextHolder.READ, readDataSource);
-
-		routingDataSource.setTargetDataSources(dataSourceMap);
-		routingDataSource.setDefaultTargetDataSource(writeDataSource);
-
-		return routingDataSource;
-	}
-
-	@Primary
-	@Bean
-	@Profile("prod")
-	public DataSource dataSource(DataSource routingDataSource) {
-		return new LazyConnectionDataSourceProxy(routingDataSource);
-	}
-
-	@Bean
-	@Profile("prod")
-	public DataSource writeDataSource(@Value("${spring.datasource.router.url.rw}") String url) {
+	public DataSource prodDataSource(@Value("${spring.datasource.url}") String url) {
 		return createDataSource(url);
 	}
 
-	@Bean
-	@Profile("prod")
-	public DataSource readDataSource(@Value("${spring.datasource.router.url.ro}") String url) {
-		return createDataSource(url);
-	}
+	// @Bean
+	// @Profile("prod")
+	// public DataSource routingDataSource(
+	// 	@Qualifier("writeDataSource") DataSource writeDataSource,
+	// 	@Qualifier("readDataSource") DataSource readDataSource) {
+	// 	RoutingDataSource routingDataSource = new RoutingDataSource();
+	// 	Map<Object, Object> dataSourceMap = new HashMap<>();
+	// 	dataSourceMap.put(DataSourceContextHolder.WRITE, writeDataSource);
+	// 	dataSourceMap.put(DataSourceContextHolder.READ, readDataSource);
+	//
+	// 	routingDataSource.setTargetDataSources(dataSourceMap);
+	// 	routingDataSource.setDefaultTargetDataSource(writeDataSource);
+	//
+	// 	return routingDataSource;
+	// }
+	//
+	// @Primary
+	// @Bean
+	// @Profile("prod")
+	// public DataSource dataSource(DataSource routingDataSource) {
+	// 	return new LazyConnectionDataSourceProxy(routingDataSource);
+	// }
+	//
+	// @Bean
+	// @Profile("prod")
+	// public DataSource writeDataSource(@Value("${spring.datasource.router.url.rw}") String url) {
+	// 	return createDataSource(url);
+	// }
+	//
+	// @Bean
+	// @Profile("prod")
+	// public DataSource readDataSource(@Value("${spring.datasource.router.url.ro}") String url) {
+	// 	return createDataSource(url);
+	// }
 
 	private BasicDataSource createDataSource(String url) {
 		BasicDataSource dataSource = new BasicDataSource();
