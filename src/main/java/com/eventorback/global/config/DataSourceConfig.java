@@ -33,7 +33,7 @@ public class DataSourceConfig {
 	@Bean
 	@Profile("prod")
 	public DataSource prodDataSource(@Value("${spring.datasource.url}") String url) {
-		return createDataSource(url);
+		return createDataSource("jdbc:mysql://localhost:3306/eventor");
 	}
 
 	// @Bean
