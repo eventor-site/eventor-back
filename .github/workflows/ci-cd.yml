@@ -78,7 +78,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: ".env"
-          target: "/home/eventor"
+          target: "/home/ubuntu/eventor"
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
@@ -87,5 +87,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd eventor-back
+            cd eventor/eventor-back
             source deploy.sh
