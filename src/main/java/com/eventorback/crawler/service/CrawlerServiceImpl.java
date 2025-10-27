@@ -8,16 +8,13 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.time.Duration;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,8 +23,7 @@ import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaDetailResponse;
 import com.eventorback.crawler.domain.dto.response.CrawlFmkoreaItemResponse;
 import com.eventorback.crawler.domain.entity.Crawler;
 import com.eventorback.crawler.respository.CrawlerRepository;
-import com.eventorback.crawler.util.AutoCloseableWebDriver;
-import com.eventorback.crawler.util.WebDriverFactory;
+import com.eventorback.crawler.util.HttpCrawler;
 import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.image.exception.ImageConvertException;
 import com.eventorback.image.service.CustomMultipartFile;
@@ -49,6 +45,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 	private final CrawlerRepository crawlerRepository;
 	private final ImageService imageService;
 	private final PostService postService;
+	private final HttpCrawler httpCrawler = new HttpCrawler();
 	private static final Long ADMIN_USERID = 3L;
 
 	@TimedExecution("에펨코리아 핫딜 게시물 크롤링")
@@ -101,146 +98,49 @@ public class CrawlerServiceImpl implements CrawlerService {
 	}
 
 	public List<CrawlFmkoreaItemResponse> crawlHotDealUntil(String lastUrl) {
-		List<CrawlFmkoreaItemResponse> results = new ArrayList<>();
-		AutoCloseableWebDriver driver = null;
-
 		try {
-			driver = WebDriverFactory.createChromeDriver();
-			driver.get("https://www.fmkorea.com/hotdeal");
-			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-
-			List<WebElement> items = driver.findElements(By.cssSelector("li.li_best2_pop0 h3.title a.hotdeal_var8"));
-
-			for (WebElement aTag : items) {
-				String title = aTag.getText().trim();
-				String href = aTag.getAttribute("href");
-				String fullUrl = href.startsWith("http") ? href : "https://www.fmkorea.com" + href;
-
-				if (fullUrl.equals(lastUrl)) {
-					break;
-				}
-
-				results.add(new CrawlFmkoreaItemResponse(title, fullUrl));
-			}
-
-			return results.reversed();
+			String html = httpCrawler.getPageContent("https://www.fmkorea.com/hotdeal");
+			List<String> urls = httpCrawler.extractHotDealLinks(html, lastUrl);
+			
+			return urls.stream()
+				.map(url -> new CrawlFmkoreaItemResponse("", url))
+				.toList();
 		} catch (Exception e) {
 			log.error("에펨코리아 핫딜 리스트 크롤링 실패: " + e.getMessage());
 			return List.of();
-		} finally {
-			closeDriverSafely(driver);
 		}
 	}
 
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
-		AutoCloseableWebDriver driver = null;
-
 		try {
-			driver = WebDriverFactory.createChromeDriver();
-			driver.get(url);
-			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
-			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-
-			String title = driver.findElement(By.cssSelector("div.board .top_area h1 span")).getText();
-			String link = getAttrByLabel(driver, "관련 URL", "href");
-			String shoppingMallStr = getTextByLabel(driver, "쇼핑몰");
+			String html = httpCrawler.getPageContent(url);
+			
+			String title = httpCrawler.extractTitle(html);
+			String link = httpCrawler.extractAttrByLabel(html, "관련 URL", "href");
+			String shoppingMallStr = httpCrawler.extractTextByLabel(html, "쇼핑몰");
 			String shoppingMall = formattingShoppingMall(shoppingMallStr);
-			String product = getTextByLabel(driver, "상품명");
-			String priceStr = getTextByLabel(driver, "가격");
+			String product = httpCrawler.extractTextByLabel(html, "상품명");
+			String priceStr = httpCrawler.extractTextByLabel(html, "가격");
 			Long price = extractPriceAsLong(priceStr);
-
-			WebElement contentTag = driver.findElement(By.cssSelector("div.rd_body .xe_content"));
-
-			String contentText = contentTag != null ? contentTag.getText() : "";
+			
+			String contentText = httpCrawler.extractContent(html);
 			String formattedContent = formattingContent(contentText);
 			String formattedSource = formattingSource(url);
-
-			List<String> imageUrlList = new ArrayList<>();
-			if (contentTag != null) {
-				List<WebElement> imgTags = contentTag.findElements(By.tagName("img"));
-				log.info("이미지 태그 개수: {}", imgTags.size());
-				
-				for (WebElement img : imgTags) {
-					String src = img.getAttribute("src");
-					if (src == null || src.trim().isEmpty()) {
-						continue;
-					}
-					
-					// 상대 URL을 절대 URL로 변환
-					if (src.startsWith("//")) {
-						src = "https:" + src;
-					} else if (src.startsWith("/")) {
-						src = "https://www.fmkorea.com" + src;
-					}
-					
-					// 이미지 URL이 유효한지 확인
-					if (src.contains("fmkorea.com") && (src.contains(".jpg") || src.contains(".png") || src.contains(".gif") || src.contains(".webp"))) {
-						imageUrlList.add(src);
-						log.info("이미지 URL 추가: {}", src);
-					}
-				}
-			}
 			
-			log.info("최종 이미지 URL 개수: {}", imageUrlList.size());
-
+			List<String> imageUrlList = httpCrawler.extractImageUrls(html);
+			
 			String combinedContent = formattedContent + formattedSource;
 
 			return new CrawlFmkoreaDetailResponse(url, title, link, shoppingMall, product, price, combinedContent,
 				imageUrlList);
 
 		} catch (Exception e) {
-			log.info("Selenium 크롤링 실패: " + e.getMessage());
+			log.info("HTTP 크롤링 실패: " + e.getMessage());
 			return null;
-		} finally {
-			closeDriverSafely(driver);
 		}
 	}
 
-	private void closeDriverSafely(AutoCloseableWebDriver driver) {
-		if (driver != null) {
-			try {
-				driver.close();
-			} catch (Exception e) {
-				log.warn("WebDriver 종료 시 오류 무시: " + e.getMessage());
-			}
-		}
-	}
 
-	/**
-	 * 지정한 레이블(label)에 해당하는 테이블 행에서 값을 추출합니다.
-	 * @param driver Selenium WebDriver 인스턴스
-	 * @param label 찾고자 하는 테이블 행의 레이블 텍스트
-	 * @return 해당하는 값의 텍스트, 없으면 빈 문자열 반환
-	 */
-	private String getTextByLabel(WebDriver driver, String label) {
-		try {
-			List<WebElement> rows = driver.findElements(By.cssSelector("table.hotdeal_table tr"));
-			for (WebElement row : rows) {
-				WebElement th = row.findElement(By.tagName("th"));
-				if (th.getText().trim().equals(label)) {
-					WebElement td = row.findElement(By.cssSelector("td .xe_content"));
-					return td.getText().trim();
-				}
-			}
-		} catch (Exception ignored) {
-		}
-		return "";
-	}
-
-	private String getAttrByLabel(WebDriver driver, String label, String attr) {
-		try {
-			List<WebElement> rows = driver.findElements(By.cssSelector("table.hotdeal_table tr"));
-			for (WebElement row : rows) {
-				WebElement th = row.findElement(By.tagName("th"));
-				if (th.getText().trim().equals(label)) {
-					WebElement link = row.findElement(By.cssSelector("td .xe_content a"));
-					return link.getAttribute(attr).trim();
-				}
-			}
-		} catch (Exception ignored) {
-		}
-		return "";
-	}
 
 	/**
 	 * 쇼핑몰 값 포맷팅
