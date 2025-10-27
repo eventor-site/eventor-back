@@ -99,8 +99,10 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 	public List<CrawlFmkoreaItemResponse> crawlHotDealUntil(String lastUrl) {
 		List<CrawlFmkoreaItemResponse> results = new ArrayList<>();
+		AutoCloseableWebDriver driver = null;
 
-		try (AutoCloseableWebDriver driver = WebDriverFactory.createChromeDriver()) {
+		try {
+			driver = WebDriverFactory.createChromeDriver();
 			driver.manage().deleteAllCookies();
 			driver.get("https://www.fmkorea.com/hotdeal");
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
@@ -120,14 +122,25 @@ public class CrawlerServiceImpl implements CrawlerService {
 			}
 
 			return results.reversed();
-		} catch (Exception ignored) {
-			log.error("에펨코리아 핫딜 리스트 크롤링 실패");
+		} catch (Exception e) {
+			log.error("에펨코리아 핫딜 리스트 크롤링 실패: " + e.getMessage());
 			return List.of();
+		} finally {
+			if (driver != null) {
+				try {
+					driver.close();
+				} catch (Exception e) {
+					log.warn("WebDriver 종료 시 오류: " + e.getMessage());
+				}
+			}
 		}
 	}
 
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
-		try (AutoCloseableWebDriver driver = WebDriverFactory.createChromeDriver()) {
+		AutoCloseableWebDriver driver = null;
+
+		try {
+			driver = WebDriverFactory.createChromeDriver();
 			driver.manage().deleteAllCookies();
 			driver.get(url);
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
@@ -173,6 +186,14 @@ public class CrawlerServiceImpl implements CrawlerService {
 		} catch (Exception e) {
 			log.info("Selenium 크롤링 실패: " + e.getMessage());
 			return null;
+		} finally {
+			if (driver != null) {
+				try {
+					driver.close();
+				} catch (Exception e) {
+					log.warn("WebDriver 종료 시 오류: " + e.getMessage());
+				}
+			}
 		}
 	}
 
