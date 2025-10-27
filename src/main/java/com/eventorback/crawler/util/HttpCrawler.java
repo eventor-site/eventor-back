@@ -37,39 +37,20 @@ public class HttpCrawler {
 			Thread.sleep(REQUEST_DELAY - timeSinceLastRequest);
 		}
 
-		int maxRetries = 2;
-		for (int attempt = 1; attempt <= maxRetries; attempt++) {
-			try {
-				HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create(url))
-					.header("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)")
-					.timeout(Duration.ofSeconds(15))
-					.build();
+		HttpRequest request = HttpRequest.newBuilder()
+			.uri(URI.create(url))
+			.header("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)")
+			.timeout(Duration.ofSeconds(15))
+			.build();
 
-				lastRequestTime = System.currentTimeMillis();
-				HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		lastRequestTime = System.currentTimeMillis();
+		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-				if (response.statusCode() == 200) {
-					return response.body();
-				} else if ((response.statusCode() == 430 || response.statusCode() == 429) && attempt < maxRetries) {
-					long waitTime = attempt * 5000; // 5초, 10초
-					log.warn("요청 제한 발생, {}ms 대기 후 재시도 ({}/{}): {}",
-						waitTime, attempt, maxRetries, url);
-					Thread.sleep(waitTime);
-					continue;
-				} else if (response.statusCode() == 430 || response.statusCode() == 429) {
-					log.error("최대 재시도 후에도 요청 제한: {}", url);
-					return ""; // 빈 문자열 반환
-				} else {
-					throw new IOException("HTTP " + response.statusCode() + " for URL: " + url);
-				}
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				throw e;
-			}
+		if (response.statusCode() == 200) {
+			return response.body();
+		} else {
+			throw new IOException("HTTP " + response.statusCode() + " for URL: " + url);
 		}
-
-		throw new IOException("최대 재시도 횟수 초과: " + url);
 	}
 
 	public List<String> extractHotDealLinks(String html, String lastUrl) {
