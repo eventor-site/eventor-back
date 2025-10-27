@@ -10,14 +10,16 @@ public class WebDriverFactory {
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--no-sandbox");
 		options.addArguments("--headless=new");
-		options.addArguments("--no-zygote");   // 좀비 프로세스 방지
+		options.addArguments("--no-zygote");
 		options.addArguments("--disable-gpu");
-		options.addArguments("--disable-dev-shm-usage");  // 공유 메모리 사용 안함
-		options.addArguments("--disable-extensions");     // 확장 프로그램 비활성화
-		options.addArguments("--disable-background-timer-throttling");
-		options.addArguments("--disable-backgrounding-occluded-windows");
-		options.addArguments("--disable-renderer-backgrounding");
-		options.addArguments("--single-process");         // 단일 프로세스 모드
+		options.addArguments("--disable-dev-shm-usage");
+		options.addArguments("--disable-extensions");
+		options.addArguments("--disable-crash-reporter");
+		options.addArguments("--disable-in-process-stack-traces");
+		options.addArguments("--disable-logging");
+		options.addArguments("--disable-web-security");
+		options.addArguments("--remote-debugging-port=0");
+		options.addArguments("--window-size=1920,1080");
 
 		// AutoCloseableWebDriver 래퍼로 감싸서 try-with-resources 지원
 		WebDriver driver = new ChromeDriver(options);
