@@ -8,20 +8,21 @@ public class WebDriverFactory {
 
 	public static AutoCloseableWebDriver createChromeDriver() {
 		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--no-sandbox");
 		options.addArguments("--headless=new");
-		options.addArguments("--no-zygote");
+		options.addArguments("--no-sandbox");
 		options.addArguments("--disable-gpu");
 		options.addArguments("--disable-dev-shm-usage");
 		options.addArguments("--disable-extensions");
-		options.addArguments("--disable-crash-reporter");
-		options.addArguments("--disable-in-process-stack-traces");
-		options.addArguments("--disable-logging");
-		options.addArguments("--disable-web-security");
-		options.addArguments("--remote-debugging-port=0");
+		options.addArguments("--disable-background-timer-throttling");
+		options.addArguments("--disable-backgrounding-occluded-windows");
+		options.addArguments("--disable-renderer-backgrounding");
+		options.addArguments("--disable-features=TranslateUI");
+		options.addArguments("--disable-ipc-flooding-protection");
+		options.addArguments("--force-device-scale-factor=1");
 		options.addArguments("--window-size=1920,1080");
+		options.setExperimentalOption("useAutomationExtension", false);
+		options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
 
-		// AutoCloseableWebDriver 래퍼로 감싸서 try-with-resources 지원
 		WebDriver driver = new ChromeDriver(options);
 		return new AutoCloseableWebDriver(driver);
 	}
