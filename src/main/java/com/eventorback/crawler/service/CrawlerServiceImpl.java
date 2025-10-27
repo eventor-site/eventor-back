@@ -103,7 +103,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 		try {
 			driver = WebDriverFactory.createChromeDriver();
-			driver.manage().deleteAllCookies();
 			driver.get("https://www.fmkorea.com/hotdeal");
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
@@ -115,7 +114,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 				String fullUrl = href.startsWith("http") ? href : "https://www.fmkorea.com" + href;
 
 				if (fullUrl.equals(lastUrl)) {
-					break; // 마지막 URL에 도달하면 종료
+					break;
 				}
 
 				results.add(new CrawlFmkoreaItemResponse(title, fullUrl));
@@ -126,13 +125,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 			log.error("에펨코리아 핫딜 리스트 크롤링 실패: " + e.getMessage());
 			return List.of();
 		} finally {
-			if (driver != null) {
-				try {
-					driver.close();
-				} catch (Exception e) {
-					log.warn("WebDriver 종료 시 오류: " + e.getMessage());
-				}
-			}
+			closeDriverSafely(driver);
 		}
 	}
 
@@ -141,7 +134,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 		try {
 			driver = WebDriverFactory.createChromeDriver();
-			driver.manage().deleteAllCookies();
 			driver.get(url);
 			driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
@@ -177,7 +169,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 				}
 			}
 
-			// String combinedContent = String.join("", imageHtmlList) + formattedContent + formattedSource;
 			String combinedContent = formattedContent + formattedSource;
 
 			return new CrawlFmkoreaDetailResponse(url, title, link, shoppingMall, product, price, combinedContent,
@@ -187,12 +178,16 @@ public class CrawlerServiceImpl implements CrawlerService {
 			log.info("Selenium 크롤링 실패: " + e.getMessage());
 			return null;
 		} finally {
-			if (driver != null) {
-				try {
-					driver.close();
-				} catch (Exception e) {
-					log.warn("WebDriver 종료 시 오류: " + e.getMessage());
-				}
+			closeDriverSafely(driver);
+		}
+	}
+
+	private void closeDriverSafely(AutoCloseableWebDriver driver) {
+		if (driver != null) {
+			try {
+				driver.close();
+			} catch (Exception e) {
+				log.warn("WebDriver 종료 시 오류 무시: " + e.getMessage());
 			}
 		}
 	}
