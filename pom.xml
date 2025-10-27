@@ -215,25 +215,25 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
-        <!-- Selenium Core -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>4.32.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-devtools</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--        &lt;!&ndash; Selenium Core &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.seleniumhq.selenium</groupId>-->
+        <!--            <artifactId>selenium-java</artifactId>-->
+        <!--            <version>4.32.0</version>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>org.seleniumhq.selenium</groupId>-->
+        <!--                    <artifactId>selenium-devtools</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
 
-        <!-- WebDriverManager (드라이버 자동 관리) -->
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.8.0</version>
-        </dependency>
+        <!--        &lt;!&ndash; WebDriverManager (드라이버 자동 관리) &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>io.github.bonigarcia</groupId>-->
+        <!--            <artifactId>webdrivermanager</artifactId>-->
+        <!--            <version>5.8.0</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>com.sksamuel.scrimage</groupId>
