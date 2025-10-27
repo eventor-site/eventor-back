@@ -20,9 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HttpCrawler {
 	private final HttpClient httpClient;
 	private long lastRequestTime = 0;
-	private static final long REQUEST_DELAY = 8000; // 8초 간격으로 증가
-	private String sessionCookies = "";
-	private final java.util.Random random = new java.util.Random();
+	private static final long REQUEST_DELAY = 1000; // 2초 간격으로 감소
 
 	public HttpCrawler() {
 		this.httpClient = HttpClient.newBuilder()
@@ -32,58 +30,29 @@ public class HttpCrawler {
 	}
 
 	public String getPageContent(String url) throws IOException, InterruptedException {
-		// 요청 간격 제어 (랜덤 지연 추가)
+		// 요청 간격 제어
 		long currentTime = System.currentTimeMillis();
 		long timeSinceLastRequest = currentTime - lastRequestTime;
-		long randomDelay = REQUEST_DELAY + random.nextInt(3000); // 8-11초 랜덤 간격
-		if (timeSinceLastRequest < randomDelay) {
-			Thread.sleep(randomDelay - timeSinceLastRequest);
+		if (timeSinceLastRequest < REQUEST_DELAY) {
+			Thread.sleep(REQUEST_DELAY - timeSinceLastRequest);
 		}
 
-		int maxRetries = 5;
+		int maxRetries = 2;
 		for (int attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
-				HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+				HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(url))
-					.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-					.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
-					.header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
-					.header("Accept-Encoding", "gzip, deflate, br")
-					.header("Cache-Control", "no-cache")
-					.header("Pragma", "no-cache")
-					.header("Sec-Fetch-Dest", "document")
-					.header("Sec-Fetch-Mode", "navigate")
-					.header("Sec-Fetch-Site", "same-origin")
-					.header("Sec-Fetch-User", "?1")
-					.header("Upgrade-Insecure-Requests", "1")
-					.timeout(Duration.ofSeconds(20));
-
-				// 쿠키 추가
-				if (!sessionCookies.isEmpty()) {
-					requestBuilder.header("Cookie", sessionCookies);
-				}
-
-				// Referer 설정
-				if (!url.contains("/hotdeal")) {
-					requestBuilder.header("Referer", "https://www.fmkorea.com/hotdeal");
-				}
-
-				HttpRequest request = requestBuilder.build();
+					.header("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)")
+					.timeout(Duration.ofSeconds(15))
+					.build();
 
 				lastRequestTime = System.currentTimeMillis();
 				HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-				// 쿠키 저장
-				response.headers().allValues("set-cookie").forEach(cookie -> {
-					if (!sessionCookies.contains(cookie.split(";")[0])) {
-						sessionCookies += cookie.split(";")[0] + "; ";
-					}
-				});
-
 				if (response.statusCode() == 200) {
 					return response.body();
 				} else if ((response.statusCode() == 430 || response.statusCode() == 429) && attempt < maxRetries) {
-					long waitTime = (long) Math.pow(2, attempt) * 10000 + random.nextInt(5000); // 10-15초 부터 시작
+					long waitTime = attempt * 5000; // 5초, 10초
 					log.warn("요청 제한 발생, {}ms 대기 후 재시도 ({}/{}): {}",
 						waitTime, attempt, maxRetries, url);
 					Thread.sleep(waitTime);
