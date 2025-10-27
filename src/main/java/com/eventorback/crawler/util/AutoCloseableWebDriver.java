@@ -6,6 +6,7 @@ import java.util.Set;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 	private final WebDriver driver;
@@ -48,8 +49,14 @@ public class AutoCloseableWebDriver implements WebDriver, AutoCloseable {
 	public void close() {
 		try {
 			driver.quit();
-		} catch (Exception e) {
-			// 이미 종료된 경우 무시
+		} catch (Exception ignored) {
+		}
+		
+		// 시스템 명령으로 Chrome 프로세스 정리
+		try {
+			Runtime.getRuntime().exec("pkill -f chrome");
+			Thread.sleep(1000); // 1초 대기
+		} catch (Exception ignored) {
 		}
 	}
 
