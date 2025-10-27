@@ -20,8 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 public class HttpCrawler {
 	private final HttpClient httpClient;
 	private long lastRequestTime = 0;
-	private static final long REQUEST_DELAY = 3000; // 3초 간격으로 증가
+	private static final long REQUEST_DELAY = 8000; // 8초 간격으로 증가
 	private String sessionCookies = "";
+	private final java.util.Random random = new java.util.Random();
 
 	public HttpCrawler() {
 		this.httpClient = HttpClient.newBuilder()
@@ -31,11 +32,12 @@ public class HttpCrawler {
 	}
 
 	public String getPageContent(String url) throws IOException, InterruptedException {
-		// 요청 간격 제어
+		// 요청 간격 제어 (랜덤 지연 추가)
 		long currentTime = System.currentTimeMillis();
 		long timeSinceLastRequest = currentTime - lastRequestTime;
-		if (timeSinceLastRequest < REQUEST_DELAY) {
-			Thread.sleep(REQUEST_DELAY - timeSinceLastRequest);
+		long randomDelay = REQUEST_DELAY + random.nextInt(3000); // 8-11초 랜덤 간격
+		if (timeSinceLastRequest < randomDelay) {
+			Thread.sleep(randomDelay - timeSinceLastRequest);
 		}
 
 		int maxRetries = 5;
@@ -81,11 +83,14 @@ public class HttpCrawler {
 				if (response.statusCode() == 200) {
 					return response.body();
 				} else if ((response.statusCode() == 430 || response.statusCode() == 429) && attempt < maxRetries) {
-					long waitTime = (long) Math.pow(2, attempt) * 3000; // 지수적 백오프
+					long waitTime = (long) Math.pow(2, attempt) * 10000 + random.nextInt(5000); // 10-15초 부터 시작
 					log.warn("요청 제한 발생, {}ms 대기 후 재시도 ({}/{}): {}",
 						waitTime, attempt, maxRetries, url);
 					Thread.sleep(waitTime);
 					continue;
+				} else if (response.statusCode() == 430 || response.statusCode() == 429) {
+					log.error("최대 재시도 후에도 요청 제한: {}", url);
+					return ""; // 빈 문자열 반환
 				} else {
 					throw new IOException("HTTP " + response.statusCode() + " for URL: " + url);
 				}
