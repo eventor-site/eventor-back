@@ -39,7 +39,9 @@ public class HttpCrawler {
 
 		HttpRequest request = HttpRequest.newBuilder()
 			.uri(URI.create(url))
-			.header("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)")
+			.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+			.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+			.header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
 			.timeout(Duration.ofSeconds(15))
 			.build();
 
