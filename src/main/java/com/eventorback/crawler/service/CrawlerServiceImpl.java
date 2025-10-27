@@ -82,15 +82,18 @@ public class CrawlerServiceImpl implements CrawlerService {
 			Long postId = postService.createPost(new CurrentUserDto(ADMIN_USERID, List.of("admin")), request, false)
 				.postId();
 
+			log.info("이미지 다운로드 시작: {} 개", newItem.images().size());
 			for (String imageUrl : newItem.images()) {
 				try {
+					log.info("이미지 다운로드 시도: {}", imageUrl);
 					MultipartFile multipartFile = downloadImageAsMultipartFile(imageUrl);
 					MultipartFile convertMultipartFile = convertToWebp(multipartFile);
 					imageService.upload(convertMultipartFile, "postimage", postId, "핫딜", false, false);
-				} catch (Exception ignored) {
-					break;
+					log.info("이미지 업로드 성공: {}", imageUrl);
+				} catch (Exception e) {
+					log.warn("이미지 업로드 실패: {} - {}", imageUrl, e.getMessage());
+					continue;
 				}
-
 			}
 
 			crawler.updateCrawler(newItem.url());
@@ -152,27 +155,38 @@ public class CrawlerServiceImpl implements CrawlerService {
 			String formattedContent = formattingContent(contentText);
 			String formattedSource = formattingSource(url);
 
-			List<String> imageHtmlList = new ArrayList<>();
+			List<String> imageUrlList = new ArrayList<>();
 			if (contentTag != null) {
 				List<WebElement> imgTags = contentTag.findElements(By.tagName("img"));
+				log.info("이미지 태그 개수: {}", imgTags.size());
+				
 				for (WebElement img : imgTags) {
 					String src = img.getAttribute("src");
-					if (src != null && src.startsWith("//")) {
-						src = "https:" + src;
+					if (src == null || src.trim().isEmpty()) {
+						continue;
 					}
-					String alt = img.getAttribute("alt");
-
-					String imgHtml = String.format(
-						"<p><a href=\"%s\"><span class=\"image-link\" contenteditable=\"false\">" +
-							"<img src=\"%s\" alt=\"%s\"></span></a><br></p>", src, src, alt);
-					imageHtmlList.add(src);
+					
+					// 상대 URL을 절대 URL로 변환
+					if (src.startsWith("//")) {
+						src = "https:" + src;
+					} else if (src.startsWith("/")) {
+						src = "https://www.fmkorea.com" + src;
+					}
+					
+					// 이미지 URL이 유효한지 확인
+					if (src.contains("fmkorea.com") && (src.contains(".jpg") || src.contains(".png") || src.contains(".gif") || src.contains(".webp"))) {
+						imageUrlList.add(src);
+						log.info("이미지 URL 추가: {}", src);
+					}
 				}
 			}
+			
+			log.info("최종 이미지 URL 개수: {}", imageUrlList.size());
 
 			String combinedContent = formattedContent + formattedSource;
 
 			return new CrawlFmkoreaDetailResponse(url, title, link, shoppingMall, product, price, combinedContent,
-				imageHtmlList);
+				imageUrlList);
 
 		} catch (Exception e) {
 			log.info("Selenium 크롤링 실패: " + e.getMessage());
@@ -283,6 +297,12 @@ public class CrawlerServiceImpl implements CrawlerService {
 		URI uri = URI.create(fileUrl);
 		URL url = uri.toURL();
 		URLConnection connection = url.openConnection();
+		
+		// User-Agent 헤더 추가로 차단 방지
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+		connection.setRequestProperty("Referer", "https://www.fmkorea.com/");
+		connection.setConnectTimeout(10000);
+		connection.setReadTimeout(10000);
 
 		String contentType = connection.getContentType();
 		String extension = imageService.getFileExtension(new File(url.getPath()).getName());

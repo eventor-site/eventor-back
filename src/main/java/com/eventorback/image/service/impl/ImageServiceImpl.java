@@ -116,10 +116,15 @@ public class ImageServiceImpl implements ImageService {
 	public void createDirectoryIfNotExists(Path folderPath) {
 		if (!Files.exists(folderPath)) {
 			try {
+				log.info("디렉토리 생성 시도: {}", folderPath);
 				Files.createDirectories(folderPath);
+				log.info("디렉토리 생성 성공: {}", folderPath);
 			} catch (IOException e) {
-				throw new CreateFolderException(e.getMessage());
+				log.error("디렉토리 생성 실패: {} - 권한을 확인하세요. 오류: {}", folderPath, e.getMessage());
+				throw new CreateFolderException("디렉토리 생성 실패: " + folderPath + " - " + e.getMessage());
 			}
+		} else {
+			log.debug("디렉토리가 이미 존재함: {}", folderPath);
 		}
 	}
 
