@@ -77,17 +77,13 @@ public class CrawlerServiceImpl implements CrawlerService {
 			Long postId = postService.createPost(new CurrentUserDto(ADMIN_USERID, List.of("admin")), request, false)
 				.postId();
 
-			log.info("이미지 다운로드 시작: {} 개", newItem.images().size());
 			for (String imageUrl : newItem.images()) {
 				try {
-					log.info("이미지 다운로드 시도: {}", imageUrl);
 					MultipartFile multipartFile = downloadImageAsMultipartFile(imageUrl);
 					MultipartFile convertMultipartFile = convertToWebp(multipartFile);
 					imageService.upload(convertMultipartFile, "postimage", postId, "핫딜", false, false);
-					log.info("이미지 업로드 성공: {}", imageUrl);
 				} catch (Exception e) {
-					log.warn("이미지 업로드 실패: {} - {}", imageUrl, e.getMessage());
-					continue;
+					break;
 				}
 			}
 
