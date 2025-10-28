@@ -126,7 +126,8 @@ public class HttpCrawler {
 				}
 
 				// 이미지 URL이 유효한지 확인
-				if (src.contains("fmkorea.com") && (src.contains(".jpg") || src.contains(".png") || src.contains(".gif")
+				if (src.contains("fmkorea.com") && (src.contains(".jpg") || src.contains(".jpeg") || src.contains(
+					".png") || src.contains(".gif")
 					|| src.contains(".webp"))) {
 					imageUrls.add(src);
 				}

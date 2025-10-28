@@ -16,7 +16,7 @@ public class CrawlerScheduler {
 	private final LeaderElectionManager leaderElectionManager;
 	private final CrawlerService crawlerService;
 
-	@Scheduled(cron = "0 */30 * * * *")
+	@Scheduled(cron = "0 */10 * * * *")
 	public void crawlHotDeals() {
 
 		if (!leaderElectionManager.tryAcquireLeadership()) {
