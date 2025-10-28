@@ -91,12 +91,14 @@ public class CrawlerServiceImpl implements CrawlerService {
 		}
 	}
 
+	// 크롤링 차단 회피하기 위해 반환 링크 5개로 제한
 	public List<CrawlFmkoreaItemResponse> crawlHotDealUntil(String lastUrl) {
 		try {
 			String html = httpCrawler.getPageContent("https://www.fmkorea.com/hotdeal");
 			List<String> urls = httpCrawler.extractHotDealLinks(html, lastUrl);
 
 			return urls.stream()
+				.limit(5)
 				.map(url -> new CrawlFmkoreaItemResponse("", url))
 				.toList();
 		} catch (Exception e) {
