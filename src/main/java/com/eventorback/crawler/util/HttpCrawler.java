@@ -20,13 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 public class HttpCrawler {
 	private final HttpClient httpClient;
 	private long lastRequestTime = 0;
-	private static final long REQUEST_DELAY = 3000; // 3초 간격으로 증가
-	private String sessionCookies = "";
+	private static final long REQUEST_DELAY = 2000; // 2초 간격
 
 	public HttpCrawler() {
 		this.httpClient = HttpClient.newBuilder()
-			.connectTimeout(Duration.ofSeconds(15))
-			.followRedirects(HttpClient.Redirect.NORMAL)
+			.connectTimeout(Duration.ofSeconds(10))
 			.build();
 	}
 
@@ -38,53 +36,27 @@ public class HttpCrawler {
 			Thread.sleep(REQUEST_DELAY - timeSinceLastRequest);
 		}
 
-		int maxRetries = 5;
+		int maxRetries = 3;
 		for (int attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
-				HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+				HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(url))
-					.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-					.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
-					.header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
-					.header("Accept-Encoding", "gzip, deflate, br")
-					.header("Cache-Control", "no-cache")
-					.header("Pragma", "no-cache")
-					.header("Sec-Fetch-Dest", "document")
-					.header("Sec-Fetch-Mode", "navigate")
-					.header("Sec-Fetch-Site", "same-origin")
-					.header("Sec-Fetch-User", "?1")
-					.header("Upgrade-Insecure-Requests", "1")
-					.timeout(Duration.ofSeconds(20));
-
-				// 쿠키 추가
-				if (!sessionCookies.isEmpty()) {
-					requestBuilder.header("Cookie", sessionCookies);
-				}
-
-				// Referer 설정
-				if (!url.contains("/hotdeal")) {
-					requestBuilder.header("Referer", "https://www.fmkorea.com/hotdeal");
-				}
-
-				HttpRequest request = requestBuilder.build();
+					.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+					.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+					.header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
+					.header("Referer", "https://www.fmkorea.com/")
+					.timeout(Duration.ofSeconds(15))
+					.build();
 
 				lastRequestTime = System.currentTimeMillis();
 				HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-				// 쿠키 저장
-				response.headers().allValues("set-cookie").forEach(cookie -> {
-					if (!sessionCookies.contains(cookie.split(";")[0])) {
-						sessionCookies += cookie.split(";")[0] + "; ";
-					}
-				});
-
 				if (response.statusCode() == 200) {
 					return response.body();
-				} else if ((response.statusCode() == 430 || response.statusCode() == 429) && attempt < maxRetries) {
-					long waitTime = (long) Math.pow(2, attempt) * 3000; // 지수적 백오프
+				} else if (response.statusCode() == 430 && attempt < maxRetries) {
 					log.warn("요청 제한 발생, {}ms 대기 후 재시도 ({}/{}): {}",
-						waitTime, attempt, maxRetries, url);
-					Thread.sleep(waitTime);
+						attempt * 5000, attempt, maxRetries, url);
+					Thread.sleep(attempt * 5000); // 지수적 백오프
 					continue;
 				} else {
 					throw new IOException("HTTP " + response.statusCode() + " for URL: " + url);
