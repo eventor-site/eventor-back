@@ -29,18 +29,19 @@ public class HttpCrawler {
 	}
 
 	public String getPageContent(String url) throws IOException, InterruptedException {
+		// 요청 간격 제어
+		Thread.sleep(REQUEST_DELAY);
+
 		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
 			.uri(URI.create(url))
 			.header("User-Agent",
 				"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/120.0.0.0 Safari/537.36")
 			.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-			.header("Accept-Language", "ko-KR,ko;q=0.9,en;q=0.8")
+			.header("Accept-Language", "en-US,en;q=0.9")
 			.timeout(Duration.ofSeconds(15));
 
 		HttpRequest request = requestBuilder.build();
 		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-		Thread.sleep(REQUEST_DELAY);
 
 		if (response.statusCode() == 200) {
 			return response.body();
@@ -125,7 +126,9 @@ public class HttpCrawler {
 				}
 
 				// 이미지 URL이 유효한지 확인
-				if (src.contains("fmkorea.com") && List.of(".jpg", ".jpeg", ".png", ".gif", ".webp").contains(src)) {
+				if (src.contains("fmkorea.com") && (src.contains(".jpg") || src.contains(".jpeg") || src.contains(
+					".png") || src.contains(".gif")
+					|| src.contains(".webp"))) {
 					imageUrls.add(src);
 				}
 			}
@@ -140,4 +143,24 @@ public class HttpCrawler {
 		return contentTag != null ? contentTag.text() : "";
 	}
 
+	public String getPageContentWithDelay(String url, long customDelay) throws IOException, InterruptedException {
+		Thread.sleep(customDelay);
+
+		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+			.uri(URI.create(url))
+			.header("User-Agent",
+				"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/120.0.0.0 Safari/537.36")
+			.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+			.header("Accept-Language", "en-US,en;q=0.9")
+			.timeout(Duration.ofSeconds(15));
+
+		HttpRequest request = requestBuilder.build();
+		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+		if (response.statusCode() == 200) {
+			return response.body();
+		} else {
+			throw new IOException("HTTP " + response.statusCode() + " for URL: " + url);
+		}
+	}
 }
