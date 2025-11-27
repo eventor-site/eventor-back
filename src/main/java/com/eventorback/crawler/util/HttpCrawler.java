@@ -19,7 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpCrawler {
 	private final HttpClient httpClient;
-	private static final long REQUEST_DELAY = 5000; // 5초 간격 ( 크롤링 차단 회피 최소값)
+	private long lastRequestTime = 0;
+	private static final long REQUEST_DELAY = 1000; // 2초 간격으로 감소
 
 	public HttpCrawler() {
 		this.httpClient = HttpClient.newBuilder()
@@ -30,17 +31,21 @@ public class HttpCrawler {
 
 	public String getPageContent(String url) throws IOException, InterruptedException {
 		// 요청 간격 제어
-		Thread.sleep(REQUEST_DELAY);
+		long currentTime = System.currentTimeMillis();
+		long timeSinceLastRequest = currentTime - lastRequestTime;
+		if (timeSinceLastRequest < REQUEST_DELAY) {
+			Thread.sleep(REQUEST_DELAY - timeSinceLastRequest);
+		}
 
-		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+		HttpRequest request = HttpRequest.newBuilder()
 			.uri(URI.create(url))
-			.header("User-Agent",
-				"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/120.0.0.0 Safari/537.36")
+			.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
 			.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-			.header("Accept-Language", "en-US,en;q=0.9")
-			.timeout(Duration.ofSeconds(15));
+			.header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
+			.timeout(Duration.ofSeconds(15))
+			.build();
 
-		HttpRequest request = requestBuilder.build();
+		lastRequestTime = System.currentTimeMillis();
 		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
 		if (response.statusCode() == 200) {
@@ -140,26 +145,5 @@ public class HttpCrawler {
 		Document doc = Jsoup.parse(html);
 		Element contentTag = doc.selectFirst("div.rd_body .xe_content");
 		return contentTag != null ? contentTag.text() : "";
-	}
-
-	public String getPageContentWithDelay(String url, long customDelay) throws IOException, InterruptedException {
-		Thread.sleep(customDelay);
-
-		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-			.uri(URI.create(url))
-			.header("User-Agent",
-				"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/120.0.0.0 Safari/537.36")
-			.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-			.header("Accept-Language", "en-US,en;q=0.9")
-			.timeout(Duration.ofSeconds(15));
-
-		HttpRequest request = requestBuilder.build();
-		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-		if (response.statusCode() == 200) {
-			return response.body();
-		} else {
-			throw new IOException("HTTP " + response.statusCode() + " for URL: " + url);
-		}
 	}
 }
