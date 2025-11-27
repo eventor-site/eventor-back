@@ -48,9 +48,6 @@ public class CrawlerServiceImpl implements CrawlerService {
 
 	@TimedExecution("에펨코리아 핫딜 게시물 크롤링")
 	public void refreshAndSaveNewItems() {
-		// 세션 초기화로 정상적인 브라우저 접근 시뮬레이션
-		httpCrawler.initializeSession();
-		
 		Crawler crawler = crawlerRepository.findTopByOrderByCrawlerIdDesc()
 			.orElseGet(() -> crawlerRepository.save(new Crawler("null")));
 		String lastUrl = crawler.getLastUrl();
@@ -195,14 +192,11 @@ public class CrawlerServiceImpl implements CrawlerService {
 		URL url = uri.toURL();
 		URLConnection connection = url.openConnection();
 
-		// 향상된 User-Agent 및 헤더로 차단 방지
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-		connection.setRequestProperty("Referer", "https://www.fmkorea.com/hotdeal");
-		connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8");
-		connection.setRequestProperty("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7");
-		connection.setRequestProperty("Cache-Control", "no-cache");
-		connection.setConnectTimeout(30000);
-		connection.setReadTimeout(30000);
+		// User-Agent 헤더 추가로 차단 방지
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+		connection.setRequestProperty("Referer", "https://www.fmkorea.com/");
+		connection.setConnectTimeout(10000);
+		connection.setReadTimeout(10000);
 
 		String contentType = connection.getContentType();
 		String extension = imageService.getFileExtension(new File(url.getPath()).getName());
