@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -99,7 +101,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 		try {
 			String html = httpCrawler.getPageContent("https://www.fmkorea.com/hotdeal");
 			List<String> urls = httpCrawler.extractHotDealLinks(html, lastUrl);
-
+			
 			return urls.stream()
 				.map(url -> new CrawlFmkoreaItemResponse("", url))
 				.toList();
@@ -112,21 +114,21 @@ public class CrawlerServiceImpl implements CrawlerService {
 	public CrawlFmkoreaDetailResponse parseDetail(String url) {
 		try {
 			String html = httpCrawler.getPageContent(url);
-
+			
 			String title = httpCrawler.extractTitle(html);
-			String link = httpCrawler.extractAttrByLabel(html, "링크", "href");
+			String link = httpCrawler.extractAttrByLabel(html, "관련 URL", "href");
 			String shoppingMallStr = httpCrawler.extractTextByLabel(html, "쇼핑몰");
 			String shoppingMall = formattingShoppingMall(shoppingMallStr);
 			String product = httpCrawler.extractTextByLabel(html, "상품명");
 			String priceStr = httpCrawler.extractTextByLabel(html, "가격");
 			Long price = extractPriceAsLong(priceStr);
-
+			
 			String contentText = httpCrawler.extractContent(html);
 			String formattedContent = formattingContent(contentText);
 			String formattedSource = formattingSource(url);
-
+			
 			List<String> imageUrlList = httpCrawler.extractImageUrls(html);
-
+			
 			String combinedContent = formattedContent + formattedSource;
 
 			return new CrawlFmkoreaDetailResponse(url, title, link, shoppingMall, product, price, combinedContent,
@@ -137,6 +139,8 @@ public class CrawlerServiceImpl implements CrawlerService {
 			return null;
 		}
 	}
+
+
 
 	/**
 	 * 쇼핑몰 값 포맷팅
@@ -193,7 +197,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 		URI uri = URI.create(fileUrl);
 		URL url = uri.toURL();
 		URLConnection connection = url.openConnection();
-
+		
 		// User-Agent 헤더 추가로 차단 방지
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
 		connection.setRequestProperty("Referer", "https://www.fmkorea.com/");
