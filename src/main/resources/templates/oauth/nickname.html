@@ -109,8 +109,8 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('nickname', nickname);
+            // const formData = new FormData();
+            // formData.append('nickname', nickname);
 
             fetch('/back/users/signup/checkNickname', {
                 method: 'POST',
@@ -119,14 +119,14 @@
                 },
                 body: JSON.stringify({nickname: nickname}),
             })
-                .then(response => response.text())
-                .then(message => {
-                    if (message === '사용 가능한 닉네임 입니다.') {
-                        feedbackElement.textContent = message;
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        feedbackElement.textContent = data.message;
                         feedbackElement.className = "match";
                         signupButton.disabled = false; // 활성화
                     } else {
-                        feedbackElement.textContent = message;
+                        feedbackElement.textContent = data.message || '사용할 수 없는 닉네임입니다.';
                         feedbackElement.className = "mismatch";
                         signupButton.disabled = true; // 비활성화
                     }
