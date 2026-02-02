@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 	private final UserRoleRepository userRoleRepository;
 	private final StatusRepository statusRepository;
-	private final PasswordEncoder passwordEncoder;
+	private final @Lazy PasswordEncoder passwordEncoder;
 	private final MailService mailService;
 	private final BanNicknameService banNicknameService;
 
