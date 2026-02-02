@@ -2,6 +2,7 @@ package com.eventorback.oauth.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +47,7 @@ public class OauthController {
 		redirectAttributes.addFlashAttribute("request", request);
 
 		// nickname 입력 페이지로 리다이렉트
-		return "redirect:/back/oauth2/signup";
+		return "redirect:/back/oauth2/signup/nickname";
 	}
 
 	@PostMapping("/oauth2/signup")
@@ -54,6 +55,12 @@ public class OauthController {
 		HttpServletResponse response) {
 		oauthService.oauthSignup(request);
 		oauthService.oauthLogin(new OauthDto(request.oauthId(), request.oauthType()), response);
+	}
+
+	@GetMapping("/oauth2/signup/nickname")
+	public String nickname(@ModelAttribute("request") SignUpRequest request, Model model) {
+		model.addAttribute("request", request); // request 정보를 모델에 추가하여 뷰에서 사용할 수 있게 함
+		return "oauth/nickname";
 	}
 
 }
