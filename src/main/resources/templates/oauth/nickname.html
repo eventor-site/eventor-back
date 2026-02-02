@@ -114,7 +114,10 @@
 
             fetch('/back/users/signup/checkNickname', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({nickname: nickname}),
             })
                 .then(response => response.text())
                 .then(message => {
