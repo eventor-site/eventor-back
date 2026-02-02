@@ -220,8 +220,10 @@ public class UserServiceImpl implements UserService {
 		Status status = statusRepository.findOrCreateStatus("회원", "활성");
 		Grade grade = gradeRepository.findByName("1").orElseThrow(StatusNotFoundException::new);
 
-		if (userRepository.existsByIdentifier(request.identifier())) {
-			throw new UserAlreadyExistsException();
+		if (request.identifier() != null && !request.identifier().isEmpty()) {
+			if (userRepository.existsByIdentifier(request.identifier())) {
+				throw new UserAlreadyExistsException();
+			}
 		}
 
 		String encodedPassword = null;
