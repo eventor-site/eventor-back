@@ -20,11 +20,16 @@ public class OauthTokenResponse {
 	@JsonProperty("token_type")
 	private String tokenType;
 
+	@JsonProperty("expires_in")
+	private Long expiresIn;
+
 	@Builder
-	public OauthTokenResponse(String accessToken, String scope, String tokenType, String idToken) {
+	public OauthTokenResponse(String accessToken, String scope, String tokenType, String idToken, Long expiresIn) {
 		this.accessToken = accessToken;
 		this.scope = scope;
 		this.tokenType = tokenType;
 		this.idToken = idToken;
+		this.expiresIn = expiresIn;
 	}
+
 }
