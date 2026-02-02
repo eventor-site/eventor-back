@@ -70,7 +70,7 @@
 <body>
 <div class="signup-container">
     <h1>닉네임 입력</h1>
-    <form action="/oauth2/signup" method="POST">
+    <form action="/back/oauth2/signup" method="POST">
         <!-- Hidden fields for OauthSignUpRequest data -->
         <input type="hidden" name="oauthId" th:value="${request.oauthId}">
         <input type="hidden" name="oauthType" th:value="${request.oauthType}">
