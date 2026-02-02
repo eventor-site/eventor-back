@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -209,6 +211,13 @@ public class UserController {
 	@PostMapping("/me/recover/oauth")
 	ResponseEntity<ApiResponse<Void>> recoverOauth(@RequestBody RecoverOauthRequest request) {
 		return ApiResponse.createSuccess(userService.recoverOauth(request));
+	}
+
+	@GetMapping("/oauth2/signup")
+	public String nickname(@ModelAttribute("request") SignUpRequest request,
+		Model model) {
+		model.addAttribute("request", request); // request 정보를 모델에 추가하여 뷰에서 사용할 수 있게 함
+		return "oauth/nickname";
 	}
 
 }
