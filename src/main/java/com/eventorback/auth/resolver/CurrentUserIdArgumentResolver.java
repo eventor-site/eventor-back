@@ -24,7 +24,7 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
 	public Object resolveArgument(@NonNull MethodParameter parameter, ModelAndViewContainer mavContainer,
 		@NonNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-		String userIdHeader = request.getHeader("X-User-userId");
-		return userIdHeader != null ? Long.parseLong(userIdHeader) : null;
+		String userIdAttribute = (String) request.getAttribute("X-User-userId");
+		return userIdAttribute != null ? Long.parseLong(userIdAttribute) : null;
 	}
 }

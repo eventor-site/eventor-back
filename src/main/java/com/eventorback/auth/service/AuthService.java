@@ -60,8 +60,8 @@ public class AuthService {
 			new RefreshToken(newRefreshToken.replace("Bearer ", ""), userId, roles, remainingTtl));
 
 		return ReissueTokenDto.builder()
-			.accessToken(newAccessToken)
-			.refreshToken(newRefreshToken)
+			.accessToken(newAccessToken.replace("Bearer ", "Bearer+"))
+			.refreshToken(newRefreshToken.replace("Bearer ", "Bearer+"))
 			.build();
 	}
 

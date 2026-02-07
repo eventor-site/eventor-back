@@ -30,17 +30,17 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		@NonNull NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
 
-		// 헤더 값 추출
-		String userIdHeader = request.getHeader("X-User-userId");
-		String userRolesHeader = request.getHeader("X-User-Roles");
+		// 속성 값 추출
+		String userIdAttribute = (String) request.getAttribute("X-User-userId");
+		String userRolesAttribute = (String) request.getAttribute("X-User-Roles");
 
 		// userId 파싱
-		Long userId = userIdHeader != null ? Long.parseLong(userIdHeader) : null;
+		Long userId = userIdAttribute != null ? Long.parseLong(userIdAttribute) : null;
 
 		// roles 파싱
 		List<String> roles = null;
-		if (userRolesHeader != null) {
-			roles = Arrays.asList(userRolesHeader.replaceAll("[\\[\\]\\s]", "").split(","));
+		if (userRolesAttribute != null) {
+			roles = Arrays.asList(userRolesAttribute.replaceAll("[\\[\\]\\s]", "").split(","));
 
 			return CurrentUserDto.builder()
 				.userId(userId)

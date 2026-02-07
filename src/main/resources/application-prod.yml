@@ -20,13 +20,6 @@ spring:
     hibernate:
       ddl-auto: update #validate로 변경 예정
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://${EUREKA_USERNAME}:${EUREKA_PASSWORD}@eventor-eureka:8761/eureka
-  instance:
-    prefer-ip-address: true
-
 upload:
   domainUrl: https://www.eventor.kr
   path: ./image
