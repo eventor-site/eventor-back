@@ -34,10 +34,10 @@ public class RoleAuthorizationAspect {
 		HttpServletRequest request = ((ServletRequestAttributes)Objects.requireNonNull(
 			RequestContextHolder.getRequestAttributes())).getRequest();
 
-		String userIdHeader = request.getHeader("X-User-UserId");
-		// 헤더에서 역할 정보 추출
+		String userIdHeader = (String) request.getAttribute("X-User-userId");
+		// 속성에서 역할 정보 추출
 
-		String rolesHeader = request.getHeader("X-User-Roles");
+		String rolesHeader = (String) request.getAttribute("X-User-Roles");
 		if (rolesHeader == null) {
 			throw new UnauthorizedException();
 		}
