@@ -35,7 +35,6 @@ import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
@@ -73,19 +72,6 @@ public class UserController {
 	@GetMapping("/search/userId")
 	public ResponseEntity<ApiResponse<List<GetUserByUserId>>> searchUserByUserId(@RequestParam Long userId) {
 		return ApiResponse.createSuccess(userService.searchUserByUserId(userId));
-	}
-
-	/**
-	 * 아이디를 통해 사용자의 토큰 정보를 조회합니다.
-	 */
-	@GetMapping("/auth/info")
-	public ResponseEntity<ApiResponse<GetUserAuth>> getAuthInfoByIdentifier(@RequestParam String identifier) {
-		return ApiResponse.createSuccess(userService.getAuthByIdentifier(identifier));
-	}
-
-	@PostMapping("/oauth2/info")
-	public ResponseEntity<ApiResponse<GetUserOauth>> getOAuthInfoByOauth(@RequestBody OauthDto request) {
-		return ApiResponse.createSuccess(userService.getOAuthInfoByOauth(request));
 	}
 
 	@AuthorizeRole("admin")
@@ -218,6 +204,11 @@ public class UserController {
 		Model model) {
 		model.addAttribute("request", request); // request 정보를 모델에 추가하여 뷰에서 사용할 수 있게 함
 		return "oauth/nickname";
+	}
+
+	@PostMapping("/oauth2/info")
+	public ResponseEntity<ApiResponse<GetUserOauth>> getOAuthInfoByOauth(@RequestBody OauthDto request) {
+		return ApiResponse.createSuccess(userService.getOAuthInfoByOauth(request));
 	}
 
 }

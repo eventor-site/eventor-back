@@ -36,7 +36,6 @@ import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
@@ -83,12 +82,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<GetUserByUserId> searchUserByUserId(Long userId) {
 		return userRepository.searchUserByUserId(userId);
-	}
-
-	@Override
-	public GetUserAuth getAuthByIdentifier(String identifier) {
-		return userRepository.getAuthByIdentifier(identifier);
-
 	}
 
 	@Override

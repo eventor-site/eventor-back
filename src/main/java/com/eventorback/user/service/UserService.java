@@ -14,7 +14,6 @@ import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserRequest;
-import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
@@ -29,8 +28,6 @@ public interface UserService {
 	List<GetUserByIdentifier> searchUserByIdentifier(String keyword);
 
 	List<GetUserByUserId> searchUserByUserId(Long userId);
-
-	GetUserAuth getAuthByIdentifier(String identifier);
 
 	GetUserOauth getOAuthInfoByOauth(OauthDto request);
 
