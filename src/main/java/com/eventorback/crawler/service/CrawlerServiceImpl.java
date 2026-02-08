@@ -142,7 +142,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
 			String title = driver.findElement(By.cssSelector("div.board .top_area h1 span")).getText();
-			String link = getAttrByLabel(driver, "관련 URL", "href");
+			String link = getAttrByLabel(driver, "링크", "href");
 			String shoppingMallStr = getTextByLabel(driver, "쇼핑몰");
 			String shoppingMall = formattingShoppingMall(shoppingMallStr);
 			String product = getTextByLabel(driver, "상품명");
@@ -159,28 +159,29 @@ public class CrawlerServiceImpl implements CrawlerService {
 			if (contentTag != null) {
 				List<WebElement> imgTags = contentTag.findElements(By.tagName("img"));
 				log.info("이미지 태그 개수: {}", imgTags.size());
-				
+
 				for (WebElement img : imgTags) {
 					String src = img.getAttribute("src");
 					if (src == null || src.trim().isEmpty()) {
 						continue;
 					}
-					
+
 					// 상대 URL을 절대 URL로 변환
 					if (src.startsWith("//")) {
 						src = "https:" + src;
 					} else if (src.startsWith("/")) {
 						src = "https://www.fmkorea.com" + src;
 					}
-					
+
 					// 이미지 URL이 유효한지 확인
-					if (src.contains("fmkorea.com") && (src.contains(".jpg") || src.contains(".png") || src.contains(".gif") || src.contains(".webp"))) {
+					if (src.contains("fmkorea.com") && (src.contains(".jpg") || src.contains(".png") || src.contains(
+						".gif") || src.contains(".webp"))) {
 						imageUrlList.add(src);
 						log.info("이미지 URL 추가: {}", src);
 					}
 				}
 			}
-			
+
 			log.info("최종 이미지 URL 개수: {}", imageUrlList.size());
 
 			String combinedContent = formattedContent + formattedSource;
@@ -232,14 +233,39 @@ public class CrawlerServiceImpl implements CrawlerService {
 			List<WebElement> rows = driver.findElements(By.cssSelector("table.hotdeal_table tr"));
 			for (WebElement row : rows) {
 				WebElement th = row.findElement(By.tagName("th"));
-				if (th.getText().trim().equals(label)) {
-					WebElement link = row.findElement(By.cssSelector("td .xe_content a"));
-					return link.getAttribute(attr).trim();
+				String thText = th.getText().trim();
+
+				// "링크" 레이블 찾기 (버튼 텍스트 제외)
+				if (thText.contains(label)) {
+					WebElement td = row.findElement(By.tagName("td"));
+					WebElement link = td.findElement(By.cssSelector(".xe_content a.hotdeal_url"));
+					String href = link.getAttribute(attr).trim();
+
+					// 실제 URL 추출 (link.fmkorea.org에서 리다이렉트되는 실제 URL)
+					if (href.contains("link.fmkorea.org/link.php")) {
+						return extractRealUrl(href);
+					}
+					return href;
 				}
 			}
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			log.warn("링크 추출 실패: {}", e.getMessage());
 		}
 		return "";
+	}
+
+	private String extractRealUrl(String fmkoreaLink) {
+		try {
+			// URL에서 url 파라미터 추출
+			String[] parts = fmkoreaLink.split("url=");
+			if (parts.length > 1) {
+				String encodedUrl = parts[1].split("&")[0]; // 첫 번째 & 전까지
+				return java.net.URLDecoder.decode(encodedUrl, "UTF-8");
+			}
+		} catch (Exception e) {
+			log.warn("실제 URL 추출 실패: {}", e.getMessage());
+		}
+		return fmkoreaLink; // 실패 시 원본 반환
 	}
 
 	/**
@@ -297,7 +323,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 		URI uri = URI.create(fileUrl);
 		URL url = uri.toURL();
 		URLConnection connection = url.openConnection();
-		
+
 		// User-Agent 헤더 추가로 차단 방지
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
 		connection.setRequestProperty("Referer", "https://www.fmkorea.com/");
