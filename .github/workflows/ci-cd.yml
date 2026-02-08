@@ -50,7 +50,7 @@ jobs:
       - name: Build and Push Docker image
         run: |
           cd .github/docker
-          if [ "$(curl -s https://www.eventor.kr/back/actuator/version)" == "blue" ]; then
+          if [ "$(curl -s https://eventor.kr/back/actuator/version)" == "blue" ]; then
             echo "Blue version is running, building Green";
             docker-compose -f compose.green-build.yml build
             docker-compose -f compose.green-build.yml push

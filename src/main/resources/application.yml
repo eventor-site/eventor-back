@@ -56,7 +56,7 @@ spring:
             client-name: google
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirect-uri: https://www.eventor.kr/back/oauth2/code/google
+            redirect-uri: https://eventor.kr/back/oauth2/code/google
             authorization-grant-type: authorization_code
             scope: email profile
 
@@ -66,13 +66,13 @@ spring:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
             authorization-grant-type: authorization_code
-            redirect-uri: https://www.eventor.kr/back/oauth2/code/naver
+            redirect-uri: https://eventor.kr/back/oauth2/code/naver
             scope: name, email
 
           kakao:
             client-name: kakao
             client-id: ${KAKAO_CLIENT_ID}
-            redirect-uri: https://www.eventor.kr/back/oauth2/code/kakao
+            redirect-uri: https://eventor.kr/back/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image, account_email
             admin-key: ${KAKAO_ADMIN_KEY}
