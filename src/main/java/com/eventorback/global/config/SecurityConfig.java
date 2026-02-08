@@ -86,7 +86,7 @@ public class SecurityConfig {
 
 				CorsConfiguration configuration = new CorsConfiguration();
 
-				configuration.setAllowedOrigins(List.of("http://localhost:8090", "https://www.eventor.kr"));
+				configuration.setAllowedOrigins(List.of("https://eventor.kr"));
 				configuration.setAllowedMethods(Collections.singletonList("*"));
 				configuration.setAllowCredentials(true);
 				configuration.setAllowedHeaders(Collections.singletonList("*"));

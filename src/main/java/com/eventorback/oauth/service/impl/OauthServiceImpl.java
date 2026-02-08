@@ -202,7 +202,7 @@ public class OauthServiceImpl implements OauthService {
 
 	public String createRedirectUrl(String accessToken, String refreshToken, String oauthId, String error) {
 		// 클라이언트로 리다이렉트 (토큰 포함)
-		String redirectUrl = "https://www.eventor.kr/auth/oauth2/login";
+		String redirectUrl = "https://eventor.kr/auth/oauth2/login";
 
 		return String.format("%s?accessToken=%s&refreshToken=%s&oauthId=%s&error=%s",
 			redirectUrl,
