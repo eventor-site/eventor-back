@@ -89,3 +89,5 @@ jobs:
           script: |
             cd eventor/eventor-back
             source deploy.sh
+
+# 배포 테스트
