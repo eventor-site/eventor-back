@@ -90,4 +90,4 @@ jobs:
             cd eventor/eventor-back
             source deploy.sh
 
-# 배포 테스트
+# 배포 테스트1
