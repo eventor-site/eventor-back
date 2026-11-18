@@ -43,7 +43,7 @@ package com.eventorback.auth.handler;// package com.eventorback.auth.handler;
 // 		String token = jwtUtil.createJwt(username, role, 60 * 60 * 60L);
 //
 // 		response.addCookie(createCookie("Authorization", token));
-// 		response.sendRedirect("https://www.eventor.kr/main");
+// 		response.sendRedirect("https://www.eventor.duckdns.org/main");
 // 	}
 //
 // 	private Cookie createCookie(String key, String value) {
