@@ -54,8 +54,9 @@ public class ImageServiceImpl implements ImageService {
 	public List<GetImageResponse> upload(MultipartFile file, String folderName, Long postId, String categoryName,
 		boolean isThumbnail, boolean isPasted) {
 
-		// 날짜별 하위 폴더(YYYYMMDD). 폴더 이름은 영문·숫자만 허용(경로 조작 방지)
-		if (folderName == null || !folderName.matches("[A-Za-z0-9_-]{1,30}")) {
+		// 날짜별 하위 폴더(YYYYMMDD). 폴더는 postimage 하나만 허용한다:
+		// 운영 nginx 는 공용 이미지 폴더의 postimage 만 마운트해 서빙하므로(다른 폴더에 저장하면 화면에 안 보임), 경로 조작도 막힌다
+		if (!"postimage".equals(folderName)) {
 			throw new com.eventorback.global.exception.BadRequestException("잘못된 폴더 이름입니다.");
 		}
 		String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
