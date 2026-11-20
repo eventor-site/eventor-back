@@ -45,7 +45,7 @@
 
 ## 4. 이미지 저장 구조
 
-- 저장 루트 `eventor.storage.root`(기본 `./uploads`). 로컬은 `eventor-back/uploads`, 운영 컨테이너는 `/app/uploads`(호스트 `/home/ubuntu/content/eventor/uploads` 마운트).
+- 저장 루트 `eventor.storage.root`(기본 `./uploads`). 로컬은 `eventor-back/uploads`, 운영 컨테이너는 `/app/uploads`(호스트 공용 이미지 폴더 `/home/ubuntu/image` 마운트, 2026-11-20 결정).
 - 공개 URL은 항상 `/uploads/{상대경로}`. DB에는 이 상대 URL만 저장(도메인 없음).
 - 운영 nginx가 `/uploads/`를 호스트 폴더에서 직접 서빙. 로컬은 Vite가 `/uploads`를 백엔드로 넘기고, 백엔드가 파일이 없으면 운영 도메인으로 302(읽기 폴백).
 - 기존 `/postimage/...` URL은 데이터 마이그레이션으로 `/uploads/postimage/...`로 바꾸고, nginx에서 옛 주소를 301로 넘긴다.

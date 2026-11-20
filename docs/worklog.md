@@ -44,6 +44,8 @@
 | R33 | Gemini 무료 한도 조사·적용, 기존 데이터 Gemini 마이그레이션, 가능한 작업량 재산정, 자동화, 사용자용 분석 기능 | ✅ | 23절, content-ops-plan 10절 |
 | R34 | trendist 와 한도가 겹칠 수 있으니 최대한 효율적으로 | ✅ | 이벤터 몫 40%, 묶음 요청, 해시로 재호출 방지 |
 | R35 | 정렬·지역 선택 상자(기본 select) 디자인 개선, 핫딜·커뮤니티·공지 목록 트렌디하게, 이벤트 목록 개선 | ✅ | 24절 |
+| R36 | 운영 이미지는 기존 공용 폴더(/home/ubuntu/image) 유지, nginx 설정을 서버 마운트에 맞춤 | ✅ | 25절 |
+| R37 | 프론트 CI/CD 를 trendist-front 와 거의 같게 | ✅ | 25절 |
 | R28 | 기획서 8절 결정 사항 모두 진행(크롤러 폐기·핫딜 정리·카테고리 개편·제휴·공공 API) | ⏳ | LLM은 Gemini 무료 등급(사용자 제공 키). 키 준비 안내는 content-ops-plan 부록 A |
 | R25 | 과거 DB 비밀번호가 든 커밋 삭제 | ✅ | 2026-11-20 force push(17절). 비밀값 자체는 사용자 결정으로 유지, PR #119 참조는 GitHub 지원 요청 필요 |
 
@@ -352,4 +354,15 @@
   | 이벤트 | 카드에 AI 혜택 한 줄(✦ 최대 50% 할인 등) |
 - 백엔드: 목록 응답에 댓글 수·고정 여부·핫딜 가격·본문 미리보기(90자)·AI 혜택 한 줄·분야 추가. 처음엔 핫딜 목록이 1.3초로 느려짐 → 원인은 선택 목록의 서브쿼리를 6.8만 행 전체에 계산한 것 → **두 단계 조회**(정렬·페이지로 id 20개 → 그 글만 서브쿼리·본문)로 0.22초(약 6배, 이전보다도 빠름).
 - 확인: 타입 검사·빌드·백엔드 테스트, 핫딜·자유·공지·이벤트·검색 데스크톱/모바일/다크 캡처(가로 넘침·콘솔 오류 없음), 드롭다운 마우스·키보드 선택으로 주소 바뀜, 축제 지역 선택(서울 27개).
+
+### 25. 운영 폴더·nginx·프론트 CI 정리 ✅
+
+- 이미지: 사용자 확인 결과 운영 이미지는 `/home/ubuntu/image/postimage/YYYYMMDD`(nginx·백엔드 공용 폴더). 원래 계획(`content/eventor/uploads`로 이동) 대신 **그대로 사용** → 파일 이동·301 없음. 화면 주소 `/uploads/…`와 옛 주소 `/postimage/…` 모두 nginx 가 `/image/postimage` 에서 바로 서빙.
+- nginx(사용자가 준 compose 기준): `./content:/var/www`, `./image/postimage:/image/postimage` 마운트가 이미 있어 **compose 변경 없음**. `deploy/nginx/eventor.conf` 의 root 를 `/var/www/eventor/releases` 로. 서버의 `sites-available/default` 안 eventor 블록 두 개만 교체.
+- 업로드 폴더: 클라이언트가 보낸 폴더 이름을 형식만 검사하던 것 → `postimage` 만 허용(nginx 가 그 폴더만 마운트).
+- 프론트 CI: trendist-front 와 같은 형식(빌드 → `/tmp/eventor-build` → releases 지우고 새로 → nginx reload). 다른 점 두 가지: Node 는 `.nvmrc`(26, React Router 8 이 22.22 이상 요구), 직전 빌드 assets 한 세대 유지(배포 순간 열린 화면에서 따로 받는 파일 404 방지). 처음 짠 방식은 이월된 파일이 계속 이월돼 쌓이는 문제를 로컬 시뮬레이션(배포 4번)으로 발견 → 빌드별 파일 목록(`.assets-current`, releases 밖)으로 직전 빌드 것만 이월.
+- 백엔드: releases 를 지웠다 다시 만들면 releases 자체를 마운트한 컨테이너는 옛 폴더를 본다 → **상위 폴더** `/home/ubuntu/content/eventor:/app/web:ro` 마운트, `index-file: ./web/releases/index.html`.
+- 백엔드 compose(사용자가 준 서버 `/home/ubuntu/eventor/eventor-back/docker-compose.yml`): 기존 `../../image:/app/image` 를 `../../image:/app/uploads` 로(호스트 폴더 그대로, 컨테이너 쪽 이름만), `../../content/eventor:/app/web:ro` 추가. 포트·env_file·네트워크는 그대로. 예시 파일을 서버 구조와 똑같이 맞춤.
+- 배포 스크립트(사용자가 준 서버 `deploy.sh`): 컨테이너 Up 만 확인하고 nginx 를 넘겨, 새 버전 첫 기동(Flyway)·기동 실패 때 502·장애 위험 → `deploy/scripts/deploy.sh`: 두 인스턴스 HTTP 헬스 체크 성공 후에만 전환, 180초 대기, `nginx -t` 후 reload, 실패 시 옛 색 유지·새 색 로그 출력 후 내림. 파일 이름(`docker-compose.blue.yml`/`green.yml`)·포트(8101/8102, 8103/8104)·upstream 파일 경로는 기존 그대로.
+- 서버 `version.txt`·`start.sh`: `restart: always` + 배포 스크립트의 옛 색 `down` 으로 대체되어 불필요(사용자 확인 요청에 답함). 컷오버·재부팅 확인 후 삭제하도록 deploy.md "정리" 절에 기록.
 
