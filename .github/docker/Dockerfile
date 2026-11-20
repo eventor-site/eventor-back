@@ -1,19 +1,18 @@
-# OpenJDK 21 기반 이미지 사용
-FROM eclipse-temurin:21-jdk
+# Java 25 실행 환경(빌드는 GitHub Actions에서 끝내고 jar만 넣는다)
+FROM eclipse-temurin:25-jre
 
-# 필수 패키지 설치
-RUN apt-get update && apt-get install -y wget curl unzip
+# Chrome 은 넣지 않는다(2026-11-20 제거). 핫딜 크롤러(Selenium)는 스케줄이 꺼져 있고, 다시 켜려면 Chrome 설치를 되살려야 한다.
 
-# Google Chrome 설치 (stable channel)
-RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google.gpg && \
-    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
-    > /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get update && apt-get install -y google-chrome-stable
+# 서버 deploy.sh 가 컨테이너 안에서 헬스 체크를 할 수 있도록 curl 만 둔다
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
+ENV TZ=Asia/Seoul
 WORKDIR /app
 
-# JAR 파일 복사
-COPY target/eventor-back-0.0.1-SNAPSHOT.jar eventor-back.jar
+# ./gradlew bootJar 결과물(build.gradle.kts 에서 이름 고정)
+COPY build/libs/eventor-back.jar eventor-back.jar
 
-# 애플리케이션 실행
+# 업로드 파일 저장 루트(eventor.storage.root=./uploads → /app/uploads). 서버 compose 에서 호스트 폴더를 마운트한다
+VOLUME ["/app/uploads"]
+
 ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "eventor-back.jar"]
