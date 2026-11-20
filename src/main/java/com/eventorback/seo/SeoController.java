@@ -129,16 +129,21 @@ public class SeoController {
 
 	@GetMapping(value = "/posts", produces = MediaType.TEXT_HTML_VALUE)
 	@Transactional(readOnly = true)
-	public ResponseEntity<String> category(@RequestParam(required = false) String categoryName) {
+	public ResponseEntity<String> category(@RequestParam(required = false) String categoryName,
+		@RequestParam(required = false) String domain) {
 		String base = baseUrl();
 		String name = categoryName == null || categoryName.isBlank() ? "이벤트" : categoryName.trim();
+		// 이벤트 분야(AI 분류, 2026-11-20): /posts?categoryName=이벤트&domain=음식·카페
+		String dom = domain != null && com.eventorback.ai.Taxonomy.DOMAINS.contains(domain.trim()) ? domain.trim() : null;
 		List<Long> ids = jdbcTemplate.queryForList("""
 			WITH RECURSIVE tree AS (
 			  SELECT category_id FROM categories WHERE name = ?
 			  UNION ALL
 			  SELECT c.category_id FROM categories c JOIN tree t ON c.parent_category_id = t.category_id)
 			SELECT category_id FROM tree""", Long.class, name);
-		String url = base + "/posts?categoryName=" + UriUtils.encodeQueryParam(name, "UTF-8");
+		String url = base + "/posts?categoryName=" + UriUtils.encodeQueryParam(name, "UTF-8")
+			+ (dom == null ? "" : "&domain=" + UriUtils.encodeQueryParam(dom, "UTF-8"));
+		String heading = dom == null ? name : dom + " 이벤트";
 		if (ids.isEmpty()) {
 			return html(HttpStatus.NOT_FOUND, SeoPage.builder().title("페이지를 찾을 수 없어요 | 이벤터")
 				.description("없는 카테고리입니다.").canonical(url).robots("noindex").body("<h1>없는 카테고리</h1>").build());
@@ -147,19 +152,21 @@ public class SeoController {
 		String in = String.join(",", ids.stream().map(String::valueOf).toList());
 		List<Map<String, Object>> posts = jdbcTemplate.queryForList("""
 			SELECT p.post_id, p.title FROM posts p JOIN statuses s ON s.status_id = p.status_id
-			WHERE s.name = '작성됨' AND p.category_id IN (""" + in + ") ORDER BY p.created_at DESC LIMIT 30");
+			""" + (dom == null ? "" : "JOIN post_insights pi ON pi.post_id = p.post_id AND pi.domain = ? ") + """
+			WHERE s.name = '작성됨' AND p.category_id IN (""" + in + ") ORDER BY p.created_at DESC LIMIT 30",
+			dom == null ? new Object[0] : new Object[] {dom});
 
-		StringBuilder body = new StringBuilder("<h1>").append(esc(name)).append("</h1><ul>");
+		StringBuilder body = new StringBuilder("<h1>").append(esc(heading)).append("</h1><ul>");
 		for (Map<String, Object> p : posts) {
 			body.append("<li><a href=\"/posts/").append(p.get("post_id")).append("\">").append(esc(str(p.get("title"))))
 				.append("</a></li>");
 		}
 		body.append("</ul>");
-		String description = name + " 최신 소식을 이벤터에서 모아 보세요. "
+		String description = heading + " 최신 소식을 이벤터에서 모아 보세요. "
 			+ String.join(", ", posts.stream().limit(3).map(p -> str(p.get("title"))).toList());
 
 		return html(HttpStatus.OK, SeoPage.builder()
-			.title(name + " 모아보기 | 이벤터")
+			.title(heading + " 모아보기 | 이벤터")
 			.description(HtmlSanitizer.text(description, 150))
 			.canonical(url)
 			.body(body.toString())
@@ -188,16 +195,24 @@ public class SeoController {
 		return xml(xml.toString());
 	}
 
-	/** 홈·카테고리 목록 */
+	/**
+	 * 홈·게시판·이벤트 분야·트렌드·축제(2026-11-20: 옛 카테고리 35개 대신 게시판 4 + AI 분야 8).
+	 * 옛 카테고리 주소는 화면에서 분야 주소로 넘기므로 사이트맵에 넣지 않는다.
+	 */
 	@GetMapping(value = "/sitemaps/pages.xml", produces = MediaType.APPLICATION_XML_VALUE)
 	@Transactional(readOnly = true)
 	public ResponseEntity<String> sitemapPages() {
 		String base = baseUrl();
 		StringBuilder xml = urlsetStart().append(url(base + "/", null, "daily", "1.0"));
-		for (String name : jdbcTemplate.queryForList("SELECT name FROM categories ORDER BY `group`, group_order",
-			String.class)) {
-			xml.append(url(base + "/posts?categoryName=" + UriUtils.encodeQueryParam(name, "UTF-8"), null, "daily", "0.7"));
+		for (String board : List.of("이벤트", "핫딜", "자유", "공지")) {
+			xml.append(url(base + "/posts?categoryName=" + UriUtils.encodeQueryParam(board, "UTF-8"), null, "daily", "0.8"));
 		}
+		for (String dom : com.eventorback.ai.Taxonomy.DOMAINS) {
+			xml.append(url(base + "/posts?categoryName=" + UriUtils.encodeQueryParam("이벤트", "UTF-8") + "&domain="
+				+ UriUtils.encodeQueryParam(dom, "UTF-8"), null, "daily", "0.7"));
+		}
+		xml.append(url(base + "/insights", null, "daily", "0.6"));
+		xml.append(url(base + "/tours/festival2", null, "daily", "0.6"));
 		return xml(xml.append("</urlset>\n").toString());
 	}
 
