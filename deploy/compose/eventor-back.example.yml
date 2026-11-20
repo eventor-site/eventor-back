@@ -1,15 +1,54 @@
-# 서버의 eventor-back 블루/그린 compose 에 더할 설정 예시(서비스 이름·네트워크는 서버에 있는 것을 따른다).
-# 모든 색(blue-1, blue-2, green-1, green-2)에 같은 volumes 를 넣는다.
+# 서버 /home/ubuntu/eventor/eventor-back/docker-compose.blue.yml 기준 예시. docker-compose.green.yml(8103/8104)도 같은 방식으로 바꾼다.
+# 2026-11 마이그레이션에서 바뀐 곳(★)
+#   ★ ../../image:/app/image → ../../image:/app/uploads
+#       새 백엔드는 업로드를 ./uploads(= /app/uploads)에 저장한다. 호스트 폴더는 기존 공용 이미지 폴더(/home/ubuntu/image) 그대로.
+#       nginx 는 같은 폴더(./image/postimage:/image/postimage)를 /uploads/… 와 옛 /postimage/… 로 서빙한다.
+#   ★ ../../content/eventor:/app/web:ro 추가
+#       SEO HTML 을 만들 때 프론트 빌드의 index.html 을 읽는다(eventor.web.index-file=./web/releases/index.html).
+#       releases 가 아니라 상위 폴더를 마운트한다: 프론트 CI 가 releases 를 지웠다 다시 만들어도 새 폴더가 보이게.
 services:
-  was-blue:
+  eventor-back-blue-1:
     image: dlrudgjs104/eventor-back:blue-1
-    env_file: ../.env
-    environment:
-      - PROD_SERVER_PORT=8101
+    container_name: "eventor-back-blue-1"
+    restart: always
+    ports:
+      - "8101:8101"
     volumes:
-      # 업로드 저장 루트(eventor.storage.root=./uploads → /app/uploads). nginx 가 같은 폴더를 /uploads/ 로 서빙
-      - /home/ubuntu/content/eventor/uploads:/app/uploads
-      # 프론트 빌드(index.html) — SEO HTML 을 만들 때 읽는다(eventor.web.index-file=./web/index.html)
-      - /home/ubuntu/content/eventor/releases:/app/web:ro
-      - ./logs:/app/logs
-    restart: unless-stopped
+      - ./blue-1-logs:/app/logs
+      - ../../image:/app/uploads
+      - ../../content/eventor:/app/web:ro
+    env_file:
+      - ../.env
+    environment:
+      - TZ=Asia/Seoul
+      - PROD_SERVER_PORT=8101
+    networks:
+      - ubuntu_back-network
+    security_opt:
+      - apparmor=unconfined
+
+  eventor-back-blue-2:
+    image: dlrudgjs104/eventor-back:blue-2
+    container_name: "eventor-back-blue-2"
+    restart: always
+    ports:
+      - "8102:8102"
+    volumes:
+      - ./blue-2-logs:/app/logs
+      - ../../image:/app/uploads
+      - ../../content/eventor:/app/web:ro
+    env_file:
+      - ../.env
+    environment:
+      - TZ=Asia/Seoul
+      - PROD_SERVER_PORT=8102
+    networks:
+      - ubuntu_back-network
+    security_opt:
+      - apparmor=unconfined
+
+networks:
+  ubuntu_front-network:
+    external: true
+  ubuntu_back-network:
+    external: true
