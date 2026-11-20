@@ -95,6 +95,7 @@ public class PostServiceImpl implements PostService {
 	private final CategoryService categoryService;
 	private final ApplicationContext applicationContext;
 	private final ImageService imageService;
+	private final com.eventorback.post.support.PostCacheEvictor postCacheEvictor;
 
 
 	@Override
@@ -288,6 +289,9 @@ public class PostServiceImpl implements PostService {
 			post = postRepository.save(Post.toEntity(category, user, status, request, isAdmin));
 		}
 
+		if (!isTemp) {
+			postCacheEvictor.evictAfterCommit();
+		}
 		return CreatePostResponse.fromEntity(post);
 	}
 
@@ -320,6 +324,9 @@ public class PostServiceImpl implements PostService {
 		}
 
 		post.update(category, request);
+		if (!isTemp) {
+			postCacheEvictor.evictAfterCommit();
+		}
 		return post;
 	}
 
@@ -327,6 +334,7 @@ public class PostServiceImpl implements PostService {
 	public void finishEventPost(Long postId) {
 		Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 		post.getEvent().finishEvent();
+		postCacheEvictor.evictAfterCommit();
 	}
 
 	@Override
@@ -389,6 +397,7 @@ public class PostServiceImpl implements PostService {
 			comment.setDeletedAt();
 		});
 
+		postCacheEvictor.evictAfterCommit();
 		return post;
 	}
 
@@ -428,6 +437,7 @@ public class PostServiceImpl implements PostService {
 	public void updatePostIsFixed(Long postId, Boolean isFixed) {
 		Post post = postRepository.getPost(postId).orElseThrow(PostNotFoundException::new);
 		post.updateIsFixed(isFixed);
+		postCacheEvictor.evictAfterCommit();
 	}
 
 	@Override
