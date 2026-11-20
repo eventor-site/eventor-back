@@ -68,7 +68,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 	@Override
 	public Long getTotalChildCount(Long group) {
 		return queryFactory
-			.select(category.childCount.sum())
+			.select(category.childCount.sumAggregate())
 			.from(category)
 			.where(category.group.eq(group))
 			.fetchOne();

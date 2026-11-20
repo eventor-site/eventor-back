@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/statusTypes")
+@RequestMapping("/api/statusTypes")
 public class StatusTypeController {
 	private final StatusTypeService statusTypeService;
 
@@ -47,11 +47,13 @@ public class StatusTypeController {
 		return ApiResponse.createSuccess(statusTypeService.getStatusTypes(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{statusTypeId}")
 	public ResponseEntity<ApiResponse<StatusTypeDto>> getStatusType(@PathVariable Long statusTypeId) {
 		return ApiResponse.createSuccess(statusTypeService.getStatusType(statusTypeId));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createStatusType(
 		@RequestBody StatusTypeDto request) {
@@ -59,6 +61,7 @@ public class StatusTypeController {
 		return ApiResponse.createSuccess("상태 유형이 생성 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/{statusTypeId}")
 	public ResponseEntity<ApiResponse<Void>> updateStatusType(@PathVariable Long statusTypeId,
 		@RequestBody StatusTypeDto request) {
@@ -66,6 +69,7 @@ public class StatusTypeController {
 		return ApiResponse.createSuccess("상태 유형이 수정 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{statusTypeId}")
 	public ResponseEntity<ApiResponse<Void>> deleteStatusType(@PathVariable Long statusTypeId) {
 		statusTypeService.deleteStatusType(statusTypeId);

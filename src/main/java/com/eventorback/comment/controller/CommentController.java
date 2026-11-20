@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back")
+@RequestMapping("/api")
 public class CommentController {
 	private final CommentService commentService;
 
@@ -77,12 +77,14 @@ public class CommentController {
 		return ApiResponse.createSuccess("댓글이 수정 되었습니다.");
 	}
 
+	@AuthorizeRole("member")
 	@PutMapping("/comments/{commentId}/recommend")
 	public ResponseEntity<ApiResponse<Void>> recommendComment(@CurrentUserId Long userId,
 		@PathVariable Long commentId) {
 		return ApiResponse.createSuccess(commentService.recommendComment(userId, commentId));
 	}
 
+	@AuthorizeRole("member")
 	@PutMapping("/comments/{commentId}/disrecommend")
 	public ResponseEntity<ApiResponse<Void>> disrecommendComment(@CurrentUserId Long userId,
 		@PathVariable Long commentId) {

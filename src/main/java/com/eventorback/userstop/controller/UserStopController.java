@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/userStops")
+@RequestMapping("/api/userStops")
 public class UserStopController {
 	private final UserStopService userStopService;
 

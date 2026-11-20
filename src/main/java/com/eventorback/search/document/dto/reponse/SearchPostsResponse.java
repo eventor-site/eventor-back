@@ -33,9 +33,32 @@ public record SearchPostsResponse(
 	String endType,
 
 	String imageUrl,
-	String imageType
+	String imageType,
+
+	// 목록 화면용(2026-11-20): 댓글 수, 고정 글, 핫딜 가격, 본문 미리보기, AI 분석(혜택 크기·분야)
+	Long commentCount,
+	Boolean isFixed,
+	Long price,
+	String excerpt,
+	String valueNote,
+	String domain
 ) {
-	public static SearchPostsResponse addInfo(SearchPostsResponse response) {
+	private static final java.util.regex.Pattern TAGS = java.util.regex.Pattern.compile("<[^>]*>");
+
+	/** HTML 본문 앞부분에서 글자만 뽑아 90자 미리보기 */
+	static String toExcerpt(String html) {
+		if (html == null || html.isBlank()) {
+			return null;
+		}
+		String text = TAGS.matcher(html).replaceAll(" ").replace("&nbsp;", " ").replace("&amp;", "&")
+			.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replaceAll("\\s+", " ").trim();
+		if (text.isEmpty()) {
+			return null;
+		}
+		return text.length() > 90 ? text.substring(0, 90) + "…" : text;
+	}
+
+	public static SearchPostsResponse addInfo(SearchPostsResponse response, String contentHead) {
 		LocalDateTime now = LocalDateTime.now();
 
 		// eventStatusName 계산
@@ -78,6 +101,12 @@ public record SearchPostsResponse(
 			.endType(response.endType())
 			.imageUrl(response.imageUrl())
 			.imageType(response.imageType())
+			.commentCount(response.commentCount())
+			.isFixed(response.isFixed())
+			.price(response.price())
+			.excerpt(toExcerpt(contentHead))
+			.valueNote(response.valueNote())
+			.domain(response.domain())
 			.build();
 	}
 }

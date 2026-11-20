@@ -1,0 +1,15 @@
+# 서버의 eventor-back 블루/그린 compose 에 더할 설정 예시(서비스 이름·네트워크는 서버에 있는 것을 따른다).
+# 모든 색(blue-1, blue-2, green-1, green-2)에 같은 volumes 를 넣는다.
+services:
+  was-blue:
+    image: dlrudgjs104/eventor-back:blue-1
+    env_file: ../.env
+    environment:
+      - PROD_SERVER_PORT=8101
+    volumes:
+      # 업로드 저장 루트(eventor.storage.root=./uploads → /app/uploads). nginx 가 같은 폴더를 /uploads/ 로 서빙
+      - /home/ubuntu/content/eventor/uploads:/app/uploads
+      # 프론트 빌드(index.html) — SEO HTML 을 만들 때 읽는다(eventor.web.index-file=./web/index.html)
+      - /home/ubuntu/content/eventor/releases:/app/web:ro
+      - ./logs:/app/logs
+    restart: unless-stopped

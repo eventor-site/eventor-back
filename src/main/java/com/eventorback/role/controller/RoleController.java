@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/roles")
+@RequestMapping("/api/roles")
 public class RoleController {
 	private final RoleService roleService;
 
@@ -33,11 +33,13 @@ public class RoleController {
 		return ApiResponse.createSuccess(roleService.getRoles(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{roleId}")
 	public ResponseEntity<ApiResponse<RoleDto>> getRole(@PathVariable Long roleId) {
 		return ApiResponse.createSuccess(roleService.getRole(roleId));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createRole(
 		@RequestBody RoleDto request) {
@@ -45,6 +47,7 @@ public class RoleController {
 		return ApiResponse.createSuccess("권한이 생성 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/{roleId}")
 	public ResponseEntity<ApiResponse<Void>> updateRole(@PathVariable Long roleId,
 		@RequestBody RoleDto request) {
@@ -52,6 +55,7 @@ public class RoleController {
 		return ApiResponse.createSuccess("권한이 수정 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{roleId}")
 	public ResponseEntity<ApiResponse<Void>> deleteRole(@PathVariable Long roleId) {
 		roleService.deleteRole(roleId);

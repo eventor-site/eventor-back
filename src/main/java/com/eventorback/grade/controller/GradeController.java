@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/grades")
+@RequestMapping("/api/grades")
 public class GradeController {
 	private final GradeService gradeService;
 
@@ -41,11 +41,13 @@ public class GradeController {
 		return ApiResponse.createSuccess(gradeService.getGrades(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{gradeId}")
 	public ResponseEntity<ApiResponse<GradeDto>> getGrade(@PathVariable Long gradeId) {
 		return ApiResponse.createSuccess(gradeService.getGrade(gradeId));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createGrade(
 		@RequestBody GradeDto request) {
@@ -53,6 +55,7 @@ public class GradeController {
 		return ApiResponse.createSuccess("등급이 추가 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/{gradeId}")
 	public ResponseEntity<ApiResponse<Void>> updateGrade(@PathVariable Long gradeId,
 		@RequestBody GradeDto request) {
@@ -60,6 +63,7 @@ public class GradeController {
 		return ApiResponse.createSuccess("등급이 수정 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{gradeId}")
 	public ResponseEntity<ApiResponse<Void>> deleteGrade(@PathVariable Long gradeId) {
 		gradeService.deleteGrade(gradeId);

@@ -29,7 +29,6 @@ import com.eventorback.user.domain.dto.request.CertifyEmailRequest;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
-import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SendCodeRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
@@ -38,9 +37,7 @@ import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
-import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -48,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/back/users")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 
 public class UserController {
@@ -102,6 +99,7 @@ public class UserController {
 		return ApiResponse.createSuccess(userService.getUserInfo(userId));
 	}
 
+	@AuthorizeRole("member")
 	@PutMapping("/me")
 	public ResponseEntity<ApiResponse<Void>> updateUser(@CurrentUserId Long userId,
 		@RequestBody UpdateUserRequest request) {
@@ -109,6 +107,7 @@ public class UserController {
 		return ApiResponse.createSuccess("회원 정보가 수정 되었습니다.");
 	}
 
+	@AuthorizeRole("member")
 	@DeleteMapping("/me")
 	ResponseEntity<ApiResponse<Void>> withdrawUser(@CurrentUserId Long userId) {
 		userService.withdrawUser(userId);
@@ -126,18 +125,14 @@ public class UserController {
 		return ApiResponse.createSuccess(userService.meRoles(currentUser));
 	}
 
+	@AuthorizeRole("member")
 	@PostMapping("/me/checkNickname")
 	public ResponseEntity<ApiResponse<Void>> meCheckNickname(@CurrentUserId Long userId,
 		@RequestBody CheckNicknameRequest request) {
 		return ApiResponse.createSuccess(userService.meCheckNickname(userId, request));
 	}
 
-	@PutMapping("/me/loginAt")
-	public ResponseEntity<ApiResponse<Void>> updateLoginAt(@RequestBody UpdateLoginAtRequest request) {
-		userService.updateLoginAt(request);
-		return ApiResponse.createSuccess();
-	}
-
+	@AuthorizeRole("member")
 	@PutMapping("/me/password")
 	ResponseEntity<ApiResponse<Void>> modifyPassword(@CurrentUserId Long userId,
 		@RequestBody ModifyPasswordRequest request) {
@@ -146,13 +141,9 @@ public class UserController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<ApiResponse<Void>> signup(@RequestBody SignUpRequest request) {
-		userService.signup(request);
+		// 소셜 계정 연결 값은 구글 로그인(/api/auth/google)만 정한다. 공개 가입 API로는 받지 않는다
+		userService.signupWithIdentifier(request.withoutOauth());
 		return ApiResponse.createSuccess("회원 가입 되었습니다.");
-	}
-
-	@PostMapping("/signup/oauth2/exists")
-	ResponseEntity<ApiResponse<Boolean>> existsByOauth(@RequestBody OauthDto request) {
-		return ApiResponse.createSuccess(userService.existsByOauth(request));
 	}
 
 	@PostMapping("/signup/checkIdentifier")
@@ -177,38 +168,6 @@ public class UserController {
 		boolean codeMatch = mailService.certifyEmail(request);
 		String message = codeMatch ? "인증되었습니다." : "인증번호가 일치하지 않습니다.";
 		return ApiResponse.createSuccess(codeMatch, message);
-	}
-
-	@PostMapping("/me/recover/identifier")
-	ResponseEntity<ApiResponse<Void>> recoverIdentifier(@RequestParam String identifier) {
-		return ApiResponse.createSuccess(userService.recoverIdentifier(identifier));
-	}
-
-	@PostMapping("/me/recover/password")
-	ResponseEntity<ApiResponse<Void>> recoverPassword(@RequestParam String identifier) {
-		return ApiResponse.createSuccess(userService.recoverPassword(identifier));
-	}
-
-	@PostMapping("/me/recover")
-	ResponseEntity<ApiResponse<Void>> recover(@RequestParam String identifier) {
-		return ApiResponse.createSuccess(userService.recover(identifier));
-	}
-
-	@PostMapping("/me/recover/oauth")
-	ResponseEntity<ApiResponse<Void>> recoverOauth(@RequestBody RecoverOauthRequest request) {
-		return ApiResponse.createSuccess(userService.recoverOauth(request));
-	}
-
-	@GetMapping("/oauth2/signup")
-	public String nickname(@ModelAttribute("request") SignUpRequest request,
-		Model model) {
-		model.addAttribute("request", request); // request 정보를 모델에 추가하여 뷰에서 사용할 수 있게 함
-		return "oauth/nickname";
-	}
-
-	@PostMapping("/oauth2/info")
-	public ResponseEntity<ApiResponse<GetUserOauth>> getOAuthInfoByOauth(@RequestBody OauthDto request) {
-		return ApiResponse.createSuccess(userService.getOAuthInfoByOauth(request));
 	}
 
 }

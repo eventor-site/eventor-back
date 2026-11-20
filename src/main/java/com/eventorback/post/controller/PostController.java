@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -36,27 +37,31 @@ import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.service.PostService;
 import com.eventorback.search.document.dto.reponse.SearchPostsResponse;
-import com.eventorback.search.service.ElasticSearchService;
+import com.eventorback.search.service.PostSearchService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/posts")
+@RequestMapping("/api/posts")
 public class PostController {
 	private final PostService postService;
-	private final ElasticSearchService elasticSearchService;
+	private final PostSearchService postSearchService;
 
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<Page<SearchPostsResponse>>> searchPosts(
-		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
+		@PageableDefault(page = 1, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		@RequestParam(defaultValue = "") String keyword,
 		@RequestParam(defaultValue = "") String categoryName,
 		@RequestParam(defaultValue = "") String eventStatusName,
-		@RequestParam(defaultValue = "") String endType) {
-		return ApiResponse.createSuccess(
-			elasticSearchService.searchPosts(pageable, keyword, categoryName, eventStatusName, endType));
+		@RequestParam(defaultValue = "") String endType,
+		@RequestParam(defaultValue = "") String domain,
+		@RequestParam(defaultValue = "") String benefit) {
+		Page<SearchPostsResponse> result =
+			postSearchService.searchPosts(pageable, keyword, categoryName, eventStatusName, endType, domain, benefit);
+		postSearchService.recordKeyword(keyword);
+		return ApiResponse.createSuccess(result);
 	}
 
 	@AuthorizeRole("admin")
@@ -123,7 +128,7 @@ public class PostController {
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<Page<GetPostsByCategoryNameResponse>>> getPostsByCategoryName(
-		@PageableDefault(page = 1, size = 10, sort = "createdAt,desc") Pageable pageable,
+		@PageableDefault(page = 1, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		@RequestParam(defaultValue = "") String categoryName,
 		@RequestParam(defaultValue = "") String eventStatusName,
 		@RequestParam(defaultValue = "") String endType) {
@@ -174,11 +179,13 @@ public class PostController {
 		return ApiResponse.createSuccess("이벤트를 종료하였습니다.");
 	}
 
+	@AuthorizeRole("member")
 	@PutMapping("/{postId}/recommend")
 	public ResponseEntity<ApiResponse<Void>> recommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
 		return ApiResponse.createSuccess(postService.recommendPost(userId, postId));
 	}
 
+	@AuthorizeRole("member")
 	@PutMapping("/{postId}/disrecommend")
 	public ResponseEntity<ApiResponse<Void>> disrecommendPost(@CurrentUserId Long userId, @PathVariable Long postId) {
 		return ApiResponse.createSuccess(postService.disrecommendPost(userId, postId));
@@ -219,7 +226,10 @@ public class PostController {
 	ResponseEntity<ApiResponse<List<GetEventPostCountByAdminResponse>>> getEventPostCountByAdmin(
 		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
 		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
-		return ApiResponse.createSuccess(postService.getEventPostCountByAdmin(startTime, endTime));
+		// 기간을 주지 않으면 이번 달 1일부터 지금까지
+		LocalDateTime from = startTime != null ? startTime : LocalDateTime.now().withDayOfMonth(1).toLocalDate().atStartOfDay();
+		LocalDateTime to = endTime != null ? endTime : LocalDateTime.now();
+		return ApiResponse.createSuccess(postService.getEventPostCountByAdmin(from, to));
 	}
 
 	@AuthorizeRole("admin")
@@ -228,13 +238,6 @@ public class PostController {
 		@CurrentUser CurrentUserDto currentUser, @RequestParam String keyword) {
 		return ApiResponse.createSuccess(
 			postService.deleteEventPostsByTitleContainKeyword(currentUser, keyword) + "개 삭제되었습니다.");
-	}
-
-	@AuthorizeRole("admin")
-	@PostMapping("/sitemap")
-	public ResponseEntity<ApiResponse<Void>> createSitemap() {
-		postService.createSitemap();
-		return ApiResponse.createSuccess("sitemap.xml 파일 생성 완료");
 	}
 
 }

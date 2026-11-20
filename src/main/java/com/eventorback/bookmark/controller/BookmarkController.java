@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.auth.annotation.CurrentUserId;
 import com.eventorback.bookmark.domain.dto.response.GetBookmarkResponse;
 import com.eventorback.bookmark.service.BookmarkService;
@@ -22,27 +23,31 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back")
+@RequestMapping("/api")
 public class BookmarkController {
 	private final BookmarkService bookmarkService;
 
+	@AuthorizeRole("member")
 	@GetMapping("/users/me/bookmarks")
 	public ResponseEntity<ApiResponse<List<GetBookmarkResponse>>> getBookmarksByUserId(@CurrentUserId Long userId) {
 		return ApiResponse.createSuccess(bookmarkService.getBookmarksByUserId(userId));
 	}
 
+	@AuthorizeRole("member")
 	@GetMapping("/users/me/bookmarks/paging")
 	public ResponseEntity<ApiResponse<Page<GetBookmarkResponse>>> getBookmarksByUserId(
 		@PageableDefault(page = 1, size = 10) Pageable pageable, @CurrentUserId Long userId) {
 		return ApiResponse.createSuccess(bookmarkService.getBookmarksByUserId(pageable, userId));
 	}
 
+	@AuthorizeRole("member")
 	@PostMapping("/categories/{categoryName}/bookmarks")
 	public ResponseEntity<ApiResponse<Void>> createOrDeleteBookmark(@CurrentUserId Long userId,
 		@PathVariable String categoryName) {
 		return ApiResponse.createSuccess(bookmarkService.createOrDeleteBookmark(userId, categoryName));
 	}
 
+	@AuthorizeRole("member")
 	@DeleteMapping("/bookmarks/{bookmarkId}")
 	public ResponseEntity<ApiResponse<Void>> deleteBookmark(@CurrentUserId Long userId, @PathVariable Long bookmarkId) {
 		bookmarkService.deleteBookmark(userId, bookmarkId);

@@ -57,7 +57,7 @@ public class User {
 	@Column(name = "nickname", length = 30)
 	private String nickname;
 
-	@Column(name = "email", length = 30)
+	@Column(name = "email", length = 255)
 	private String email;
 
 	@Column(name = "birth")
@@ -199,5 +199,14 @@ public class User {
 			this.oauthId = "[탈퇴]";
 		}
 
+	}
+
+	/**
+	 * 소셜 로그인 계정을 연결한다(카카오·네이버·아이디 회원이 같은 이메일의 구글로 로그인할 때).
+	 */
+	public void linkOauth(String oauthType, String oauthId) {
+		this.oauthType = oauthType;
+		this.oauthId = oauthId;
+		this.updatedAt = LocalDateTime.now();
 	}
 }

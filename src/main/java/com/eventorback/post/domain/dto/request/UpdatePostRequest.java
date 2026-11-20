@@ -20,4 +20,8 @@ public record UpdatePostRequest(
 	String productName,
 	Long price
 ) {
+	public UpdatePostRequest withContent(String newContent) {
+		return new UpdatePostRequest(categoryName, title, newContent, link, startTime, endTime, endType, shoppingMall, productName,
+			price);
+	}
 }

@@ -15,6 +15,7 @@ import com.eventorback.category.domain.dto.request.UpdateCategoryRequest;
 import com.eventorback.category.domain.dto.response.GetCategoryListResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryResponse;
+import com.eventorback.category.domain.dto.response.CategoryTreeNode;
 import com.eventorback.category.domain.entity.Category;
 import com.eventorback.category.exception.CategoryAlreadyExistsException;
 import com.eventorback.category.exception.CategoryNotFoundException;
@@ -181,4 +182,29 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 	}
 
+
+	/**
+	 * 메뉴용 카테고리 트리. 카테고리 변경 API가 categoryIds·categoryNames 캐시를 비우므로 같은 캐시를 쓴다.
+	 */
+	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "categoryNames", key = "'__tree__'", cacheManager = "cacheManager")
+	public List<CategoryTreeNode> getCategoryTree() {
+		List<Category> all = categoryRepository.findAll();
+		java.util.Map<Long, List<Category>> byParent = new java.util.HashMap<>();
+		for (Category c : all) {
+			Long parentId = c.getParentCategory() == null ? 0L : c.getParentCategory().getCategoryId();
+			byParent.computeIfAbsent(parentId, k -> new java.util.ArrayList<>()).add(c);
+		}
+		return buildTree(byParent, 0L);
+	}
+
+	private List<CategoryTreeNode> buildTree(java.util.Map<Long, List<Category>> byParent, Long parentId) {
+		return byParent.getOrDefault(parentId, List.of()).stream()
+			.sorted(java.util.Comparator
+				.comparing((Category c) -> c.getGroup() == null ? Long.MAX_VALUE : c.getGroup())
+				.thenComparing(c -> c.getGroupOrder() == null ? Long.MAX_VALUE : c.getGroupOrder()))
+			.map(c -> new CategoryTreeNode(c.getCategoryId(), c.getName(),
+				c.getDepth() == null ? 0 : c.getDepth().intValue(), buildTree(byParent, c.getCategoryId())))
+			.toList();
+	}
 }

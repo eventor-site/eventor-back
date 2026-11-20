@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/reportTypes")
+@RequestMapping("/api/reportTypes")
 public class ReportTypeController {
 	private final ReportTypeService reportTypeService;
 
@@ -40,11 +40,13 @@ public class ReportTypeController {
 		return ApiResponse.createSuccess(reportTypeService.getReportTypes(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{reportTypeId}")
 	public ResponseEntity<ApiResponse<ReportTypeDto>> getReportType(@PathVariable Long reportTypeId) {
 		return ApiResponse.createSuccess(reportTypeService.getReportType(reportTypeId));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createReportType(
 		@RequestBody ReportTypeDto request) {
@@ -52,6 +54,7 @@ public class ReportTypeController {
 		return ApiResponse.createSuccess("신고 유형이 생성 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/{reportTypeId}")
 	public ResponseEntity<ApiResponse<Void>> updateReportType(@PathVariable Long reportTypeId,
 		@RequestBody ReportTypeDto request) {
@@ -59,6 +62,7 @@ public class ReportTypeController {
 		return ApiResponse.createSuccess("신고 유형이 수정 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{reportTypeId}")
 	public ResponseEntity<ApiResponse<Void>> deleteReportType(@PathVariable Long reportTypeId) {
 		reportTypeService.deleteReportType(reportTypeId);

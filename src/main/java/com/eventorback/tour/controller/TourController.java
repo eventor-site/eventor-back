@@ -13,22 +13,15 @@ import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.tour.domain.dto.response.GetOngoingFestivalResponse;
 import com.eventorback.tour.domain.dto.response.GetTourResponse;
 import com.eventorback.tour.domain.dto.response.SearchFestivalResponse;
-import com.eventorback.tour.domain.dto.response.SearchTourResponse;
 import com.eventorback.tour.service.TourService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/tours")
+@RequestMapping("/api/tours")
 public class TourController {
 	private final TourService tourApiService;
-
-	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<SearchTourResponse>> searchTour(
-		@RequestParam String address, @RequestParam String radius) {
-		return ApiResponse.createSuccess(tourApiService.searchTour(address, radius));
-	}
 
 	@GetMapping("/{contentId}")
 	public ResponseEntity<ApiResponse<GetTourResponse>> getTour(

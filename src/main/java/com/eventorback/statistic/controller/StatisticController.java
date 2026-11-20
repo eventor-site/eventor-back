@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.statistic.domain.dto.response.GetStatistic;
 import com.eventorback.statistic.service.StatisticService;
@@ -17,10 +18,11 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/statistics")
+@RequestMapping("/api/statistics")
 public class StatisticController {
 	private final StatisticService statusService;
 
+	@AuthorizeRole("admin")
 	@GetMapping
 	public ResponseEntity<ApiResponse<Page<GetStatistic>>> getStatistics(
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {

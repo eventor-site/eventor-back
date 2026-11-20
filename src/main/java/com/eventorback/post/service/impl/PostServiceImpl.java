@@ -55,6 +55,7 @@ import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
 import com.eventorback.post.repository.PostRepository;
+import com.eventorback.global.util.HtmlSanitizer;
 import com.eventorback.post.service.PostService;
 import com.eventorback.postrecommend.domain.entity.PostRecommend;
 import com.eventorback.postrecommend.repository.PostRecommendRepository;
@@ -78,6 +79,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
+	public static final List<String> MEMBER_WRITABLE_CATEGORIES = List.of("자유", "핫딜");
 	private final PostRepository postRepository;
 	private final EventRepository eventRepository;
 	private final HotDealRepository hotDealRepository;
@@ -94,11 +96,6 @@ public class PostServiceImpl implements PostService {
 	private final ApplicationContext applicationContext;
 	private final ImageService imageService;
 
-	@Value("${upload.domainUrl}")
-	private String domainUrl;
-
-	@Value("${upload.path}")
-	private String uploadPath;
 
 	@Override
 	@Caching(evict = {
@@ -273,6 +270,8 @@ public class PostServiceImpl implements PostService {
 			.orElseThrow(CategoryNotFoundException::new);
 		User user = userRepository.findById(currentUser.userId()).orElseThrow(UserNotFoundException::new);
 		boolean isAdmin = currentUser.roles().contains("admin");
+		checkWritableCategory(request.categoryName(), isAdmin);
+		request = request.withContent(HtmlSanitizer.sanitize(request.content()));
 		Status status = !isTemp ? statusRepository.findOrCreateStatus("게시글", "작성됨") :
 			statusRepository.findOrCreateStatus("게시글", "작성중");
 		List<String> eventCategoryNames = categoryService.getCategoryNames("이벤트");
@@ -302,6 +301,8 @@ public class PostServiceImpl implements PostService {
 		if (!post.getUser().getUserId().equals(currentUser.userId()) && !currentUser.roles().contains("admin")) {
 			throw new UserForbiddenException();
 		}
+		checkWritableCategory(request.categoryName(), currentUser.roles().contains("admin"));
+		request = request.withContent(HtmlSanitizer.sanitize(request.content()));
 
 		if (!isTemp) {
 			Status status = statusRepository.findOrCreateStatus("게시글", "작성됨");
@@ -453,49 +454,14 @@ public class PostServiceImpl implements PostService {
 		return postIds.size();
 	}
 
-	// TODO: 추구 업로드 구역 분리, 추후 파일크기 10MB or 50,000건 넘을 경우 생성시간 기준 기간별 조회로 개선
-	@Override
-	public void createSitemap() {
-		List<GetSitemapResponse> posts = postRepository.getPostsSitemap();
 
-		StringBuilder sitemapBuilder = new StringBuilder();
-		sitemapBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		sitemapBuilder.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
-
-		for (GetSitemapResponse post : posts) {
-			String lastmod = post.createdAt()
-				.atOffset(ZoneOffset.ofHours(9))  // Asia/Seoul 기준 (UTC+9)
-				.truncatedTo(ChronoUnit.SECONDS)
-				.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-
-			sitemapBuilder.append("  <url>\n");
-			sitemapBuilder.append("    <loc>")
-				.append(domainUrl)
-				.append("/posts/")
-				.append(post.postId())
-				.append("</loc>\n");
-			sitemapBuilder.append("    <lastmod>").append(lastmod).append("</lastmod>\n");
-			sitemapBuilder.append("  </url>\n");
-		}
-
-		sitemapBuilder.append("</urlset>\n");
-
-		// 폴더 생성
-		Path folderPath = Paths.get(uploadPath, "postimage/sitemap");
-		imageService.createDirectoryIfNotExists(folderPath);
-
-		// 경로 및 파일명
-		Path filePath = folderPath.resolve("sitemap.xml");
-
-		try {
-			Files.writeString(
-				filePath,
-				sitemapBuilder.toString(),
-				StandardOpenOption.CREATE,
-				StandardOpenOption.TRUNCATE_EXISTING
-			);
-		} catch (IOException e) {
-			throw new FileSaveException("사이트맵 저장 실패: " + e.getMessage());
+	/**
+	 * 회원은 자유·핫딜에만 쓸 수 있고, 이벤트·공지 등 그 밖의 카테고리는 관리자만 쓸 수 있다.
+	 * (이전에는 프론트 화면에서만 막았다)
+	 */
+	private void checkWritableCategory(String categoryName, boolean isAdmin) {
+		if (!isAdmin && !MEMBER_WRITABLE_CATEGORIES.contains(categoryName)) {
+			throw new UserForbiddenException();
 		}
 	}
 }

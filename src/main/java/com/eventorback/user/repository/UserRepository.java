@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.eventorback.status.domain.entity.Status;
 import com.eventorback.user.domain.entity.User;
 
-import feign.Param;
+import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
 
@@ -28,6 +28,14 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 	boolean existsByUserIdNotAndNickname(Long userId, String nickname);
 
 	boolean existsByOauthIdAndOauthType(String oauthId, String oauthType);
+
+	long countByLoginAtGreaterThanEqual(java.time.LocalDateTime loginAt);
+
+	Optional<User> findFirstByOauthTypeAndOauthId(String oauthType, String oauthId);
+
+	/** 구글 로그인 시 같은 이메일의 기존 계정(카카오·네이버·아이디 회원)을 찾는다. 최근 로그인 순 */
+	@Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email) AND u.status.name <> '탈퇴' ORDER BY u.loginAt DESC")
+	List<User> findLinkCandidatesByEmail(@Param("email") String email);
 
 	@Modifying
 	@Transactional

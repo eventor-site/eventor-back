@@ -1,9 +1,9 @@
 package com.eventorback.global.util;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class NumberUtil {
-	private static final Random random = new Random();
+	private static final SecureRandom random = new SecureRandom(); // 인증번호는 예측할 수 없어야 한다
 
 	public static String createRandom(int length) {
 		StringBuilder randomNumber = new StringBuilder(length);

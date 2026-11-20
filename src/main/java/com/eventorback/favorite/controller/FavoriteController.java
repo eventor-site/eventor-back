@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back")
+@RequestMapping("/api")
 public class FavoriteController {
 	private final FavoriteService favoriteService;
 
@@ -32,13 +32,15 @@ public class FavoriteController {
 		return ApiResponse.createSuccess(favoriteService.getFavoritesByUserId(pageable, userId));
 	}
 
-	@PostMapping("/post/{postId}/favorites")
+	@AuthorizeRole("member")
+	@PostMapping("/posts/{postId}/favorites")
 	public ResponseEntity<ApiResponse<Void>> createOrDeleteFavorite(@CurrentUserId Long userId,
 		@PathVariable Long postId) {
 		return ApiResponse.createSuccess(favoriteService.createOrDeleteFavorite(userId, postId));
 	}
 
-	@DeleteMapping("/{favoriteId}")
+	@AuthorizeRole("member")
+	@DeleteMapping("/favorites/{favoriteId}")
 	public ResponseEntity<ApiResponse<String>> deleteFavorite(@CurrentUserId Long userId,
 		@PathVariable Long favoriteId) {
 		favoriteService.deleteFavorite(userId, favoriteId);

@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/points")
+@RequestMapping("/api/points")
 public class PointController {
 	private final PointService pointService;
 
@@ -34,6 +34,7 @@ public class PointController {
 		return ApiResponse.createSuccess(pointService.getPoints(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{pointId}")
 	public ResponseEntity<ApiResponse<GetPointResponse>> getPoint(@PathVariable Long pointId) {
 		return ApiResponse.createSuccess(pointService.getPoint(pointId));

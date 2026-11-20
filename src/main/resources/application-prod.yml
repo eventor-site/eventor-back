@@ -1,25 +1,11 @@
+# 운영. 값은 서버 docker compose 의 env_file(.env, GitHub ENV_FILE 시크릿)로 받는다.
 server:
   port: ${PROD_SERVER_PORT}
 
 spring:
   datasource:
     url: ${PROD_MYSQL_URL}
-    dbcp2:
-      username: ${MYSQL_USERNAME}
-      password: ${MYSQL_PASSWORD}
 
-  data:
-    redis:
-      host: redis
-      password: ${REDIS_PASSWORD}
-
-  # JPA 설정
-  jpa:
-    open-in-view: false
-    show-sql: false    # Hibernate 가 생성하는 SQL 쿼리를 콘솔에 출력
-    hibernate:
-      ddl-auto: update #validate로 변경 예정
-
-upload:
-  domainUrl: https://eventor.duckdns.org
-  path: ./image
+eventor:
+  cookie:
+    secure: true

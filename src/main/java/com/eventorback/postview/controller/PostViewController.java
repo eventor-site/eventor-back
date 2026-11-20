@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back")
+@RequestMapping("/api")
 public class PostViewController {
 	private final PostViewService postViewService;
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eventorback.auth.annotation.AuthorizeRole;
 import com.eventorback.global.annotation.TimedExecution;
 import com.eventorback.global.dto.ApiResponse;
 import com.eventorback.image.domain.dto.response.GetImageResponse;
@@ -18,8 +19,6 @@ import com.eventorback.image.service.ImageService;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.repository.PostRepository;
 import com.eventorback.post.service.PostService;
-import com.eventorback.search.document.EsPost;
-import com.eventorback.search.repository.ElasticSearchRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,32 +26,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back")
+@RequestMapping("/api")
 public class GlobalController {
 	private final PostRepository postRepository;
 	private final ImageRepository imageRepository;
-	private final ElasticSearchRepository elasticsearchRepository;
 	private final ImageService imageService;
 	private final PostService postService;
 
-	@TimedExecution("게시물 ElasticSearch 동기화")
-	@PutMapping("/search/sync")
-	ResponseEntity<ApiResponse<Void>> syncPostToElasticsearch() {
-		List<Post> posts = postRepository.findAll();
-
-		for (Post post : posts) {
-			Long postId = post.getPostId();
-
-			log.info("작업 postId: {}", postId);
-
-			Image image = imageRepository.findByPostPostIdAndIsThumbnail(postId, true).orElse(null);
-			EsPost esPost = EsPost.fromEntity(post, image);
-			elasticsearchRepository.save(esPost);
-		}
-
-		return ApiResponse.createSuccess("게시물 ElasticSearch 동기화 완료");
-	}
-
+	@AuthorizeRole("admin")
 	@TimedExecution("이미지 확장자 값 추가")
 	@Transactional
 	@PutMapping("/images/sync")
@@ -68,6 +49,7 @@ public class GlobalController {
 		return ApiResponse.createSuccess("이미지 확장자 값 추가 완료");
 	}
 
+	@AuthorizeRole("admin")
 	@TimedExecution("SoftDeleted 게시물 삭제")
 	@DeleteMapping("/posts/cleanup")
 	public ResponseEntity<ApiResponse<List<GetImageResponse>>> deleteSoftDeletedPosts() {

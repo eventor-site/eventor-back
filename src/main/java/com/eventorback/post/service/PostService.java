@@ -82,5 +82,4 @@ public interface PostService {
 
 	Integer deleteEventPostsByTitleContainKeyword(CurrentUserDto currentUser, String keyword);
 
-	void createSitemap();
 }

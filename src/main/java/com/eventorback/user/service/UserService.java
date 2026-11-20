@@ -9,7 +9,6 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
-import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
@@ -17,9 +16,7 @@ import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
-import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.OauthDto;
 
 public interface UserService {
 
@@ -29,9 +26,7 @@ public interface UserService {
 
 	List<GetUserByUserId> searchUserByUserId(Long userId);
 
-	GetUserOauth getOAuthInfoByOauth(OauthDto request);
 
-	Boolean existsByOauth(OauthDto request);
 
 	GetUserResponse getUserInfo(Long userId);
 
@@ -55,17 +50,16 @@ public interface UserService {
 
 	void signup(SignUpRequest request);
 
+	/** 아이디·비밀번호 가입: 형식·중복·금지 닉네임·이메일 인증을 서버에서 확인한다 */
+	void signupWithIdentifier(SignUpRequest request);
+
 	String checkIdentifier(CheckIdentifierRequest request);
 
 	String checkNickname(CheckNicknameRequest request);
 
-	String recoverIdentifier(String identifier);
 
-	String recoverPassword(String identifier);
 
-	String recover(String identifier);
 
-	String recoverOauth(RecoverOauthRequest request);
 
 	void softDeleteExpiredUsers();
 

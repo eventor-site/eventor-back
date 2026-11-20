@@ -23,6 +23,7 @@ import com.eventorback.category.domain.dto.response.GetCategoryListResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryNameResponse;
 import com.eventorback.category.domain.dto.response.GetCategoryResponse;
 import com.eventorback.category.service.impl.CategoryServiceImpl;
+import com.eventorback.category.domain.dto.response.CategoryTreeNode;
 import com.eventorback.global.dto.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -30,13 +31,19 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/categories")
+@RequestMapping("/api/categories")
 public class CategoryController {
 	private final CategoryServiceImpl categoryService;
 
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<List<GetCategoryNameResponse>>> searchCategories(@RequestParam String keyword) {
 		return ApiResponse.createSuccess(categoryService.searchCategories(keyword));
+	}
+
+	/** 메뉴용 카테고리 트리(누구나) */
+	@GetMapping("/tree")
+	public ResponseEntity<ApiResponse<List<CategoryTreeNode>>> getCategoryTree() {
+		return ApiResponse.createSuccess(categoryService.getCategoryTree());
 	}
 
 	@GetMapping
@@ -51,11 +58,13 @@ public class CategoryController {
 		return ApiResponse.createSuccess(categoryService.getCategories(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{categoryId}")
 	public ResponseEntity<ApiResponse<GetCategoryResponse>> getCategory(@PathVariable Long categoryId) {
 		return ApiResponse.createSuccess(categoryService.getCategory(categoryId));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createCategory(@Valid @RequestBody CreateCategoryRequest request) {
 		categoryService.createCategory(request);

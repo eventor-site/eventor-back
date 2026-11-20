@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/banNicknames")
+@RequestMapping("/api/banNicknames")
 public class BanNicknameController {
 	private final BanNicknameService banNicknameService;
 
@@ -40,6 +40,7 @@ public class BanNicknameController {
 		return ApiResponse.createSuccess(banNicknameService.getBanNicknames(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createBanNickname(
 		@RequestBody BanNicknameDto request) {
@@ -47,6 +48,7 @@ public class BanNicknameController {
 		return ApiResponse.createSuccess("금지 닉네임이 추가 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{banNicknameId}")
 	public ResponseEntity<ApiResponse<Void>> deleteBanNickname(@PathVariable Long banNicknameId) {
 		banNicknameService.deleteBanNickname(banNicknameId);

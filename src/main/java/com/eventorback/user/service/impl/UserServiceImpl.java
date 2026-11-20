@@ -31,7 +31,6 @@ import com.eventorback.user.domain.dto.CurrentUserDto;
 import com.eventorback.user.domain.dto.request.CheckIdentifierRequest;
 import com.eventorback.user.domain.dto.request.CheckNicknameRequest;
 import com.eventorback.user.domain.dto.request.ModifyPasswordRequest;
-import com.eventorback.user.domain.dto.request.RecoverOauthRequest;
 import com.eventorback.user.domain.dto.request.SignUpRequest;
 import com.eventorback.user.domain.dto.request.UpdateLoginAtRequest;
 import com.eventorback.user.domain.dto.request.UpdateUserAttributeRequest;
@@ -39,9 +38,7 @@ import com.eventorback.user.domain.dto.request.UpdateUserRequest;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
-import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.exception.NicknameChangeCooldownBadRequestException;
 import com.eventorback.user.exception.UserAlreadyExistsException;
@@ -82,16 +79,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<GetUserByUserId> searchUserByUserId(Long userId) {
 		return userRepository.searchUserByUserId(userId);
-	}
-
-	@Override
-	public GetUserOauth getOAuthInfoByOauth(OauthDto request) {
-		return userRepository.getOAuthInfoByOauth(request);
-	}
-
-	@Override
-	public Boolean existsByOauth(OauthDto request) {
-		return userRepository.existsByOauthIdAndOauthType(request.oauthId(), request.oauthType());
 	}
 
 	@Override
@@ -235,6 +222,27 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public void signupWithIdentifier(SignUpRequest request) {
+		String identifier = request.identifier() == null ? "" : request.identifier().trim();
+		if (!identifier.matches("^[a-zA-Z0-9]{4,20}$")) {
+			throw new com.eventorback.global.exception.BadRequestException("아이디는 영문·숫자 4~20자로 입력해 주세요.");
+		}
+		String nickname = request.nickname() == null ? "" : request.nickname().trim();
+		if (nickname.length() < 2 || nickname.length() > 10) {
+			throw new com.eventorback.global.exception.BadRequestException("닉네임은 2~10자로 입력해 주세요.");
+		}
+		String nicknameCheck = checkNickname(new CheckNicknameRequest(nickname));
+		if (!nicknameCheck.startsWith("사용 가능")) {
+			throw new com.eventorback.global.exception.BadRequestException(nicknameCheck);
+		}
+		if (request.email() == null || !mailService.consumeSignupVerified(request.email().trim())) {
+			throw new com.eventorback.global.exception.BadRequestException("이메일 인증을 먼저 완료해 주세요.");
+		}
+		signup(new SignUpRequest(identifier, request.password(), request.name(), nickname, request.email().trim(),
+			request.birth(), request.gender(), request.phone(), null, null, null));
+	}
+
+	@Override
 	public String checkIdentifier(CheckIdentifierRequest request) {
 		if (userRepository.existsByIdentifier(request.identifier())) {
 			return "이미 존재하는 아이디 입니다.";
@@ -258,54 +266,6 @@ public class UserServiceImpl implements UserService {
 		}
 
 		return "사용 가능한 닉네임 입니다.";
-	}
-
-	@Override
-	public String recoverIdentifier(String identifier) {
-		if (userRepository.existsByIdentifier(identifier)) {
-			// mailService.sendMail(email, "아이디 찾기", user.getIdentifier());
-			// return email + "로 아이디를 전송하였습니다.";
-			return "가입된 아이디 입니다.";
-		}
-		return "가입된 아이디가 아닙니다.";
-	}
-
-	@Override
-	public String recoverPassword(String identifier) {
-		User user = userRepository.findByIdentifier(identifier).orElse(null);
-		if (user != null) {
-			// 새로운 비밀번호
-			String newPassword = PasswordUtil.generateSecurePassword(8);
-			boolean isSendEmail = mailService.sendMail(user.getEmail(), "비밀번호 초기화", newPassword);
-
-			if (isSendEmail) {
-				String encryptedNewPassword = passwordEncoder.encode(newPassword);
-				user.modifyPassword(encryptedNewPassword);
-				return user.getEmail() + "로 새로운 비밀번호가 전송되었습니다.";
-			} else {
-				return user.getEmail() + "로 이미 새로운 비밀 번호를 전송하였습니다.";
-			}
-		}
-		return "가입된 아이디가 아닙니다.";
-	}
-
-	@Override
-	public String recover(String identifier) {
-		User user = userRepository.findByIdentifier(identifier).orElseThrow(UserNotFoundException::new);
-		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-		user.updateStatus(status);
-
-		return "계정이 복구 되었습니다.";
-	}
-
-	@Override
-	public String recoverOauth(RecoverOauthRequest request) {
-		User user = userRepository.findByOauthIdAndEmail(request.oauthId(), request.email())
-			.orElseThrow(UserNotFoundException::new);
-		Status status = statusRepository.findOrCreateStatus("회원", "활성");
-		user.updateStatus(status);
-
-		return "계정이 복구 되었습니다.";
 	}
 
 	@Override

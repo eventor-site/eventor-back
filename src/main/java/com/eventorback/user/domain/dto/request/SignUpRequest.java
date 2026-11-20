@@ -1,6 +1,5 @@
 package com.eventorback.user.domain.dto.request;
 
-import com.eventorback.oauth.dto.UserProfile;
 
 import lombok.Builder;
 
@@ -18,18 +17,10 @@ public record SignUpRequest(
 	String oauthType,
 	String certifyCode) {
 
-	public static SignUpRequest fromUserProfile(UserProfile userProfile) {
-		return SignUpRequest.builder()
-			// .identifier(userProfile.getEmail())
-			// .password(UUID.randomUUID().toString())
-			// .name(userProfile.getName())
-			.email(userProfile.email())
-			// .birth(userProfile.getBirth())
-			// .gender(userProfile.getGender())
-			// .phone(userProfile.getPhone())
-			.oauthId(userProfile.oauthId())
-			.oauthType(userProfile.oauthType())
-			.build();
+	/** 소셜 로그인 값(oauthId, oauthType)을 비운 복사본 */
+	public SignUpRequest withoutOauth() {
+		return new SignUpRequest(identifier, password, name, nickname, email, birth, gender, phone, null, null,
+			certifyCode);
 	}
 }
 

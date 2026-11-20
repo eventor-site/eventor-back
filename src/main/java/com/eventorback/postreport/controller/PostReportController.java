@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back")
+@RequestMapping("/api")
 public class PostReportController {
 	private final PostReportService postReportService;
 
@@ -34,6 +34,7 @@ public class PostReportController {
 		return ApiResponse.createSuccess(postReportService.getPostReports(pageable));
 	}
 
+	@AuthorizeRole("member")
 	@PostMapping("/posts/{postId}/postReports")
 	public ResponseEntity<ApiResponse<Void>> createPostReport(@CurrentUserId Long userId, @PathVariable Long postId,
 		@RequestParam String reportTypeName) {

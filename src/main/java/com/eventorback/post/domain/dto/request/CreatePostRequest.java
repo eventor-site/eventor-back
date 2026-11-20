@@ -20,4 +20,8 @@ public record CreatePostRequest(
 	String productName,
 	Long price
 ) {
+	public CreatePostRequest withContent(String newContent) {
+		return new CreatePostRequest(categoryName, title, newContent, link, startTime, endTime, endType, shoppingMall, productName,
+			price);
+	}
 }

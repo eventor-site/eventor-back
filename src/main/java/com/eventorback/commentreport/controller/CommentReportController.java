@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back")
+@RequestMapping("/api")
 public class CommentReportController {
 	private final CommentReportService commentReportService;
 
@@ -34,6 +34,7 @@ public class CommentReportController {
 		return ApiResponse.createSuccess(commentReportService.getCommentReports(pageable));
 	}
 
+	@AuthorizeRole("member")
 	@PostMapping("/comments/{commentId}/commentReports")
 	public ResponseEntity<ApiResponse<Void>> createCommentReport(@CurrentUserId Long userId,
 		@PathVariable Long commentId,

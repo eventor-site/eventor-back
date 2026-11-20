@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/pointHistories")
+@RequestMapping("/api/pointHistories")
 public class PointHistoryController {
 	private final PointHistoryService pointHistoryService;
 
@@ -31,7 +31,10 @@ public class PointHistoryController {
 		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
 		@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
 		@PageableDefault(page = 1, size = 10) Pageable pageable) {
-		return ApiResponse.createSuccess(pointHistoryService.getUserPointTotalsByPeriod(startTime, endTime, pageable));
+		// 기간을 주지 않으면 이번 달 1일부터 지금까지
+		LocalDateTime from = startTime != null ? startTime : LocalDateTime.now().withDayOfMonth(1).toLocalDate().atStartOfDay();
+		LocalDateTime to = endTime != null ? endTime : LocalDateTime.now();
+		return ApiResponse.createSuccess(pointHistoryService.getUserPointTotalsByPeriod(from, to, pageable));
 	}
 
 }

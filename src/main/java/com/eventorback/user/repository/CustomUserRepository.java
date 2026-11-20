@@ -10,9 +10,7 @@ import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
-import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 
 public interface CustomUserRepository {
@@ -29,7 +27,6 @@ public interface CustomUserRepository {
 
 	GetUserAuth getAuthByIdentifier(String identifier);
 
-	GetUserOauth getOAuthInfoByOauth(OauthDto request);
 
 	Optional<GetUserResponse> getUserInfo(Long userId);
 

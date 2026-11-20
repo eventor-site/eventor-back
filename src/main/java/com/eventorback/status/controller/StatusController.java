@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/statuses")
+@RequestMapping("/api/statuses")
 public class StatusController {
 	private final StatusService statusService;
 
@@ -44,11 +44,13 @@ public class StatusController {
 		return ApiResponse.createSuccess(statusService.getStatuses(pageable));
 	}
 
+	@AuthorizeRole("admin")
 	@GetMapping("/{statusId}")
 	public ResponseEntity<ApiResponse<GetStatusResponse>> getStatus(@PathVariable Long statusId) {
 		return ApiResponse.createSuccess(statusService.getStatus(statusId));
 	}
 
+	@AuthorizeRole("admin")
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> createStatus(
 		@RequestBody StatusRequest request) {
@@ -56,6 +58,7 @@ public class StatusController {
 		return ApiResponse.createSuccess("상태가 생성 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@PutMapping("/{statusId}")
 	public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable Long statusId,
 		@RequestBody StatusRequest request) {
@@ -63,6 +66,7 @@ public class StatusController {
 		return ApiResponse.createSuccess("상태가 수정 되었습니다.");
 	}
 
+	@AuthorizeRole("admin")
 	@DeleteMapping("/{statusId}")
 	public ResponseEntity<ApiResponse<Void>> deleteStatus(@PathVariable Long statusId) {
 		statusService.deleteStatus(statusId);

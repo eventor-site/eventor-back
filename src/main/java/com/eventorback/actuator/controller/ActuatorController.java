@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/back/actuator")
+@RequestMapping("/api/actuator")
 public class ActuatorController {
 
 	@Value("${server.port}")

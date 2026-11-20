@@ -1,35 +1,20 @@
+# 로컬 개발(기본 프로필). 비밀값은 git에 올리지 않는 src/main/resources/application.env 에 적는다.
 spring:
+  config:
+    import: optional:file:./src/main/resources/application.env[.properties]
+
+  # 개발 DB: 운영 서버의 eventor_dev(운영 eventor 복제본, scripts/clone-prod-to-dev.sh)
   datasource:
     url: ${DEV_MYSQL_URL}
-    dbcp2:
-      username: ${MYSQL_USERNAME}
-      password: ${MYSQL_PASSWORD}
 
-  data:
-    redis:
-      host: localhost
-      password: ${REDIS_PASSWORD}
-  
-  # JPA 설정
   jpa:
-    show-sql: true    # Hibernate 가 생성하는 SQL 쿼리를 콘솔에 출력
-    properties:
-      hibernate:
-        format_sql: true    # SQL 쿼리를 보기 쉽게 포맷팅하여 출력합니다.
-        use_sql_comments: true    # SQL 쿼리에 주석을 추가
-        highlight_sql: true   # SQL 쿼리를 하이라이트하여 출력
     hibernate:
-      ddl-auto: update #validate로 변경 예정
+      ddl-auto: validate
 
-logging:
-  level:
-    org.hibernate.orm.jdbc.bind: trace
-    org.springframework:
-      transaction:
-        interceptor: trace
-        security: debug
-        web: debug
-
-upload:
-  domainUrl: http://localhost
-  path: C:/Users/dlrud/Desktop/eventor/image
+eventor:
+  storage:
+    # 로컬 DB는 운영 복제본이라 이미지 파일은 운영 서버에만 있다. 로컬에 없으면 운영에서 읽는다
+    fallback-base-url: https://eventor.duckdns.org
+  web:
+    # 로컬은 프론트 빌드 파일이 없으니 Vite 개발 서버에서 index.html 을 받는다
+    index-url: http://localhost:9080/

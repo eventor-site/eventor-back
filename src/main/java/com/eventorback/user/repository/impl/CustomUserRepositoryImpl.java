@@ -20,9 +20,7 @@ import com.eventorback.user.domain.dto.response.GetUserAuth;
 import com.eventorback.user.domain.dto.response.GetUserByIdentifier;
 import com.eventorback.user.domain.dto.response.GetUserByUserId;
 import com.eventorback.user.domain.dto.response.GetUserListResponse;
-import com.eventorback.user.domain.dto.response.GetUserOauth;
 import com.eventorback.user.domain.dto.response.GetUserResponse;
-import com.eventorback.user.domain.dto.response.OauthDto;
 import com.eventorback.user.domain.entity.User;
 import com.eventorback.user.repository.CustomUserRepository;
 import com.querydsl.core.types.Projections;
@@ -118,22 +116,6 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 	}
 
 	@Override
-	public GetUserOauth getOAuthInfoByOauth(OauthDto request) {
-		User result = queryFactory
-			.selectFrom(user)
-			.from(user)
-			.where(user.oauthId.eq(request.oauthId()), user.oauthType.eq(request.oauthType()))
-			.fetchOne();
-
-		if (result != null) {
-			return GetUserOauth.fromEntity(result);
-		} else {
-			return null;
-		}
-
-	}
-
-	@Override
 	public Optional<GetUserResponse> getUserInfo(Long userId) {
 		// 사용자 역할 이름 리스트 조회
 		List<String> roles = queryFactory
@@ -177,7 +159,8 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
 	@Override
 	public List<Long> getDormantUsers() {
-		LocalDateTime now = LocalDateTime.now();
+		// 휴면 전환 기준: 1년 동안 로그인하지 않은 활성 회원(2026-11-20 90일 → 1년)
+		LocalDateTime threshold = LocalDateTime.now().minusYears(1);
 		return queryFactory
 			.select(user.userId)
 			.from(user)
@@ -185,10 +168,10 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 			.join(status.statusType, statusType)
 			.where(
 				status.name.eq("활성")
-					// 조건 1: 마지막 로그인 시간이 null 이고, 생성일이 90일 이전인 경우
-					.and(user.loginAt.isNull().and(user.createdAt.loe(now.minusDays(90)))
-						// 조건 2: 마지막 로그인 시간이 90일 이전이고, 상태가 "활성"인 경우
-						.or(user.loginAt.isNotNull().and(user.loginAt.loe(now.minusDays(90))))
+					// 조건 1: 로그인한 적이 없고 가입한 지 1년이 지난 경우
+					.and(user.loginAt.isNull().and(user.createdAt.loe(threshold))
+						// 조건 2: 마지막 로그인이 1년 전 이전인 경우
+						.or(user.loginAt.isNotNull().and(user.loginAt.loe(threshold)))
 					)
 
 			)

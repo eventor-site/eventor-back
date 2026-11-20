@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +25,7 @@ import com.eventorback.image.exception.FileSaveException;
 import com.eventorback.image.exception.ImageCapacityExceededException;
 import com.eventorback.image.exception.ImageNotFoundException;
 import com.eventorback.image.repository.ImageRepository;
+import com.eventorback.global.storage.FileStorage;
 import com.eventorback.image.service.ImageService;
 import com.eventorback.post.domain.entity.Post;
 import com.eventorback.post.exception.PostNotFoundException;
@@ -47,21 +47,18 @@ public class ImageServiceImpl implements ImageService {
 		".webp");
 	private static final List<String> VIDEO_EXTENSIONS = Arrays.asList(".mp4", ".mov", ".avi", ".wmv", ".mkv", ".webm");
 
-	@Value("${upload.domainUrl}")
-	private String domainUrl;
-
-	@Value("${upload.path}")
-	private String uploadPath;
+	private final FileStorage fileStorage;
 
 	@Override
 	// @Async("imageUploadExecutor")
 	public List<GetImageResponse> upload(MultipartFile file, String folderName, Long postId, String categoryName,
 		boolean isThumbnail, boolean isPasted) {
 
-		// 날짜별 하위 폴더 생성 (YYYYMMDD 형식)
+		// 날짜별 하위 폴더(YYYYMMDD). 폴더 이름은 영문·숫자만 허용(경로 조작 방지)
+		if (folderName == null || !folderName.matches("[A-Za-z0-9_-]{1,30}")) {
+			throw new com.eventorback.global.exception.BadRequestException("잘못된 폴더 이름입니다.");
+		}
 		String today = new SimpleDateFormat("yyyyMMdd").format(new Date());
-		Path folderPath = Paths.get(uploadPath, folderName, today);
-		createDirectoryIfNotExists(folderPath);
 
 		// 파일 이름 생성 (UUID 로 중복 방지)
 		String originalFilename = file.getOriginalFilename();
@@ -77,11 +74,13 @@ public class ImageServiceImpl implements ImageService {
 			throw new ImageCapacityExceededException();
 		}
 
-		// 4. 파일 저장
-		saveFile(folderPath, newFileName, file);
-
-		// 리소스 URL
-		String url = domainUrl + "/" + folderName + "/" + today + "/" + newFileName;
+		// 4. 파일 저장. URL은 도메인 없는 /uploads/... (로컬·운영 공통)
+		String url;
+		try {
+			url = fileStorage.save(folderName + "/" + today + "/" + newFileName, file.getBytes());
+		} catch (IOException e) {
+			throw new FileSaveException(e.getMessage());
+		}
 
 		// 기존 썸네일 존재하면 제거
 		if (isThumbnail) {
@@ -171,17 +170,12 @@ public class ImageServiceImpl implements ImageService {
 			// 1. DB 에서 이미지 정보 조회
 			Image image = imageRepository.findById(imageId)
 				.orElseThrow(ImageNotFoundException::new);
-
-			// 2. 실제 파일 경로 가져오기
-			Path filePath = Paths.get(uploadPath,
-				image.getUrl().replaceFirst(domainUrl, ""));
-
-			try {
-				// 3. 실제 파일 삭제
-				Files.deleteIfExists(filePath);
-			} catch (IOException e) {
-				log.error("파일 삭제 실패: {}", filePath, e);
+			if (!image.getPost().getPostId().equals(request.postId())) {
+				throw new ImageNotFoundException();
 			}
+
+			// 2~3. 실제 파일 삭제
+			fileStorage.delete(image.getUrl());
 
 			// 4. DB 에서 이미지 정보 삭제
 			imageRepository.deleteById(imageId);
@@ -206,13 +200,7 @@ public class ImageServiceImpl implements ImageService {
 		List<GetImageResponse> images = imageRepository.getAllByPostId(postId);
 
 		images.forEach(image -> {
-			Path filePath = Paths.get(uploadPath, image.url().replaceFirst(domainUrl, ""));
-
-			try {
-				Files.deleteIfExists(filePath);
-			} catch (IOException e) {
-				log.error("파일 삭제 실패: {}", filePath, e);
-			}
+			fileStorage.delete(image.url());
 
 			imageRepository.deleteById(image.imageId());
 		});
@@ -223,16 +211,8 @@ public class ImageServiceImpl implements ImageService {
 		List<Image> images = imageRepository.findByPostUserUserIdAndPostStatusName(userId, "작성중");
 
 		images.forEach(image -> {
-			// 2. 실제 파일 경로 가져오기
-			Path filePath = Paths.get(uploadPath,
-				image.getUrl().replaceFirst(domainUrl, ""));
-
-			try {
-				// 3. 실제 파일 삭제
-				Files.deleteIfExists(filePath);
-			} catch (IOException e) {
-				log.error("파일 삭제 실패: {}", filePath, e);
-			}
+			// 2~3. 실제 파일 삭제
+			fileStorage.delete(image.getUrl());
 
 			// 4. DB 에서 이미지 정보 삭제
 			imageRepository.deleteById(image.getImageId());

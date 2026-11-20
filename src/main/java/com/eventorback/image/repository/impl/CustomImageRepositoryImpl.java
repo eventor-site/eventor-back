@@ -39,7 +39,7 @@ public class CustomImageRepositoryImpl implements CustomImageRepository {
 	public Long sumSizeByPostPostId(Long postId) {
 		return Optional.ofNullable(
 			queryFactory
-				.select(image.size.sum())
+				.select(image.size.sumAggregate())
 				.from(image)
 				.where(image.post.postId.eq(postId))
 				.fetchOne()

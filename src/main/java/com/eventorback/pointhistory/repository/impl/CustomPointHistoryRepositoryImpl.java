@@ -31,14 +31,14 @@ public class CustomPointHistoryRepositoryImpl implements CustomPointHistoryRepos
 				pointHistory.user.userId,
 				pointHistory.user.nickname,
 				pointHistory.user.email,
-				point.amount.sum()
+				point.amount.sumAggregate()
 			))
 			.from(pointHistory)
 			.join(pointHistory.point, point)
 			.join(pointHistory.user, user)
 			.where(pointHistory.createdAt.between(startTime, endTime))
 			.groupBy(pointHistory.user.userId, pointHistory.user.nickname, pointHistory.user.email)
-			.orderBy(point.amount.sum().desc())
+			.orderBy(point.amount.sumAggregate().desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();

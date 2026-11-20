@@ -1,113 +1,46 @@
 package com.eventorback.global.config;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
-import com.eventorback.auth.filter.LoginFilter;
-import com.eventorback.auth.filter.LogoutFilter;
-import com.eventorback.auth.repository.RefreshTokenRepository;
-import com.eventorback.auth.service.AppCustomUserDetailsService;
-import com.eventorback.auth.utils.JwtUtils;
-import com.eventorback.global.util.CookieUtils;
-import com.eventorback.user.service.UserService;
-
-import lombok.RequiredArgsConstructor;
-
+/**
+ * Spring Security는 보안 헤더와 비밀번호 인코더만 쓴다.
+ * 인증은 {@code JwtAuthenticationFilter}(쿠키 JWT), 권한은 {@code @AuthorizeRole} AOP가 맡는다.
+ * <p>
+ * CSRF: 인증 쿠키가 SameSite=Lax라 다른 사이트에서 보낸 POST·PUT·DELETE에는 쿠키가 붙지 않는다.
+ * CORS: 프론트와 API가 같은 도메인(운영 nginx, 로컬 Vite 프록시)이라 허용하지 않는다.
+ */
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-	private final AuthenticationConfiguration authenticationConfiguration;
-	private final CookieUtils cookieUtils;
-	private final JwtUtils jwtUtils;
-	private final AppCustomUserDetailsService userDetailsService;
-	private final RefreshTokenRepository refreshTokenRepository;
-	// private final CustomOAuth2UserService customOAuth2UserService;
-	// private final CustomSuccessHandler customSuccessHandler;
-
-	@Value("${spring.jwt.access-token.expires-in}")
-	private Long accessTokenExpiresIn;
-	@Value("${spring.jwt.refresh-token.expires-in}")
-	private Long refreshTokenExpiresIn;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
-			.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
-
-			.authorizeHttpRequests((auth) -> auth
-					.requestMatchers("/**", "/js/**", "/css/**", "/images/**", "/favicon.ico").permitAll()
-				// .anyRequest().authenticated()
-			)
-
-			//
-			// .oauth2Login((oauth2) -> oauth2
-			//
-			// 	.userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-			// 		.userService(customOAuth2UserService))
-			// 	.successHandler(customSuccessHandler)
-			//
-			// )
-
-			// .addFilterAfter(new JWTFilter(jwtUtils), OAuth2LoginAuthenticationFilter.class)
-
-			.addFilterAt(
-				new LoginFilter(
-					authenticationManager(authenticationConfiguration),
-					jwtUtils,
-					accessTokenExpiresIn,
-					refreshTokenExpiresIn,
-					refreshTokenRepository,
-					userService
-				),
-				UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(new LogoutFilter(cookieUtils, refreshTokenRepository),
-				org.springframework.security.web.authentication.logout.LogoutFilter.class)
-			.userDetailsService(userDetailsService)
-
-			.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
-
-				CorsConfiguration configuration = new CorsConfiguration();
-
-				configuration.setAllowedOrigins(List.of("https://eventor.duckdns.org"));
-				configuration.setAllowedMethods(Collections.singletonList("*"));
-				configuration.setAllowCredentials(true);
-				configuration.setAllowedHeaders(Collections.singletonList("*"));
-				configuration.setMaxAge(3600L);
-
-				configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-				configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
-				return configuration;
-			}))
+			.logout(AbstractHttpConfigurer::disable)
+			.requestCache(AbstractHttpConfigurer::disable)
+			.anonymous(AbstractHttpConfigurer::disable)
+			.headers(headers -> headers
+				.frameOptions(frame -> frame.sameOrigin())
+				.referrerPolicy(ref -> ref.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)))
+			.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
 			.build();
-
 	}
 
 	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
+	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-		return configuration.getAuthenticationManager();
 	}
 }

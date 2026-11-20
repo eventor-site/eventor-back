@@ -204,7 +204,7 @@ public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 	@Override
 	public Long getTotalChildCount(Long group) {
 		return queryFactory
-			.select(comment.childCount.sum())
+			.select(comment.childCount.sumAggregate())
 			.from(comment)
 			.where(comment.group.eq(group))
 			.fetchOne();

@@ -14,20 +14,15 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.eventorback.tour.client.GeocoderApiClient;
 import com.eventorback.tour.client.TourApiClient;
-import com.eventorback.tour.domain.dto.response.GeoPointResponse;
 import com.eventorback.tour.domain.dto.response.GetOngoingFestivalResponse;
 import com.eventorback.tour.domain.dto.response.GetTourResponse;
 import com.eventorback.tour.domain.dto.response.SearchFestivalResponse;
-import com.eventorback.tour.domain.dto.response.SearchTourResponse;
-import com.eventorback.tour.domain.dto.response.TourApiResponse;
-import com.eventorback.tour.exception.AddressBadRequestException;
-import com.eventorback.tour.exception.GecoderAPIServerException;
 import com.eventorback.tour.exception.TourAPIServerException;
 import com.eventorback.tour.service.TourService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,51 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class TourServiceImpl implements TourService {
 	private final TourApiClient tourApiClient;
-	private final GeocoderApiClient geocoderApiClient;
-
-	@Value("${openApi.geocoder}")
-	private String geocorderApiKey;
 
 	@Value("${openApi.tour}")
 	private String tourApiKey;
-
-	@Override
-	public SearchTourResponse searchTour(String address, String radius) {
-		Map<String, Object> geocoderApiResponse;
-
-		try {
-			geocoderApiResponse = geocoderApiClient.convertAddress("address", "GetCoord", address,
-				"road", geocorderApiKey);
-		} catch (Exception e) {
-			throw new GecoderAPIServerException();
-		}
-
-		GeoPointResponse point = GeoPointResponse.fromGeocoderApiResponse(geocoderApiResponse);
-
-		if (point == null) {
-			throw new AddressBadRequestException();
-		}
-
-		try {
-			Map<String, Object> tourApiResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
-				point.x(), point.y(), radius, "12", tourApiKey);
-
-			Map<String, Object> hotelResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
-				point.x(), point.y(), radius, "39", tourApiKey);
-
-			Map<String, Object> eateryResponse = tourApiClient.getLocationBasedList2(50, "WEB", "이벤터", "json", "S",
-				point.x(), point.y(), radius, "32", tourApiKey);
-
-			List<TourApiResponse> tours = TourApiResponse.parseTourApiResponse(tourApiResponse);
-			List<TourApiResponse> hotels = TourApiResponse.parseTourApiResponse(hotelResponse);
-			List<TourApiResponse> eateries = TourApiResponse.parseTourApiResponse(eateryResponse);
-
-			return new SearchTourResponse(tours, hotels, eateries);
-		} catch (Exception e) {
-			throw new TourAPIServerException();
-		}
-
-	}
 
 	@Override
 	public GetTourResponse getTour(String contentId, String contentTypeId) {
@@ -108,7 +61,7 @@ public class TourServiceImpl implements TourService {
 	}
 
 	@Override
-	@Cacheable(cacheNames = "cache", key = "'searchFestival2'", cacheManager = "cacheManager")
+	@Cacheable(cacheNames = "festivals", key = "'searchFestival2'", cacheManager = "cacheManager")
 	public List<SearchFestivalResponse> searchFestival2() {
 		LocalDate today = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -119,7 +72,7 @@ public class TourServiceImpl implements TourService {
 		String eventStartDate = start.format(formatter);
 		String eventEndDate = end.format(formatter);
 
-		ObjectMapper objectMapper = new ObjectMapper();
+		ObjectMapper objectMapper = JsonMapper.builder().build();
 		List<SearchFestivalResponse> result = new ArrayList<>();
 
 		try {
@@ -194,15 +147,15 @@ public class TourServiceImpl implements TourService {
 	}
 
 	@Override
-	@Cacheable(cacheNames = "cache", key = "'getOngoingFestivals'", cacheManager = "cacheManager")
+	@Cacheable(cacheNames = "festivals", key = "'getOngoingFestivals'", cacheManager = "cacheManager")
 	public List<GetOngoingFestivalResponse> getOngoingFestivals() {
 		return searchFestival2().stream().limit(10).map(GetOngoingFestivalResponse::fromDTO).toList();
 	}
 
 	@Override
 	@Caching(evict = {
-		@CacheEvict(cacheNames = "cache", key = "'searchFestival2'", cacheManager = "cacheManager"),
-		@CacheEvict(cacheNames = "cache", key = "'getOngoingFestivals'", cacheManager = "cacheManager")
+		@CacheEvict(cacheNames = "festivals", key = "'searchFestival2'", cacheManager = "cacheManager"),
+		@CacheEvict(cacheNames = "festivals", key = "'getOngoingFestivals'", cacheManager = "cacheManager")
 	})
 	public void evictSearchFestival2Cache() {
 	}
