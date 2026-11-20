@@ -36,7 +36,7 @@ import com.eventorback.post.domain.dto.response.GetPostsByCategoryNameResponse;
 import com.eventorback.post.domain.dto.response.GetRecommendPostResponse;
 import com.eventorback.post.domain.dto.response.GetTempPostResponse;
 import com.eventorback.post.service.PostService;
-import com.eventorback.search.document.dto.reponse.SearchPostsResponse;
+import com.eventorback.search.dto.response.SearchPostsResponse;
 import com.eventorback.search.service.PostSearchService;
 import com.eventorback.user.domain.dto.CurrentUserDto;
 

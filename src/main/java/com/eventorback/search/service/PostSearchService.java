@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eventorback.category.repository.CategoryRepository;
-import com.eventorback.search.document.dto.reponse.SearchPostsResponse;
+import com.eventorback.search.dto.response.SearchPostsResponse;
 import com.eventorback.search.repository.PostSearchRepository;
 
 import lombok.RequiredArgsConstructor;

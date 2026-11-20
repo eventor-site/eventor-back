@@ -1,4 +1,4 @@
-package com.eventorback.search.document.dto.reponse;
+package com.eventorback.search.dto.response;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
